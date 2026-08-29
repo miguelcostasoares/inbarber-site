@@ -1,0 +1,378 @@
+/* ==========================================================================
+   InBarber — Responsividade (mobile-first)
+   Os arquivos anteriores definem o layout de 320px. Aqui as media queries
+   min-width vão adicionando colunas conforme a tela cresce.
+
+   Pontos de quebra:
+     480px  → celular grande
+     640px  → celular deitado / tablet pequeno
+     768px  → tablet
+     960px  → tablet grande / notebook pequeno
+    1024px  → desktop (navegação em linha)
+    1280px  → desktop grande
+   ========================================================================== */
+
+/* ==========================================================================
+   ≥ 480px
+   ========================================================================== */
+@media (min-width: 480px) {
+  .signup-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero__floating-card {
+    left: auto;
+    right: -1rem;
+  }
+}
+
+/* ==========================================================================
+   ≥ 640px
+   ========================================================================== */
+@media (min-width: 640px) {
+  .trends-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trend--feature {
+    grid-column: span 2;
+    min-height: 440px;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters__reset {
+    grid-column: span 2;
+    justify-self: start;
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .benefit:last-child {
+    grid-column: span 2;
+  }
+}
+
+/* ==========================================================================
+   ≥ 768px
+   ========================================================================== */
+@media (min-width: 768px) {
+  /* Tablet: três filtros lado a lado, botão de busca em linha própria. */
+  .searchbox__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.125rem;
+  }
+
+  .searchbox__seg + .searchbox__seg::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 1px;
+    height: 26px;
+    background: var(--color-border-subtle);
+    transform: translateY(-50%);
+  }
+
+
+  .step {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  }
+
+  .step:nth-child(even) .step__text {
+    order: 2;
+  }
+
+  .feature {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  }
+
+  .feature:nth-child(even) .feature__text {
+    order: 2;
+  }
+
+  .footer__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .footer__brand {
+    grid-column: span 3;
+  }
+}
+
+/* ==========================================================================
+   ≥ 960px
+   ========================================================================== */
+@media (min-width: 960px) {
+  .hero__inner {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+
+  .b2b-hero__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  }
+
+  .b2b-preview__panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  }
+
+  .cta-block {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+  }
+
+  .reviews__layout {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 2fr);
+  }
+
+  .score-card {
+    position: sticky;
+    top: calc(var(--header-height) + 2rem);
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .benefit:last-child {
+    grid-column: auto;
+  }
+
+  .filters {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  }
+
+  .filters__reset {
+    grid-column: auto;
+    justify-self: stretch;
+  }
+}
+
+/* ==========================================================================
+   ≥ 1024px — rodapé em cinco colunas
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .footer__grid {
+    grid-template-columns: 1.6fr repeat(4, 1fr);
+    gap: var(--space-2xl);
+  }
+
+  .footer__brand {
+    grid-column: auto;
+  }
+}
+
+/* ==========================================================================
+   ≥ 1200px — a busca vira uma pílula única com o botão em linha
+   ========================================================================== */
+@media (min-width: 1200px) {
+  .searchbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.375rem 0.375rem 0.25rem;
+    border-radius: var(--radius-pill);
+  }
+
+  .searchbox__grid {
+    flex: 1;
+    grid-template-columns: 1.3fr 1fr 1.05fr;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .searchbox__submit {
+    width: auto;
+  }
+}
+
+/* ==========================================================================
+   ≥ 1280px
+   ========================================================================== */
+@media (min-width: 1280px) {
+  .shops-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .reviews-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Ajustes finos de telas pequenas (≤ 480px)
+   ========================================================================== */
+@media (max-width: 479px) {
+  .search-bar {
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+  }
+
+  .search-bar__input {
+    padding-left: 2.75rem;
+  }
+
+  .search-bar .btn {
+    width: 100%;
+  }
+
+  .hero__floating-card {
+    position: static;
+    margin-top: var(--space-md);
+  }
+
+  .hero__photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer__bottom .lang-switcher {
+    margin-left: 0;
+  }
+
+  .shop-card__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shop-card__footer .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Depoimentos: carrossel horizontal abaixo de 960px
+   ========================================================================== */
+@media (max-width: 959px) {
+  .reviews-grid {
+    display: flex;
+    gap: var(--space-md);
+    overflow-x: auto;
+    padding-bottom: var(--space-sm);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .reviews-grid > * {
+    flex: 0 0 min(84%, 340px);
+    scroll-snap-align: start;
+  }
+
+  .reviews-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .reviews-grid::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-pill);
+  }
+
+  .reviews-controls {
+    display: flex;
+  }
+}
+
+/* ==========================================================================
+   Header compacto e animações contidas em telas pequenas
+   ========================================================================== */
+@media (max-width: 767px) {
+  /* O rótulo longo do botão de negócios vira a versão curta. */
+  .header__business-full {
+    display: none;
+  }
+
+  .header__business-short {
+    display: inline;
+  }
+}
+
+@media (max-width: 559px) {
+  .header__inner {
+    gap: var(--space-2xs);
+  }
+
+  /* Só o símbolo da marca; o nome volta a partir de 560px. */
+  .brand__name {
+    display: none;
+  }
+
+  .lang-select__trigger {
+    padding: 0.4375rem;
+  }
+
+  .lang-select__menu {
+    right: -0.5rem;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 419px) {
+  /* Em telas muito estreitas o botão de sessão fica só com o ícone.
+     O rótulo continua acessível pelo aria-label. */
+  .header__signin-label {
+    display: none;
+  }
+
+  .header__signin {
+    padding-inline: 0.6875rem;
+  }
+
+  .header__business {
+    padding-inline: 0.625rem;
+  }
+}
+
+@media (max-width: 767px) {
+  /* Empilhado, o deslocamento lateral do reveal criaria rolagem horizontal. */
+  [data-reveal="left"],
+  [data-reveal="right"] {
+    transform: translateY(28px);
+  }
+
+  /* Anotações dos mockups são decorativas e não cabem em telas estreitas. */
+  .annotation {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Telas muito largas
+   ========================================================================== */
+@media (min-width: 1600px) {
+  .glow-orb {
+    opacity: 0.35;
+  }
+}
+
+/* ==========================================================================
+   Impressão
+   ========================================================================== */
+@media print {
+  .header,
+  .footer__social,
+  .menu-toggle,
+  .lang-switcher,
+  .hero__bg,
+  .glow-orb,
+  .grid-lines {
+    display: none !important;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+    background-image: none;
+  }
+}

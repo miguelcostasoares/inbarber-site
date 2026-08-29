@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <title>Barbearia — InBarber</title>
+  <meta name="description" content="Perfil da barbearia na InBarber: serviços, preços, horários e agendamento.">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="InBarber">
+  <meta property="og:title" content="Barbearia — InBarber">
+  <meta property="og:description" content="Perfil da barbearia na InBarber: serviços, preços, horários e agendamento.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS crítico inline: a página já nasce no dark mode, sem flash de branco. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: #09090b;
+      color: #fafafa;
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    h1, h2, h3, p { margin: 0; }
+    button { font: inherit; }
+  </style>
+
+  <!-- Folhas do projeto. Ausentes hoje, entram sem conflito quando o site voltar. -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/destaques.css">
+</head>
+<body>
+  <main class="perfil" data-perfil>
+    <!-- Montado por js/barbearia.js a partir do ?id= da URL. -->
+  </main>
+
+  <script src="js/translations.destaques.js" defer></script>
+  <script src="js/destaques-data.js" defer></script>
+  <script src="js/barbearia.js" defer></script>
+</body>
+</html>

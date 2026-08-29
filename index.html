@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090b">
+  <link rel="icon" type="image/png" href="assets/images/inbarber-logo.png">
+  <link rel="apple-touch-icon" href="assets/images/inbarber-logo.png">
+
+  <title data-i18n="meta.home.title">InBarber</title>
+  <meta name="description" data-i18n-content="meta.home.description" content="">
+
+  <!-- Open Graph / redes sociais -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="InBarber">
+  <meta property="og:title" data-i18n-content="meta.home.title" content="">
+  <meta property="og:description" data-i18n-content="meta.home.description" content="">
+  <meta property="og:url" content="https://inbarber.com/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="canonical" href="https://inbarber.com/">
+  <link rel="alternate" hreflang="pt-BR" href="https://inbarber.com/">
+  <link rel="alternate" hreflang="en" href="https://inbarber.com/?lang=en">
+  <link rel="alternate" hreflang="es" href="https://inbarber.com/?lang=es">
+  <link rel="alternate" hreflang="x-default" href="https://inbarber.com/">
+
+  <!-- Tipografia -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS crítico: evita flash de tema claro antes das folhas carregarem -->
+  <style>
+    html { background: #09090b; }
+    body { margin: 0; color: #fafafa; background: #09090b; font-family: "Inter", system-ui, sans-serif; }
+    .no-js [data-reveal] { opacity: 1; transform: none; }
+  </style>
+
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "InBarber",
+    "url": "https://inbarber.com/",
+    "inLanguage": ["pt-BR", "en", "es"],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://inbarber.com/barbearias.html?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+</head>
+
+<body data-page="home">
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Pular para o conteúdo</a>
+
+  <!-- ====================================================================
+       HEADER — marca à esquerda, ações à direita.
+       Sem links de seção: a navegação acontece pelo conteúdo da página.
+       ==================================================================== -->
+  <header class="header" data-header>
+    <div class="container header__inner">
+      <a class="brand" href="index.html" data-i18n-attr="aria-label:brand.logoAlt">
+        <img class="brand__mark" src="assets/images/inbarber-logo.png" alt="" width="446" height="622" decoding="async">
+        <span class="brand__name">In<em>Barber</em></span>
+      </a>
+
+      <div class="header__actions">
+        <!-- Seletor de idioma: bandeira + código da localidade -->
+        <div class="lang-select" data-lang-select>
+          <button type="button" class="lang-select__trigger" data-lang-trigger
+                  aria-expanded="false" aria-haspopup="true"
+                  data-i18n-attr="aria-label:lang.label|title:lang.label">
+            <span class="lang-select__flag" data-lang-flag></span>
+            <span class="lang-select__code" data-lang-code></span>
+            <svg class="lang-select__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-select__menu" role="group" data-lang-menu
+               data-i18n-attr="aria-label:lang.menuLabel" hidden></div>
+        </div>
+
+        <a class="btn btn--ghost btn--sm header__business" href="para-barbearias.html"
+           data-i18n-attr="aria-label:nav.business">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 9.5 5 4h14l1.5 5.5a3 3 0 0 1-5.7 1.6 3 3 0 0 1-5.6 0 3 3 0 0 1-5.7-1.6Z"/><path d="M5 11.4V20h14v-8.6"/><path d="M10 20v-4.5h4V20"/></svg>
+          <span class="header__business-full" data-i18n="nav.business"></span>
+          <span class="header__business-short" data-i18n="nav.businessShort"></span>
+        </a>
+
+        <button type="button" class="btn btn--gradient btn--sm header__signin" data-signin
+                data-i18n-attr="aria-label:nav.signIn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H9.2A4.2 4.2 0 0 0 5 18.7v1.8"/><circle cx="12" cy="7.5" r="3.8"/></svg>
+          <span class="header__signin-label" data-i18n="nav.signIn"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ==================================================================
+         SEÇÃO 1 — HERO
+         ================================================================== -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__bg" aria-hidden="true">
+        <img class="hero__bg-image"
+             src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&amp;fit=crop&amp;w=1600&amp;q=60"
+             alt="" width="1600" height="900" fetchpriority="low" decoding="async">
+      </div>
+      <div class="grid-lines" aria-hidden="true"></div>
+
+      <div class="container hero__inner">
+        <div class="hero__content">
+          <span class="badge badge--cyan" data-reveal><span class="badge__dot"></span><span data-i18n="hero.badge"></span></span>
+
+          <h1 class="hero__title" id="hero-title" data-i18n-html="hero.titleHtml" data-reveal style="--reveal-delay:60ms"></h1>
+
+          <p class="hero__subtitle" data-i18n="hero.subtitle" data-reveal style="--reveal-delay:120ms"></p>
+
+          <div class="hero__search" data-reveal style="--reveal-delay:180ms">
+            <form class="searchbox" data-hero-search novalidate>
+              <div class="searchbox__grid">
+
+                <!-- Onde: cidade digitada, escolhida na lista ou pela localização -->
+                <div class="searchbox__seg">
+                  <button type="button" class="searchbox__field" data-popover-trigger="where"
+                          aria-expanded="false" aria-controls="pop-where">
+                    <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="search.whereLabel"></span></span>
+                    <span class="searchbox__value is-empty" data-value="where"></span>
+                  </button>
+
+                  <div class="popover" id="pop-where" data-popover="where" hidden>
+                    <div class="popover__search">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+                      <label class="visually-hidden" for="where-input" data-i18n="search.whereLabel"></label>
+                      <input class="popover__input" id="where-input" type="search" autocomplete="off"
+                             data-where-input data-i18n-attr="placeholder:search.wherePlaceholder">
+                    </div>
+
+                    <button type="button" class="popover__action" data-geo-button>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg><span data-i18n="search.useMyLocation"></span>
+                    </button>
+                    <p class="popover__hint" data-geo-status role="status" aria-live="polite" hidden></p>
+
+                    <p class="popover__group-title" data-i18n="search.popularCities"></p>
+                    <div class="popover__list" data-city-list></div>
+                  </div>
+                </div>
+
+                <!-- Quando -->
+                <div class="searchbox__seg">
+                  <button type="button" class="searchbox__field" data-popover-trigger="day"
+                          aria-expanded="false" aria-controls="pop-day">
+                    <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 9.5h18"/></svg><span data-i18n="search.whenLabel"></span></span>
+                    <span class="searchbox__value" data-value="day"></span>
+                  </button>
+                  <div class="popover" id="pop-day" data-popover="day" hidden>
+                    <div class="popover__list" data-day-list></div>
+                  </div>
+                </div>
+
+                <!-- Período do dia -->
+                <div class="searchbox__seg">
+                  <button type="button" class="searchbox__field" data-popover-trigger="time"
+                          aria-expanded="false" aria-controls="pop-time">
+                    <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/></svg><span data-i18n="search.timeLabel"></span></span>
+                    <span class="searchbox__value" data-value="time"></span>
+                  </button>
+                  <div class="popover popover--right" id="pop-time" data-popover="time" hidden>
+                    <div class="popover__list" data-time-list></div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn btn--gradient searchbox__submit" type="submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><span data-i18n="search.submit"></span>
+              </button>
+            </form>
+          </div>
+
+          <ul class="hero__stats" data-reveal style="--reveal-delay:240ms">
+            <li class="stat">
+              <p class="stat__value stat__value--gradient" data-count="2847" data-count-suffix="+">2.847+</p>
+              <p class="stat__label" data-i18n="hero.stat1Label"></p>
+            </li>
+            <li class="stat">
+              <p class="stat__value" data-count="194320">194.320</p>
+              <p class="stat__label" data-i18n="hero.stat2Label"></p>
+            </li>
+            <li class="stat">
+              <p class="stat__value" data-count="4.9" data-count-decimals="1">4,9</p>
+              <p class="stat__label" data-i18n="hero.stat3Label"></p>
+            </li>
+          </ul>
+        </div>
+
+        <div class="hero__visual" data-reveal="scale" style="--reveal-delay:200ms">
+          <figure class="framed framed--glow hero__photo">
+            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&amp;fit=crop&amp;w=900&amp;q=75"
+                 data-i18n-attr="alt:hero.imageAlt" alt="" width="900" height="1125" decoding="async">
+          </figure>
+
+          <div class="hero__floating-card">
+            <span class="stars" role="img" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+            </span>
+            <div>
+              <p class="stat__value">4,9</p>
+              <p class="stat__label" data-i18n="reviews.scoreLabel"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         SEÇÃO 2 — COMO FUNCIONA
+         ================================================================== -->
+    <section class="section" id="como-funciona" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section__header section__header--center" data-reveal>
+          <span class="eyebrow" data-i18n="how.eyebrow"></span>
+          <h2 class="section__title" id="how-title" data-i18n="how.title"></h2>
+          <p class="section__subtitle" data-i18n="how.subtitle"></p>
+        </div>
+
+        <ol class="steps">
+
+          <!-- Passo 1 · Buscar -->
+          <li class="step">
+            <div class="step__text" data-reveal="left">
+              <p class="step__index"><span data-i18n="how.stepLabel"></span> <span class="step__number">01</span></p>
+              <h3 class="step__title" data-i18n="how.step1.title"></h3>
+              <p class="step__desc" data-i18n="how.step1.desc"></p>
+            </div>
+            <div class="step__visual" data-reveal="right">
+              <div class="mockup" role="img" data-i18n-attr="aria-label:how.step1.alt">
+                <div class="mockup__bar" aria-hidden="true">
+                  <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                  <span class="mockup__url">inbarber.com/barbearias</span>
+                </div>
+                <div class="mockup__screen" aria-hidden="true">
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__label">Vila Madalena, São Paulo</span>
+                    <span class="mockup__grow"></span>
+                    <span class="mockup__pill mockup__pill--cyan">GPS</span>
+                  </div>
+                  <div class="mockup__row">
+                    <span class="mockup__pill mockup__pill--primary">Degradê</span>
+                    <span class="mockup__pill mockup__pill--primary">Barba</span>
+                    <span class="mockup__pill mockup__pill--primary">4,5+</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__bone mockup__bone--thumb"></span>
+                    <span class="mockup__grow">
+                      <span class="mockup__title">Navalha &amp; Cia</span>
+                      <span class="mockup__meta">1,2 km · Vila Madalena</span>
+                    </span>
+                    <span class="mockup__pill mockup__pill--gold">4,9 ★</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__bone mockup__bone--thumb"></span>
+                    <span class="mockup__grow">
+                      <span class="mockup__title">Ateliê do Fade</span>
+                      <span class="mockup__meta">2,4 km · Pinheiros</span>
+                    </span>
+                    <span class="mockup__pill mockup__pill--gold">4,8 ★</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__bone mockup__bone--thumb"></span>
+                    <span class="mockup__grow">
+                      <span class="mockup__title">Tesoura de Ouro</span>
+                      <span class="mockup__meta">3,8 km · Moema</span>
+                    </span>
+                    <span class="mockup__pill mockup__pill--gold">4,6 ★</span>
+                  </div>
+                </div>
+              </div>
+              <span class="annotation" style="top:14%; right:-0.5rem;" aria-hidden="true">GPS</span>
+            </div>
+          </li>
+
+          <!-- Passo 2 · Perfil -->
+          <li class="step">
+            <div class="step__text" data-reveal="right">
+              <p class="step__index"><span data-i18n="how.stepLabel"></span> <span class="step__number">02</span></p>
+              <h3 class="step__title" data-i18n="how.step2.title"></h3>
+              <p class="step__desc" data-i18n="how.step2.desc"></p>
+            </div>
+            <div class="step__visual" data-reveal="left">
+              <div class="mockup" role="img" data-i18n-attr="aria-label:how.step2.alt">
+                <div class="mockup__bar" aria-hidden="true">
+                  <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                  <span class="mockup__url">inbarber.com/navalha-cia</span>
+                </div>
+                <div class="mockup__screen" aria-hidden="true">
+                  <div class="mockup__row">
+                    <span class="mockup__bone mockup__bone--thumb" style="width:56px;height:56px"></span>
+                    <span class="mockup__grow">
+                      <span class="mockup__title">Navalha &amp; Cia</span>
+                      <span class="mockup__meta">Vila Madalena · Aberto até 21h</span>
+                    </span>
+                    <span class="mockup__pill mockup__pill--success">Aberto</span>
+                  </div>
+                  <div class="mockup__row">
+                    <span class="mockup__bone mockup__bone--thumb" style="flex:1;height:44px;width:auto"></span>
+                    <span class="mockup__bone mockup__bone--thumb" style="flex:1;height:44px;width:auto"></span>
+                    <span class="mockup__bone mockup__bone--thumb" style="flex:1;height:44px;width:auto"></span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__grow"><span class="mockup__title">Degradê + barba</span></span>
+                    <span class="mockup__meta">45 min · R$ 85</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__grow"><span class="mockup__title">Corte clássico</span></span>
+                    <span class="mockup__meta">30 min · R$ 55</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__bone mockup__bone--avatar"></span>
+                    <span class="mockup__grow"><span class="mockup__meta">“Melhor fade da zona oeste.”</span></span>
+                    <span class="mockup__pill mockup__pill--gold">★★★★★</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Passo 3 · Serviço e horário -->
+          <li class="step">
+            <div class="step__text" data-reveal="left">
+              <p class="step__index"><span data-i18n="how.stepLabel"></span> <span class="step__number">03</span></p>
+              <h3 class="step__title" data-i18n="how.step3.title"></h3>
+              <p class="step__desc" data-i18n="how.step3.desc"></p>
+            </div>
+            <div class="step__visual" data-reveal="right">
+              <div class="mockup" role="img" data-i18n-attr="aria-label:how.step3.alt">
+                <div class="mockup__bar" aria-hidden="true">
+                  <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                  <span class="mockup__url">inbarber.com/agendar</span>
+                </div>
+                <div class="mockup__screen" aria-hidden="true">
+                  <span class="mockup__label">Serviço</span>
+                  <div class="mockup__row">
+                    <span class="mockup__pill mockup__pill--cyan">Degradê + barba</span>
+                    <span class="mockup__pill mockup__pill--primary">Só corte</span>
+                  </div>
+                  <span class="mockup__label">Profissional</span>
+                  <div class="mockup__row">
+                    <span class="mockup__bone mockup__bone--avatar"></span>
+                    <span class="mockup__title">Marcos V.</span>
+                    <span class="mockup__grow"></span>
+                    <span class="mockup__meta">Quinta, 12 mar</span>
+                  </div>
+                  <span class="mockup__label">Horários livres</span>
+                  <div class="mockup__row">
+                    <span class="mockup__slot mockup__slot--busy">09:30</span>
+                    <span class="mockup__slot">10:15</span>
+                    <span class="mockup__slot mockup__slot--active">11:00</span>
+                  </div>
+                  <div class="mockup__row">
+                    <span class="mockup__slot">14:30</span>
+                    <span class="mockup__slot mockup__slot--busy">15:15</span>
+                    <span class="mockup__slot">18:00</span>
+                  </div>
+                </div>
+              </div>
+              <span class="annotation" style="bottom:16%; left:-0.5rem;" aria-hidden="true">11:00</span>
+            </div>
+          </li>
+
+          <!-- Passo 4 · Confirmação -->
+          <li class="step">
+            <div class="step__text" data-reveal="right">
+              <p class="step__index"><span data-i18n="how.stepLabel"></span> <span class="step__number">04</span></p>
+              <h3 class="step__title" data-i18n="how.step4.title"></h3>
+              <p class="step__desc" data-i18n="how.step4.desc"></p>
+            </div>
+            <div class="step__visual" data-reveal="left">
+              <div class="mockup" role="img" data-i18n-attr="aria-label:how.step4.alt">
+                <div class="mockup__bar" aria-hidden="true">
+                  <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                  <span class="mockup__url">inbarber.com/agendamento/8412</span>
+                </div>
+                <div class="mockup__screen" aria-hidden="true">
+                  <div class="mockup__row">
+                    <span class="mockup__pill mockup__pill--success">Confirmado</span>
+                    <span class="mockup__grow"></span>
+                    <span class="mockup__meta">#8412</span>
+                  </div>
+                  <div class="mockup__panel">
+                    <span class="mockup__title">Navalha &amp; Cia</span>
+                    <span class="mockup__meta">Quinta, 12 de março · 11:00</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__grow"><span class="mockup__meta">Degradê + barba · Marcos V.</span></span>
+                    <span class="mockup__title">R$ 85</span>
+                  </div>
+                  <div class="mockup__panel mockup__row">
+                    <span class="mockup__pill mockup__pill--cyan">Lembrete 24h antes</span>
+                    <span class="mockup__grow"></span>
+                    <span class="mockup__meta">Remarcar</span>
+                  </div>
+                  <div class="mockup__cta">Adicionar ao calendário</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ol>
+
+        <div class="how__footer" data-reveal>
+          <p class="how__note" data-i18n="how.note"></p>
+          <a class="btn btn--primary" href="barbearias.html" data-i18n="how.cta"></a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section__divider">
+
+    <!-- ==================================================================
+         SEÇÃO 3 — BARBEARIAS RECOMENDADAS
+         ================================================================== -->
+    <section class="section" id="barbearias" aria-labelledby="shops-title">
+      <div class="container">
+        <div class="section__header section__header--center" data-reveal>
+          <span class="eyebrow" data-i18n="shops.eyebrow"></span>
+          <h2 class="section__title" id="shops-title" data-i18n="shops.title"></h2>
+          <p class="section__subtitle" data-i18n="shops.subtitle"></p>
+        </div>
+
+        <div class="shops-grid" data-featured-shops></div>
+
+        <div class="shops__footer" data-reveal>
+          <a class="btn btn--ghost btn--lg" href="barbearias.html" data-i18n="shops.viewAll"></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         SEÇÃO 4 — TENDÊNCIAS & ESTILOS
+         ================================================================== -->
+    <section class="section" id="tendencias" aria-labelledby="trends-title">
+      <div class="container">
+        <div class="section__header" data-reveal>
+          <span class="eyebrow" data-i18n="trends.eyebrow"></span>
+          <h2 class="section__title" id="trends-title" data-i18n="trends.title"></h2>
+          <p class="section__subtitle" data-i18n="trends.subtitle"></p>
+        </div>
+
+        <div class="trends-grid" id="trends" data-trends-grid></div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         SEÇÃO 5 — AVALIAÇÕES DA INBARBER
+         ================================================================== -->
+    <section class="section" id="avaliacoes" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="section__header" data-reveal>
+          <span class="eyebrow" data-i18n="reviews.eyebrow"></span>
+          <h2 class="section__title" id="reviews-title" data-i18n="reviews.title"></h2>
+          <p class="section__subtitle" data-i18n="reviews.subtitle"></p>
+        </div>
+
+        <div class="reviews__layout">
+          <aside class="score-card" data-reveal="scale">
+            <p class="score-card__value" data-i18n="reviews.scoreValue"></p>
+            <span class="stars stars--lg score-card__stars" role="img" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
+            </span>
+            <p class="score-card__label" data-i18n="reviews.scoreLabel"></p>
+            <p class="score-card__caption" data-i18n="reviews.scoreCaption"></p>
+          </aside>
+
+          <div>
+            <div class="reviews-grid" data-reviews-grid></div>
+            <div class="reviews-controls">
+              <button type="button" data-reviews-prev data-i18n-attr="aria-label:reviews.prev">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button type="button" data-reviews-next data-i18n-attr="aria-label:reviews.next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         SEÇÃO 6 — PREVIEW DA JORNADA B2B
+         ================================================================== -->
+    <section class="section b2b-preview" aria-labelledby="b2b-preview-title">
+      <div class="container">
+        <div class="b2b-preview__panel" data-reveal="scale">
+          <div class="b2b-preview__content">
+            <span class="eyebrow" data-i18n="b2bPreview.eyebrow"></span>
+            <h2 class="b2b-preview__title" id="b2b-preview-title" data-i18n="b2bPreview.title"></h2>
+            <p class="b2b-preview__desc" data-i18n="b2bPreview.desc"></p>
+
+            <ul class="check-list">
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <span data-i18n="b2bPreview.bullet1"></span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <span data-i18n="b2bPreview.bullet2"></span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <span data-i18n="b2bPreview.bullet3"></span>
+              </li>
+            </ul>
+
+            <div class="b2b-preview__cta">
+              <a class="btn btn--gold btn--lg" href="para-barbearias.html" data-i18n="b2bPreview.cta"></a>
+            </div>
+          </div>
+
+          <div class="b2b-preview__visual">
+            <div class="mockup" role="img" data-i18n-attr="aria-label:b2bPreview.imageAlt">
+              <div class="mockup__bar" aria-hidden="true">
+                <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+                <span class="mockup__url">painel.inbarber.com</span>
+              </div>
+              <div class="mockup__screen" aria-hidden="true">
+                <div class="mockup__row">
+                  <span class="mockup__title">Hoje · 14 agendamentos</span>
+                  <span class="mockup__grow"></span>
+                  <span class="mockup__pill mockup__pill--success">+18%</span>
+                </div>
+                <div class="mockup__panel">
+                  <span class="mockup__label">Ocupação da semana</span>
+                  <div class="mockup__bars">
+                    <span style="height:42%"></span><span style="height:64%"></span><span style="height:55%"></span>
+                    <span style="height:82%"></span><span style="height:96%"></span><span style="height:74%"></span>
+                    <span style="height:38%"></span>
+                  </div>
+                </div>
+                <div class="mockup__panel mockup__row">
+                  <span class="mockup__bone mockup__bone--avatar"></span>
+                  <span class="mockup__grow"><span class="mockup__title">Rafael N.</span><span class="mockup__meta">11:00 · Degradê + barba</span></span>
+                  <span class="mockup__pill mockup__pill--cyan">Novo</span>
+                </div>
+                <div class="mockup__panel mockup__row">
+                  <span class="mockup__bone mockup__bone--avatar"></span>
+                  <span class="mockup__grow"><span class="mockup__title">Diego A.</span><span class="mockup__meta">11:45 · Corte clássico</span></span>
+                  <span class="mockup__pill mockup__pill--primary">Recorrente</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================================================================
+       FOOTER
+       ==================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a class="brand" href="index.html" data-i18n-attr="aria-label:brand.logoAlt">
+            <img class="brand__mark" src="assets/images/inbarber-logo.png" alt="" width="446" height="622" loading="lazy" decoding="async">
+            <span class="brand__name">In<em>Barber</em></span>
+          </a>
+          <p class="footer__tagline" data-i18n="footer.tagline"></p>
+
+          <ul class="footer__social" data-i18n-attr="aria-label:footer.socialLabel">
+            <li>
+              <a href="https://instagram.com/inbarber" rel="noopener noreferrer" target="_blank" data-i18n-attr="aria-label:footer.social.instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://tiktok.com/@inbarber" rel="noopener noreferrer" target="_blank" data-i18n-attr="aria-label:footer.social.tiktok">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v12.2a3.8 3.8 0 1 1-3.2-3.75"/><path d="M14 6.2A5.2 5.2 0 0 0 19.5 10"/></svg>
+              </a>
+            </li>
+            <li>
+              <a href="https://youtube.com/@inbarber" rel="noopener noreferrer" target="_blank" data-i18n-attr="aria-label:footer.social.youtube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10.5 9.5 5 2.5-5 2.5z"/></svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <nav class="footer__col" data-i18n-attr="aria-label:footer.navLabel">
+          <h3 class="footer__col-title" data-i18n="footer.explore"></h3>
+          <div class="footer__links">
+            <a href="barbearias.html" data-i18n="footer.link.barbershops"></a>
+            <a href="index.html#tendencias" data-i18n="footer.link.trends"></a>
+            <a href="index.html#como-funciona" data-i18n="footer.link.howItWorks"></a>
+            <a href="index.html#avaliacoes" data-i18n="footer.link.reviews"></a>
+          </div>
+        </nav>
+
+        <div class="footer__col">
+          <h3 class="footer__col-title" data-i18n="footer.business"></h3>
+          <div class="footer__links">
+            <a href="para-barbearias.html#cadastro" data-i18n="footer.link.register"></a>
+            <a href="para-barbearias.html#funcionalidades" data-i18n="footer.link.features"></a>
+            <a href="para-barbearias.html#cadastro" data-i18n="footer.link.pricing"></a>
+          </div>
+        </div>
+
+        <div class="footer__col">
+          <h3 class="footer__col-title" data-i18n="footer.company"></h3>
+          <div class="footer__links">
+            <a href="#" data-i18n="footer.link.about"></a>
+            <a href="#" data-i18n="footer.link.contact"></a>
+            <a href="#" data-i18n="footer.link.careers"></a>
+          </div>
+        </div>
+
+        <div class="footer__col">
+          <h3 class="footer__col-title" data-i18n="footer.legal"></h3>
+          <div class="footer__links">
+            <a href="#" data-i18n="footer.link.privacy"></a>
+            <a href="#" data-i18n="footer.link.terms"></a>
+            <a href="#" data-i18n="footer.link.cookies"></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__legal" data-copyright></p>
+        <p class="footer__legal" data-i18n="footer.madeIn"></p>
+
+        <div class="lang-select lang-select--up" data-lang-select>
+          <button type="button" class="lang-select__trigger" data-lang-trigger
+                  aria-expanded="false" aria-haspopup="true"
+                  data-i18n-attr="aria-label:lang.label|title:lang.label">
+            <span class="lang-select__flag" data-lang-flag></span>
+            <span class="lang-select__code" data-lang-code></span>
+            <svg class="lang-select__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-select__menu" role="group" data-lang-menu
+               data-i18n-attr="aria-label:lang.menuLabel" hidden></div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts: ordem obrigatória (dicionário → dados → i18n → interações) -->
+  <script src="js/translations.js" defer></script>
+  <script src="js/data.js" defer></script>
+  <script src="js/i18n.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
