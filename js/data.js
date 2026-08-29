@@ -26,6 +26,17 @@ window.INBARBER_DATA = (function () {
   /* ----------------------------------------------------------------------
      Barbearias
      priceFrom está em reais; a exibição é convertida pelo i18n.
+
+     Campos que sustentam a seção "Barbearias recomendadas" da home:
+       reviews30d  avaliações recebidas nos últimos 30 dias — é o que dá lastro
+                   à frase "as mais bem avaliadas desta semana" e ao motivo
+                   exibido em cada card.
+       rebookRate  % de clientes que voltaram à mesma barbearia em 90 dias.
+       joinedAt    data de entrada na plataforma (ISO). Ordena o trilho
+                   "Novas na InBarber" e define o selo "Novo" (até 45 dias).
+
+     São dados de demonstração, como o resto do arquivo: quando houver backend,
+     eles vêm de lá. Nada disso é estimado no cliente.
      ---------------------------------------------------------------------- */
   var barbershops = [
     {
@@ -36,11 +47,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "sao-paulo",
       rating: 4.9,
       reviews: 1284,
+      reviews30d: 96,
+      rebookRate: 87,
+      joinedAt: "2024-03-12",
       priceFrom: 55,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
-      featured: true,
       serviceKeys: ["fade", "beard", "hotTowel"],
       image: shopPhoto("1585747860715-2ba37e788b70")
     },
@@ -52,11 +65,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "curitiba",
       rating: 4.9,
       reviews: 942,
+      reviews30d: 74,
+      rebookRate: 83,
+      joinedAt: "2024-07-02",
       priceFrom: 48,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
-      featured: true,
       serviceKeys: ["fade", "classic", "grooming"],
       image: shopPhoto("1503951914875-452162b0f3f1")
     },
@@ -68,11 +83,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "belo-horizonte",
       rating: 4.8,
       reviews: 1105,
+      reviews30d: 68,
+      rebookRate: 81,
+      joinedAt: "2023-11-20",
       priceFrom: 45,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
-      featured: true,
       serviceKeys: ["classic", "beard", "kids"],
       image: shopPhoto("1621605815971-fbc98d665033")
     },
@@ -84,11 +101,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "rio-de-janeiro",
       rating: 4.9,
       reviews: 1673,
+      reviews30d: 112,
+      rebookRate: 90,
+      joinedAt: "2023-05-08",
       priceFrom: 70,
       openNow: false,
       days: [2, 3, 4, 5, 6, 0],
       periods: ["morning", "afternoon", "evening"],
-      featured: true,
       serviceKeys: ["fade", "coloring", "hotTowel"],
       image: shopPhoto("1599351431202-1e0f0137899a")
     },
@@ -100,11 +119,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "porto-alegre",
       rating: 4.7,
       reviews: 618,
+      reviews30d: 51,
+      rebookRate: 76,
+      joinedAt: "2024-09-15",
       priceFrom: 40,
       openNow: true,
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
-      featured: true,
       serviceKeys: ["classic", "beard", "grooming"],
       image: shopPhoto("1605497788044-5a32c7078486")
     },
@@ -116,11 +137,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "recife",
       rating: 4.8,
       reviews: 803,
+      reviews30d: 63,
+      rebookRate: 79,
+      joinedAt: "2025-01-22",
       priceFrom: 42,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
-      featured: true,
       serviceKeys: ["fade", "braids", "kids"],
       image: shopPhoto("1647140655214-e4a2d914971f")
     },
@@ -132,11 +155,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "salvador",
       rating: 4.7,
       reviews: 549,
+      reviews30d: 44,
+      rebookRate: 72,
+      joinedAt: "2025-04-03",
       priceFrom: 38,
       openNow: true,
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
-      featured: false,
       serviceKeys: ["braids", "fade", "beard"],
       image: shopPhoto("1621645582931-d1d3e6564943")
     },
@@ -148,11 +173,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "brasilia",
       rating: 4.6,
       reviews: 431,
+      reviews30d: 33,
+      rebookRate: 69,
+      joinedAt: "2025-06-18",
       priceFrom: 50,
       openNow: false,
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
-      featured: false,
       serviceKeys: ["classic", "grooming", "hotTowel"],
       image: shopPhoto("1536520002442-39764a41e987")
     },
@@ -164,11 +191,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "fortaleza",
       rating: 4.8,
       reviews: 727,
+      reviews30d: 58,
+      rebookRate: 78,
+      joinedAt: "2025-09-09",
       priceFrom: 35,
       openNow: true,
       days: [0, 1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
-      featured: false,
       serviceKeys: ["fade", "kids", "beard"],
       image: shopPhoto("1596728325488-58c87691e9af")
     },
@@ -180,11 +209,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "florianopolis",
       rating: 4.9,
       reviews: 512,
+      reviews30d: 47,
+      rebookRate: 85,
+      joinedAt: "2026-05-30",
       priceFrom: 60,
       openNow: true,
       days: [2, 3, 4, 5, 6, 0],
       periods: ["afternoon", "evening"],
-      featured: false,
       serviceKeys: ["fade", "coloring", "grooming"],
       image: shopPhoto("1517832606299-7ae9b720a186")
     },
@@ -196,11 +227,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "sao-paulo",
       rating: 4.6,
       reviews: 866,
+      reviews30d: 39,
+      rebookRate: 70,
+      joinedAt: "2025-11-27",
       priceFrom: 65,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
-      featured: false,
       serviceKeys: ["classic", "coloring", "hotTowel"],
       image: shopPhoto("1593702275687-f8b402bf1fb5")
     },
@@ -212,11 +245,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "rio-de-janeiro",
       rating: 4.5,
       reviews: 394,
+      reviews30d: 28,
+      rebookRate: 66,
+      joinedAt: "2026-06-24",
       priceFrom: 45,
       openNow: false,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "evening"],
-      featured: false,
       serviceKeys: ["fade", "beard", "kids"],
       image: shopPhoto("1657105052497-f996284ffff8")
     },
@@ -228,11 +263,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "porto-alegre",
       rating: 4.4,
       reviews: 288,
+      reviews30d: 22,
+      rebookRate: 61,
+      joinedAt: "2026-07-16",
       priceFrom: 32,
       openNow: true,
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
-      featured: false,
       serviceKeys: ["classic", "kids", "beard"],
       image: shopPhoto("1592647420148-bfcc177e2117")
     },
@@ -244,11 +281,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "sao-paulo",
       rating: 4.8,
       reviews: 1032,
+      reviews30d: 81,
+      rebookRate: 84,
+      joinedAt: "2026-07-28",
       priceFrom: 58,
       openNow: true,
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
-      featured: false,
       serviceKeys: ["fade", "coloring", "braids"],
       image: shopPhoto("1678356164573-9a534fe43958")
     },
@@ -260,11 +299,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "belo-horizonte",
       rating: 4.6,
       reviews: 476,
+      reviews30d: 35,
+      rebookRate: 74,
+      joinedAt: "2026-08-05",
       priceFrom: 36,
       openNow: true,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
-      featured: false,
       serviceKeys: ["classic", "beard", "grooming"],
       image: shopPhoto("1635273051937-a0ddef9573b6")
     },
@@ -276,11 +317,13 @@ window.INBARBER_DATA = (function () {
       cityKey: "recife",
       rating: 4.5,
       reviews: 351,
+      reviews30d: 19,
+      rebookRate: 63,
+      joinedAt: "2026-08-19",
       priceFrom: 34,
       openNow: false,
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
-      featured: false,
       serviceKeys: ["fade", "kids", "braids"],
       image: shopPhoto("1599351431613-18ef1fdd27e1")
     }
@@ -332,6 +375,125 @@ window.INBARBER_DATA = (function () {
       }
     });
     return best ? { city: best, distanceKm: Math.round(bestDistance) } : null;
+  }
+
+  /** Distância aproximada, em km, entre o visitante (cidade) e a barbearia. */
+  function distanceFromCity(city, shop) {
+    var from = cityCoords[city];
+    var to = cityCoords[shop.city];
+    if (!from || !to) return null;
+    return Math.round(distanceKm(from.lat, from.lng, to.lat, to.lng));
+  }
+
+  /* ----------------------------------------------------------------------
+     Seleção da home: recomendadas, novas e próximos horários
+
+     Nada aqui inventa número: tudo sai dos campos das barbearias acima.
+     ---------------------------------------------------------------------- */
+
+  /* Até quantos dias depois da entrada uma barbearia ainda é "nova". */
+  var NEW_SHOP_DAYS = 45;
+
+  /* Nota pesa mais que volume; o volume dos últimos 30 dias desempata.
+     Duas casas de nota (4.9 → 4900) mantêm o desempate abaixo da nota. */
+  function meritScore(shop) {
+    return shop.rating * 1000 + shop.reviews30d;
+  }
+
+  /**
+   * Barbearias recomendadas, por mérito.
+   * Com cidade conhecida, as da cidade do visitante vêm primeiro — cada bloco
+   * continua ordenado por mérito, então a vizinhança nunca esconde a nota.
+   */
+  function recommended(city, limit) {
+    var ranked = barbershops.slice().sort(function (a, b) {
+      return meritScore(b) - meritScore(a);
+    });
+
+    if (city && cityCoords[city]) {
+      var local = [];
+      var rest = [];
+      ranked.forEach(function (shop) {
+        (shop.city === city ? local : rest).push(shop);
+      });
+      ranked = local.concat(rest);
+    }
+
+    return ranked.slice(0, limit || 6);
+  }
+
+  /** As últimas barbearias a entrar na plataforma, da mais recente para a mais antiga. */
+  function newest(limit) {
+    return barbershops
+      .slice()
+      .sort(function (a, b) {
+        if (a.joinedAt === b.joinedAt) return b.rating - a.rating;
+        return a.joinedAt < b.joinedAt ? 1 : -1;
+      })
+      .slice(0, limit || 6);
+  }
+
+  /** Dias completos desde a entrada da barbearia na plataforma. */
+  function daysSinceJoining(shop, from) {
+    var parts = String(shop.joinedAt).split("-");
+    var joined = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    var now = from || new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.max(0, Math.round((today - joined) / 86400000));
+  }
+
+  function isNewShop(shop, from) {
+    return daysSinceJoining(shop, from) <= NEW_SHOP_DAYS;
+  }
+
+  /* Grade de horários por período. A barbearia abre no período; o horário
+     exato varia por barbearia para que a home não repita o mesmo relógio em
+     todos os cards. */
+  var PERIOD_ORDER = ["morning", "afternoon", "evening"];
+  var PERIOD_HOURS = {
+    morning: [[9, 0], [10, 30], [11, 15]],
+    afternoon: [[14, 0], [15, 30], [16, 45]],
+    evening: [[19, 0], [20, 30], [21, 15]]
+  };
+
+  /* Hash estável do id: a mesma barbearia mostra sempre os mesmos horários. */
+  function hashOf(text) {
+    var hash = 0;
+    for (var i = 0; i < text.length; i += 1) {
+      hash = (hash * 31 + text.charCodeAt(i)) % 100000;
+    }
+    return hash;
+  }
+
+  /**
+   * Próximos horários livres da barbearia, derivados de days/periods.
+   * Respeita 90 minutos de antecedência e olha até 14 dias à frente.
+   * @returns {Array<{date: Date, period: string, daysAhead: number}>}
+   */
+  function nextSlots(shop, count, from) {
+    var now = from || new Date();
+    var wanted = count || 3;
+    var offset = hashOf(shop.id);
+    var out = [];
+
+    for (var ahead = 0; ahead < 14 && out.length < wanted; ahead += 1) {
+      var day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + ahead);
+      if (shop.days.indexOf(day.getDay()) === -1) continue;
+
+      for (var p = 0; p < PERIOD_ORDER.length && out.length < wanted; p += 1) {
+        var period = PERIOD_ORDER[p];
+        if (shop.periods.indexOf(period) === -1) continue;
+
+        var hours = PERIOD_HOURS[period];
+        var pick = hours[(offset + p) % hours.length];
+        var slot = new Date(day.getFullYear(), day.getMonth(), day.getDate(), pick[0], pick[1]);
+        if (slot.getTime() - now.getTime() < 90 * 60000) continue;
+
+        out.push({ date: slot, period: period, daysAhead: ahead });
+      }
+    }
+
+    return out;
   }
 
   var cities = barbershops
@@ -403,6 +565,14 @@ window.INBARBER_DATA = (function () {
     cities: cities,
     cityCoords: cityCoords,
     nearestCity: nearestCity,
+    distanceKm: distanceKm,
+    distanceFromCity: distanceFromCity,
+    recommended: recommended,
+    newest: newest,
+    nextSlots: nextSlots,
+    isNewShop: isNewShop,
+    daysSinceJoining: daysSinceJoining,
+    newShopDays: NEW_SHOP_DAYS,
     periodKeys: ["morning", "afternoon", "evening"],
     serviceKeys: serviceKeys,
     reviews: reviews,

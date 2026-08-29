@@ -1,0 +1,859 @@
+/* ==========================================================================
+   InBarber — Barbearias recomendadas + Novas na InBarber
+
+   Duas listas na mesma seção da home, com pesos visuais diferentes:
+
+     .rec-hero   card de destaque (#1 do ranking), duas colunas no desktop
+     .rec-card   cards #2 em diante, em grade
+     .news-*     trilho horizontal das barbearias que acabaram de entrar
+
+   Acentos: dourado para o ranking (mérito), violeta para o que é novo.
+   O azul/ciano da marca fica no hover e no foco, como no resto do site.
+   Só usa tokens do variables.css — nenhuma cor solta aqui.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TÍTULO DE DESTAQUE DA SEÇÃO
+
+   Tratamento de premiação: filetes dourados ao redor do sobretítulo, título
+   com degradê do branco ao dourado e um brilho quente atrás. É o único lugar
+   da home com esse peso — é o que anuncia o ranking da semana.
+   ========================================================================== */
+.recs-heading {
+  position: relative;
+  isolation: isolate;
+}
+
+.recs-heading::before {
+  content: "";
+  position: absolute;
+  top: -35%;
+  left: 50%;
+  z-index: -1;
+  width: min(620px, 100%);
+  height: 260px;
+  background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0) 70%);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.recs-heading .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-warning);
+}
+
+/* O header centralizado esconde o filete padrão do .eyebrow; aqui ele volta,
+   dos dois lados, em dourado. */
+.recs-heading .eyebrow::before,
+.recs-heading .eyebrow::after {
+  content: "";
+  display: block;
+  width: clamp(20px, 6vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0) 0%, rgba(245, 158, 11, 0.7) 100%);
+}
+
+.recs-heading .eyebrow::after {
+  transform: scaleX(-1);
+}
+
+/* Degradê vertical (e não diagonal): em título de duas linhas o diagonal
+   dourava o meio de uma palavra qualquer; assim o brilho desce parelho. */
+.recs-heading__title {
+  background: linear-gradient(180deg, var(--color-text) 0%, #fde8b0 62%, #d9a441 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-wrap: balance;
+}
+
+/* ==========================================================================
+   2. CONTÊINER DA SEÇÃO
+   ========================================================================== */
+.recs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.recs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: var(--space-lg);
+}
+
+/* ==========================================================================
+   3. PEÇAS COMPARTILHADAS PELOS CARDS
+   ========================================================================== */
+
+/* Link que cobre o card inteiro sem aninhar elementos interativos:
+   o texto continua sendo o único link, mas a área de clique é o card. */
+.rec-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rec-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+.rec-link:focus-visible {
+  outline: none;
+}
+
+.rec-hero:focus-within,
+.rec-card:focus-within,
+.news-card:focus-within {
+  border-color: var(--color-secondary);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Nome, localização e distância */
+.rec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.rec-meta svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--color-secondary);
+}
+
+.rec-near {
+  padding: 0.125rem 0.5rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  border-radius: var(--radius-pill);
+}
+
+/* Nota */
+.rec-rating {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3125rem;
+  font-size: var(--text-sm);
+}
+
+.rec-rating svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-warning);
+  transform: translateY(2px);
+}
+
+.rec-rating strong {
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+}
+
+.rec-rating__count {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+/* Motivo da recomendação */
+.rec-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4375rem;
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+.rec-reason svg {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  margin-top: 0.2rem;
+  color: var(--color-success);
+}
+
+/* Serviços */
+.rec-services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+/* Preço */
+.rec-price {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.rec-price strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   4. PRÓXIMOS HORÁRIOS
+   ========================================================================== */
+.rec-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  margin-top: auto;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.rec-slots__label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.rec-slots__label svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-secondary);
+}
+
+.rec-slots__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.rec-slot {
+  position: relative;
+  z-index: 2; /* acima do link que cobre o card */
+  display: flex;
+  flex-direction: column;
+  gap: 0.0625rem;
+  padding: 0.375rem 0.625rem;
+  text-decoration: none;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.rec-slot:hover {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border-glow);
+  transform: translateY(-1px);
+}
+
+.rec-slot__day {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.rec-slot__time {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.rec-slots__empty {
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+}
+
+/* ==========================================================================
+   5. CARD DE DESTAQUE — #1 DO RANKING
+   ========================================================================== */
+.rec-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  background-image: var(--gradient-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xl);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.rec-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(120deg, rgba(245, 158, 11, 0.09) 0%, rgba(245, 158, 11, 0) 42%);
+  pointer-events: none;
+}
+
+.rec-hero:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 255, 0.28);
+  box-shadow: var(--shadow-lg);
+}
+
+.rec-hero__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--gradient-image-fallback);
+}
+
+.rec-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slower) var(--ease-out);
+}
+
+.rec-hero:hover .rec-hero__media img {
+  transform: scale(1.04);
+}
+
+.rec-hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 9, 11, 0.55) 0%, rgba(9, 9, 11, 0) 45%, rgba(9, 9, 11, 0.7) 100%);
+  pointer-events: none;
+}
+
+/* Coroa: o lugar do primeiro colocado, no lugar do antigo numeral. */
+.rec-hero__medal {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  color: var(--color-text-inverse);
+  background: var(--gradient-gold);
+  border-radius: 50%;
+  box-shadow: var(--glow-gold);
+}
+
+.rec-hero__medal svg {
+  width: 26px;
+  height: 26px;
+}
+
+.rec-hero__status {
+  position: absolute;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.rec-hero__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+}
+
+.rec-hero__crown {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-warning);
+  background: var(--color-warning-soft);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-radius: var(--radius-pill);
+}
+
+.rec-hero__crown svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rec-hero__name {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.rec-hero__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.rec-hero__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xs);
+  margin-top: var(--space-2xs);
+}
+
+.rec-hero__metrics li {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.rec-hero__metrics strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  line-height: 1.1;
+  letter-spacing: var(--tracking-tight);
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rec-hero__metrics span {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+.rec-hero__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.rec-hero__footer .btn {
+  position: relative;
+  z-index: 2;
+}
+
+.rec-hero__footer .btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   6. CARDS #2 EM DIANTE
+   ========================================================================== */
+.rec-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  background-image: var(--gradient-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.rec-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 240, 255, 0.28);
+  box-shadow: var(--shadow-lg);
+}
+
+.rec-card__media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--gradient-image-fallback);
+}
+
+.rec-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.rec-card:hover .rec-card__media img {
+  transform: scale(1.05);
+}
+
+.rec-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 9, 11, 0.6) 0%, rgba(9, 9, 11, 0) 55%);
+  pointer-events: none;
+}
+
+.rec-card__status {
+  position: absolute;
+  right: var(--space-sm);
+  top: var(--space-sm);
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.rec-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.rec-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+}
+
+.rec-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding-top: var(--space-sm);
+}
+
+.rec-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-secondary);
+}
+
+.rec-card__cta svg {
+  width: 15px;
+  height: 15px;
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.rec-card:hover .rec-card__cta svg {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   7. NOVAS NA INBARBER — trilho horizontal
+   ========================================================================== */
+.news {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.news__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.news__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.news__title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.news__title::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--color-violet);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--color-violet-soft);
+}
+
+.news__subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.news__controls {
+  display: none;
+  gap: var(--space-xs);
+}
+
+.rail-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--color-text);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+}
+
+.rail-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rail-btn:hover:not(:disabled) {
+  background: var(--color-bg-raised);
+  border-color: var(--color-border-glow);
+}
+
+.rail-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.news__rail {
+  display: flex;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.news__rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.news__rail::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+.news-item {
+  flex: 0 0 min(78vw, 250px);
+  scroll-snap-align: start;
+}
+
+.news-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg-elevated);
+  background-image: var(--gradient-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.news-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: var(--shadow-lg);
+}
+
+.news-card__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--gradient-image-fallback);
+}
+
+.news-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.news-card:hover .news-card__media img {
+  transform: scale(1.05);
+}
+
+.news-card__badge {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.25rem 0.625rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text);
+  background: linear-gradient(120deg, rgba(139, 92, 246, 0.95) 0%, rgba(236, 72, 153, 0.9) 100%);
+  border-radius: var(--radius-pill);
+}
+
+.news-card__badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.news-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: var(--space-md);
+}
+
+.news-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+}
+
+.news-card__joined {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-violet);
+}
+
+.news-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  margin-top: auto;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.news-card__footer .rec-price {
+  text-align: right;
+}
+
+.news-card__footer .rec-price strong {
+  font-size: var(--text-sm);
+}
+
+/* ==========================================================================
+   8. RESPONSIVO
+   ========================================================================== */
+@media (min-width: 480px) {
+  .news-item {
+    flex-basis: 250px;
+  }
+}
+
+@media (min-width: 768px) {
+  .rec-hero__body {
+    padding: var(--space-xl);
+  }
+
+  .news__controls {
+    display: flex;
+  }
+}
+
+@media (min-width: 900px) {
+  .rec-hero {
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .rec-hero__media {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .rec-hero__media::after {
+    background: linear-gradient(90deg, rgba(9, 9, 11, 0.35) 0%, rgba(9, 9, 11, 0) 55%);
+  }
+
+  .rec-hero__status {
+    right: auto;
+    left: var(--space-sm);
+    bottom: var(--space-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  .recs {
+    gap: var(--space-xl);
+  }
+
+  .recs__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .rec-hero__metrics {
+    gap: var(--space-sm);
+  }
+}
+
+/* Quem pediu menos movimento não recebe rolagem animada nem zoom na foto. */
+@media (prefers-reduced-motion: reduce) {
+  .rec-hero:hover,
+  .rec-card:hover,
+  .news-card:hover,
+  .rec-slot:hover {
+    transform: none;
+  }
+
+  .rec-hero:hover .rec-hero__media img,
+  .rec-card:hover .rec-card__media img,
+  .news-card:hover .news-card__media img,
+  .rec-card:hover .rec-card__cta svg {
+    transform: none;
+  }
+}

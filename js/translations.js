@@ -117,11 +117,42 @@ window.INBARBER_TRANSLATIONS = {
 
     /* ---------- HOME · Barbearias recomendadas ---------- */
     "shops.eyebrow": "Barbearias recomendadas",
-    "shops.title": "As mais bem avaliadas desta semana",
+    "shops.title": "Melhores barbearias da semana",
     "shops.subtitle":
       "Seleção baseada em avaliações verificadas de clientes que agendaram pela InBarber nos últimos 30 dias.",
     "shops.viewAll": "Ver todas as barbearias",
     "shops.viewProfile": "Ver perfil",
+    "shops.titleCity": "Melhores barbearias perto de {city}",
+    "shops.subtitleCity":
+      "Começamos pelas barbearias de {city} e completamos com as melhores da plataforma. A ordem vem da nota e das avaliações verificadas dos últimos 30 dias.",
+
+    /* ---------- HOME · Ranking das recomendadas ---------- */
+    "recs.listLabel": "Barbearias recomendadas desta semana",
+    "recs.topBadge": "Melhor avaliada da semana",
+    "recs.reason.reviews": "{count} avaliações nos últimos 30 dias",
+    "recs.reason.rebook": "{percent}% dos clientes voltaram em 90 dias",
+    "recs.reason.rating": "Nota {rating} em {count} avaliações",
+    "recs.metricRating": "nota média",
+    "recs.metricReviews30": "avaliações em 30 dias",
+    "recs.metricRebook": "voltaram em 90 dias",
+    "recs.here": "Na sua cidade",
+    "recs.distance": "a {km} km de {city}",
+    "recs.slotsLabel": "Próximos horários",
+    "recs.slotsEmpty": "Agenda fechada nos próximos dias",
+    "recs.slotAria": "Agendar {day} às {time} — {name}",
+    "recs.reviewsCount": "{count} avaliações",
+
+    /* ---------- HOME · Novas na InBarber ---------- */
+    "news.title": "Novas na InBarber",
+    "news.subtitle": "As últimas barbearias a abrir agenda na plataforma.",
+    "news.railLabel": "Barbearias que entraram recentemente",
+    "news.badge": "Novo",
+    "news.joinedToday": "Entrou hoje",
+    "news.joinedYesterday": "Entrou ontem",
+    "news.joinedDays": "Entrou há {count} dias",
+    "news.joinedSince": "Na InBarber desde {month} de {year}",
+    "news.prev": "Ver as anteriores",
+    "news.next": "Ver as próximas",
 
     /* ---------- Barbearias em Destaque (carrossel patrocinado do hero) ---------- */
     "featured.title": "Barbearias em Destaque",
@@ -544,11 +575,42 @@ window.INBARBER_TRANSLATIONS = {
 
     /* ---------- HOME · Barbearias recomendadas ---------- */
     "shops.eyebrow": "Recommended barbershops",
-    "shops.title": "This week's highest rated",
+    "shops.title": "Best barbershops of the week",
     "shops.subtitle":
       "Picked from verified reviews left by clients who booked through InBarber in the last 30 days.",
     "shops.viewAll": "See all barbershops",
     "shops.viewProfile": "View profile",
+    "shops.titleCity": "Best barbershops near {city}",
+    "shops.subtitleCity":
+      "We start with the barbershops in {city} and fill the rest with the best on the platform. The order comes from the rating and from verified reviews left in the last 30 days.",
+
+    /* ---------- HOME · Recommended ranking ---------- */
+    "recs.listLabel": "This week's recommended barbershops",
+    "recs.topBadge": "Highest rated this week",
+    "recs.reason.reviews": "{count} reviews in the last 30 days",
+    "recs.reason.rebook": "{percent}% of clients came back within 90 days",
+    "recs.reason.rating": "Rated {rating} across {count} reviews",
+    "recs.metricRating": "average rating",
+    "recs.metricReviews30": "reviews in 30 days",
+    "recs.metricRebook": "came back in 90 days",
+    "recs.here": "In your city",
+    "recs.distance": "{km} km from {city}",
+    "recs.slotsLabel": "Next open slots",
+    "recs.slotsEmpty": "No open slots in the next few days",
+    "recs.slotAria": "Book {day} at {time} — {name}",
+    "recs.reviewsCount": "{count} reviews",
+
+    /* ---------- HOME · New on InBarber ---------- */
+    "news.title": "New on InBarber",
+    "news.subtitle": "The latest barbershops to open their calendar on the platform.",
+    "news.railLabel": "Barbershops that joined recently",
+    "news.badge": "New",
+    "news.joinedToday": "Joined today",
+    "news.joinedYesterday": "Joined yesterday",
+    "news.joinedDays": "Joined {count} days ago",
+    "news.joinedSince": "On InBarber since {month} {year}",
+    "news.prev": "See previous",
+    "news.next": "See next",
 
     /* ---------- Featured Barbershops (sponsored hero carousel) ---------- */
     "featured.title": "Featured Barbershops",
@@ -971,11 +1033,42 @@ window.INBARBER_TRANSLATIONS = {
 
     /* ---------- HOME · Barbearias recomendadas ---------- */
     "shops.eyebrow": "Barberías recomendadas",
-    "shops.title": "Las mejor valoradas de esta semana",
+    "shops.title": "Mejores barberías de la semana",
     "shops.subtitle":
       "Selección basada en valoraciones verificadas de clientes que reservaron por InBarber en los últimos 30 días.",
     "shops.viewAll": "Ver todas las barberías",
     "shops.viewProfile": "Ver perfil",
+    "shops.titleCity": "Mejores barberías cerca de {city}",
+    "shops.subtitleCity":
+      "Empezamos por las barberías de {city} y completamos con las mejores de la plataforma. El orden sale de la valoración y de las reseñas verificadas de los últimos 30 días.",
+
+    /* ---------- HOME · Ranking de recomendadas ---------- */
+    "recs.listLabel": "Barberías recomendadas de esta semana",
+    "recs.topBadge": "La mejor valorada de la semana",
+    "recs.reason.reviews": "{count} valoraciones en los últimos 30 días",
+    "recs.reason.rebook": "{percent}% de los clientes volvieron en 90 días",
+    "recs.reason.rating": "Valoración de {rating} en {count} reseñas",
+    "recs.metricRating": "valoración media",
+    "recs.metricReviews30": "valoraciones en 30 días",
+    "recs.metricRebook": "volvieron en 90 días",
+    "recs.here": "En tu ciudad",
+    "recs.distance": "a {km} km de {city}",
+    "recs.slotsLabel": "Próximas horas libres",
+    "recs.slotsEmpty": "Sin horas libres en los próximos días",
+    "recs.slotAria": "Reservar {day} a las {time} — {name}",
+    "recs.reviewsCount": "{count} valoraciones",
+
+    /* ---------- HOME · Nuevas en InBarber ---------- */
+    "news.title": "Nuevas en InBarber",
+    "news.subtitle": "Las últimas barberías en abrir agenda en la plataforma.",
+    "news.railLabel": "Barberías que entraron hace poco",
+    "news.badge": "Nueva",
+    "news.joinedToday": "Entró hoy",
+    "news.joinedYesterday": "Entró ayer",
+    "news.joinedDays": "Entró hace {count} días",
+    "news.joinedSince": "En InBarber desde {month} de {year}",
+    "news.prev": "Ver las anteriores",
+    "news.next": "Ver las siguientes",
 
     /* ---------- Barberías Destacadas (carrusel patrocinado del hero) ---------- */
     "featured.title": "Barberías Destacadas",

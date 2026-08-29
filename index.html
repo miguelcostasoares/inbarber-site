@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/featured.css">
+  <link rel="stylesheet" href="css/recomendadas.css">
   <link rel="stylesheet" href="css/responsive.css">
 
   <script type="application/ld+json">
@@ -228,17 +229,45 @@
     </section>
 
     <!-- ==================================================================
-         SEÇÃO 2 — BARBEARIAS RECOMENDADAS
+         SEÇÃO 2 — BARBEARIAS RECOMENDADAS + NOVAS NA INBARBER
+
+         Ranking por mérito (nota + avaliações dos últimos 30 dias), montado
+         por js/main.js a partir de js/data.js. O título e o subtítulo são
+         escritos pelo JS, e não por data-i18n, porque mudam de chave quando o
+         visitante já tem cidade conhecida ("As mais bem avaliadas em {city}").
+
+         Este espaço não se compra: os anúncios ficam no carrossel do hero,
+         sempre com selo de "Destaque pago".
          ================================================================== -->
     <section class="section" id="barbearias" aria-labelledby="shops-title">
       <div class="container">
-        <div class="section__header section__header--center" data-reveal>
+        <div class="section__header section__header--center recs-heading" data-reveal>
           <span class="eyebrow" data-i18n="shops.eyebrow"></span>
-          <h2 class="section__title" id="shops-title" data-i18n="shops.title"></h2>
-          <p class="section__subtitle" data-i18n="shops.subtitle"></p>
+          <h2 class="section__title recs-heading__title" id="shops-title" data-recs-title></h2>
+          <p class="section__subtitle" data-recs-subtitle></p>
         </div>
 
-        <div class="shops-grid" data-featured-shops></div>
+        <div class="recs" data-featured-shops></div>
+
+        <!-- Novas na InBarber: trilho das últimas barbearias a entrar. -->
+        <div class="news" data-reveal>
+          <div class="news__header">
+            <div class="news__heading">
+              <h3 class="news__title" id="news-title" data-i18n="news.title"></h3>
+              <p class="news__subtitle" data-i18n="news.subtitle"></p>
+            </div>
+            <div class="news__controls">
+              <button type="button" class="rail-btn" data-news-prev data-i18n-attr="aria-label:news.prev">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
+              </button>
+              <button type="button" class="rail-btn" data-news-next data-i18n-attr="aria-label:news.next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <ul class="news__rail" data-new-shops></ul>
+        </div>
 
         <div class="shops__footer" data-reveal>
           <a class="btn btn--ghost btn--lg" href="barbearias.html" data-i18n="shops.viewAll"></a>

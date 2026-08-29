@@ -445,6 +445,144 @@ checar(
 );
 await lista.close();
 
+/* --- 15.1 Barbearias recomendadas (ranking + novas) -------------------------- */
+const recs = await ctx.newPage();
+vigiar(recs, "recomendadas");
+await recs.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+/* Testes anteriores deste mesmo contexto podem ter guardado uma cidade;
+   o ranking nacional é o ponto de partida desta bateria. */
+await recs.evaluate(() => localStorage.removeItem("inbarber:city"));
+await recs.reload({ waitUntil: "domcontentloaded" });
+await recs.waitForSelector(".rec-hero__name");
+
+const esperado = await recs.evaluate(() =>
+  window.INBARBER_DATA.recommended(null, 7).map((s) => s.name)
+);
+const exibido = await recs.$$eval(".rec-hero__name, .rec-card__name a", (ns) =>
+  ns.map((n) => (n.lastChild ? n.lastChild.textContent : n.textContent).trim())
+);
+checar(
+  "Ranking mostra 1 destaque + 6 cards no desktop",
+  (await recs.$$(".rec-hero")).length === 1 && (await recs.$$(".rec-card")).length === 6
+);
+checar(
+  "Ranking segue o mérito do data.js (nota + avaliações de 30 dias)",
+  exibido.join(" | ") === esperado.join(" | "),
+  exibido.join(" | ")
+);
+checar(
+  "Primeiro colocado é marcado por uma coroa, não por numeral",
+  (await recs.$$(".rec-hero__medal svg")).length === 1 && (await recs.$$(".rec-rank")).length === 0
+);
+checar(
+  "Nenhum card mostra numeral de posição",
+  await recs.$$eval(".rec-hero, .rec-card", (cards) =>
+    cards.every((c) => !/^\s*0?\d\s*$/.test(c.textContent.trim().slice(0, 3)))
+  )
+);
+checar(
+  "Título da seção anuncia o ranking da semana (no idioma ativo)",
+  (await recs.$eval("[data-recs-title]", (n) => n.textContent)) ===
+    (await recs.evaluate(() => window.InBarberI18n.t("shops.title"))),
+  await recs.$eval("[data-recs-title]", (n) => n.textContent)
+);
+checar(
+  "Todo card do ranking leva ao perfil com a origem home-recs",
+  (await recs.$$eval(".recs .rec-link", (as) => as.map((a) => a.getAttribute("href")))).every((h) =>
+    h.startsWith("barbearia.html?id=") && h.includes("ref=home-recs")
+  )
+);
+checar(
+  "Todo card do ranking mostra os próximos horários",
+  (await recs.$$eval(".recs .rec-slots", (ns) => ns.length)) === 7
+);
+const horarios = await recs.$$eval(".rec-slot", (as) => as.map((a) => a.getAttribute("href")));
+checar(
+  "Cada horário leva ao perfil já com a data escolhida",
+  horarios.length > 0 && horarios.every((h) => /&slot=\d{4}-\d{2}-\d{2}T\d{2}%3A\d{2}$/.test(h)),
+  horarios[0]
+);
+checar(
+  "Recomendação não é espaço comprado: nenhum selo de patrocinado no ranking",
+  (await recs.$$(".recs [class*='sponsored']")).length === 0
+);
+checar(
+  "Sem cidade conhecida, nenhum card promete distância",
+  (await recs.$$(".rec-near")).length === 0
+);
+
+/* Cidade conhecida: o título muda, a cidade do visitante vem primeiro e a
+   distância aparece — tudo sem recarregar a página. */
+await recs.evaluate(() => {
+  localStorage.setItem("inbarber:city", "Porto Alegre");
+  document.dispatchEvent(new CustomEvent("inbarber:citychange", { detail: { city: "Porto Alegre" } }));
+});
+await recs.waitForTimeout(250);
+checar(
+  "Escolher a cidade reescreve o título da seção",
+  (await recs.$eval("[data-recs-title]", (n) => n.textContent)).includes("Porto Alegre"),
+  await recs.$eval("[data-recs-title]", (n) => n.textContent)
+);
+const primeiras = await recs.$$eval(".rec-hero, .rec-card", (cards) =>
+  cards.slice(0, 2).map((c) => c.querySelector(".rec-meta span").textContent)
+);
+checar(
+  "Barbearias da cidade do visitante encabeçam o ranking",
+  primeiras.every((t) => t.includes("Porto Alegre")),
+  primeiras.join(" | ")
+);
+checar(
+  "Cards de outra cidade mostram a distância em km",
+  (await recs.$$eval(".rec-near", (ns) => ns.map((n) => n.textContent))).some((t) => /km/.test(t))
+);
+
+/* Novas na InBarber */
+const novasEsperadas = await recs.evaluate(() =>
+  window.INBARBER_DATA.newest(6).map((s) => s.name)
+);
+checar(
+  "Trilho de novas segue a data de entrada, da mais recente para a mais antiga",
+  (await recs.$$eval(".news-card__name a", (ns) => ns.map((n) => n.textContent.trim()))).join(" | ") ===
+    novasEsperadas.join(" | ")
+);
+checar(
+  "Selo \"Novo\" só aparece em quem entrou dentro da janela",
+  await recs.evaluate(() => {
+    const data = window.INBARBER_DATA;
+    const dentro = data.newest(6).filter((s) => data.isNewShop(s)).length;
+    return document.querySelectorAll(".news-card__badge").length === dentro;
+  })
+);
+checar(
+  "Trilho de novas leva ao perfil com a origem home-new",
+  (await recs.$$eval(".news-card .rec-link", (as) => as.map((a) => a.getAttribute("href")))).every((h) =>
+    h.includes("ref=home-new")
+  )
+);
+
+/* Idioma */
+await recs.evaluate(() => window.InBarberI18n.setLanguage("es"));
+await recs.waitForTimeout(250);
+checar(
+  "Seção inteira se re-renderiza ao trocar de idioma",
+  (await recs.$eval(".news__title", (n) => n.textContent)) === "Nuevas en InBarber" &&
+    (await recs.$eval(".rec-slots__label", (n) => n.textContent.trim())) === "Próximas horas libres",
+  await recs.$eval(".news__title", (n) => n.textContent)
+);
+await recs.close();
+
+/* No celular a lista encurta em vez de virar um rolo sem fim. */
+const recsMobile = await ctx.newPage();
+vigiar(recsMobile, "recomendadas-mobile");
+await recsMobile.setViewportSize({ width: 375, height: 800 });
+await recsMobile.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await recsMobile.waitForSelector(".rec-hero__name");
+checar(
+  "No celular o ranking cai para 5 barbearias",
+  (await recsMobile.$$(".rec-card")).length === 4
+);
+await recsMobile.close();
+
 /* --- 16. Responsivo ---------------------------------------------------------- */
 const rotas = ["index.html", "barbearias.html", "barbearia.html?id=distrito-barber", "para-barbearias.html"];
 for (const largura of [320, 375, 480, 768, 1024, 1280, 1440]) {
