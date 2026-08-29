@@ -36,7 +36,9 @@
     check:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
     close:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    target:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>'
   };
 
   /* ======================================================================
@@ -750,7 +752,15 @@
      Três painéis: Onde (cidade, com "usar minha localização" dentro),
      Quando (dia) e Horário (período). O resultado vira query string para
      barbearias.html, que aplica exatamente os mesmos filtros.
+
+     Além do clique, a barra funciona inteira pelo teclado: seta para baixo
+     abre o painel, setas percorrem as opções, Home/End vão aos extremos e
+     Esc devolve o foco ao campo. Ao escolher um valor a barra avança
+     sozinha para o próximo filtro ainda no padrão, então quem quer só a
+     cidade continua a um Enter do resultado.
      ====================================================================== */
+  var PANEL_ORDER = ["where", "day", "time"];
+
   function initHeroSearch() {
     var form = qs("[data-hero-search]");
     if (!form) return;
@@ -764,10 +774,20 @@
     var timeList = qs("[data-time-list]", form);
     var geoButton = qs("[data-geo-button]", form);
     var geoStatus = qs("[data-geo-status]", form);
+    var clearWhere = qs("[data-clear-where]", form);
+    var submitButton = qs(".searchbox__submit", form);
+
+    var root = form.parentNode;
+    var quickList = qs("[data-quick-list]", root);
+    var liveStatus = qs("[data-search-status]", root);
 
     /* ---------------------------------------------------------------
        Painéis
        --------------------------------------------------------------- */
+    function triggerOf(name) {
+      return qs('[data-popover-trigger="' + name + '"]', form);
+    }
+
     function panelOf(name) {
       return qs('[data-popover="' + name + '"]', form);
     }
@@ -782,32 +802,131 @@
       });
     }
 
-    qsa("[data-popover-trigger]", form).forEach(function (trigger) {
-      trigger.addEventListener("click", function () {
-        var name = trigger.getAttribute("data-popover-trigger");
-        var panel = panelOf(name);
-        if (!panel) return;
+    function openPanel(name, focusFirst) {
+      var trigger = triggerOf(name);
+      var panel = panelOf(name);
+      if (!trigger || !panel) return;
 
-        var isOpen = trigger.getAttribute("aria-expanded") === "true";
-        closePanels(isOpen ? null : name);
-        trigger.setAttribute("aria-expanded", isOpen ? "false" : "true");
-        panel.hidden = isOpen;
+      closePanels(name);
+      trigger.setAttribute("aria-expanded", "true");
+      panel.hidden = false;
 
-        if (!isOpen) {
-          var focusable = qs("input, button", panel);
-          if (focusable) focusable.focus();
+      if (focusFirst === "input" && name === "where" && whereInput) {
+        whereInput.focus();
+        whereInput.select();
+        return;
+      }
+      if (focusFirst) focusOption(panel, 0);
+    }
+
+    function isOpen(name) {
+      var trigger = triggerOf(name);
+      return !!trigger && trigger.getAttribute("aria-expanded") === "true";
+    }
+
+    /* Avança para o próximo filtro que ainda está no padrão. Se todos já
+       foram preenchidos, fecha tudo e entrega o foco ao botão Buscar. */
+    function advanceFrom(name) {
+      var next = PANEL_ORDER[PANEL_ORDER.indexOf(name) + 1];
+      var untouched = { where: !state.where, day: state.day === "any", time: state.time === "any" };
+
+      while (next) {
+        if (untouched[next]) {
+          openPanel(next, next === "where" ? "input" : true);
+          return;
         }
+        next = PANEL_ORDER[PANEL_ORDER.indexOf(next) + 1];
+      }
+
+      closePanels(null);
+      if (submitButton) submitButton.focus();
+    }
+
+    qsa("[data-popover-trigger]", form).forEach(function (trigger) {
+      var name = trigger.getAttribute("data-popover-trigger");
+
+      trigger.addEventListener("click", function () {
+        if (isOpen(name)) {
+          closePanels(null);
+          return;
+        }
+        openPanel(name, name === "where" ? "input" : false);
+      });
+
+      trigger.addEventListener("keydown", function (event) {
+        if (event.key !== "ArrowDown" && event.key !== "Down") return;
+        event.preventDefault();
+        openPanel(name, name === "where" ? "input" : true);
       });
     });
 
     document.addEventListener("click", function (event) {
+      /* Escolher uma opção re-renderiza a lista, então o alvo do clique já
+         saiu do DOM quando o evento chega aqui: ignoramos esses casos para
+         não fechar o painel que a própria escolha acabou de abrir. */
+      if (!event.target.isConnected) return;
       if (form.contains(event.target)) return;
+      if (root && root.contains(event.target)) return;
       closePanels(null);
     });
 
+    /* ---------------------------------------------------------------
+       Teclado dentro dos painéis
+       --------------------------------------------------------------- */
+    function optionsIn(panel) {
+      return qsa(".popover__option, .popover__action", panel).filter(function (node) {
+        return !node.disabled;
+      });
+    }
+
+    function focusOption(panel, index) {
+      var options = optionsIn(panel);
+      if (!options.length) return;
+      var safe = Math.max(0, Math.min(index, options.length - 1));
+      options[safe].focus();
+    }
+
+    function moveFocus(panel, step) {
+      var options = optionsIn(panel);
+      if (!options.length) return;
+      var current = options.indexOf(document.activeElement);
+      var next = current === -1 ? 0 : (current + step + options.length) % options.length;
+      options[next].focus();
+    }
+
     form.addEventListener("keydown", function (event) {
-      if (event.key !== "Escape") return;
-      closePanels(null);
+      var panel = event.target.closest ? event.target.closest(".popover") : null;
+
+      if (event.key === "Escape" || event.key === "Esc") {
+        var openName = PANEL_ORDER.filter(isOpen)[0];
+        closePanels(null);
+        if (openName) {
+          var trigger = triggerOf(openName);
+          if (trigger) trigger.focus();
+        }
+        return;
+      }
+
+      if (!panel) return;
+
+      if (event.key === "ArrowDown" || event.key === "Down") {
+        event.preventDefault();
+        moveFocus(panel, 1);
+      } else if (event.key === "ArrowUp" || event.key === "Up") {
+        event.preventDefault();
+        moveFocus(panel, -1);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        focusOption(panel, 0);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        focusOption(panel, optionsIn(panel).length - 1);
+      } else if (event.key === "Enter" && event.target === whereInput) {
+        /* Enter no campo de texto aceita a primeira cidade da lista. */
+        event.preventDefault();
+        var first = qs("[data-city]", panel);
+        if (first) first.click();
+      }
     });
 
     /* ---------------------------------------------------------------
@@ -829,8 +948,16 @@
         whereNode.textContent = state.where || i18n.t("search.whereAny");
         whereNode.classList.toggle("is-empty", !state.where);
       }
-      if (dayNode) dayNode.textContent = labelOf(DAY_OPTIONS, state.day);
-      if (timeNode) timeNode.textContent = labelOf(TIME_OPTIONS, state.time);
+      if (dayNode) {
+        dayNode.textContent = labelOf(DAY_OPTIONS, state.day);
+        dayNode.classList.toggle("is-empty", state.day === "any");
+      }
+      if (timeNode) {
+        timeNode.textContent = labelOf(TIME_OPTIONS, state.time);
+        timeNode.classList.toggle("is-empty", state.time === "any");
+      }
+      if (clearWhere) clearWhere.hidden = !state.where;
+      form.classList.toggle("is-filled", !!state.where);
     }
 
     /* ---------------------------------------------------------------
@@ -840,6 +967,25 @@
       return data.barbershops.filter(function (shop) {
         return shop.city === city;
       }).length;
+    }
+
+    function cityCountLabel(city) {
+      var total = shopsIn(city);
+      return total === 1
+        ? i18n.t("search.oneShopInCity", { city: city })
+        : i18n.t("search.shopsInCity", { count: i18n.formatNumber(total), city: city });
+    }
+
+    /* Destaca o trecho digitado sem abrir mão do escape do resto do texto. */
+    function highlight(text, query) {
+      if (!query) return escapeHtml(text);
+      var at = text.toLowerCase().indexOf(query);
+      if (at === -1) return escapeHtml(text);
+      return (
+        escapeHtml(text.slice(0, at)) +
+        '<mark class="popover__mark">' + escapeHtml(text.slice(at, at + query.length)) + "</mark>" +
+        escapeHtml(text.slice(at + query.length))
+      );
     }
 
     function renderCities() {
@@ -861,7 +1007,7 @@
             '<button type="button" class="popover__option" data-city="' + escapeHtml(city) + '"' +
             (isActive ? ' aria-current="true"' : "") + ">" +
             ICONS.pin +
-            "<span>" + escapeHtml(city) + "</span>" +
+            "<span>" + highlight(city, query) + "</span>" +
             '<span class="popover__option-meta">' + i18n.formatNumber(shopsIn(city)) + "</span>" +
             "</button>"
           );
@@ -885,27 +1031,91 @@
         .join("");
     }
 
+    /* Atalhos: localização + as três cidades com mais barbearias. */
+    function renderQuick() {
+      if (!quickList) return;
+
+      var top = data.cities
+        .slice()
+        .sort(function (a, b) {
+          return shopsIn(b) - shopsIn(a);
+        })
+        .slice(0, 3);
+
+      var chips = [
+        '<button type="button" class="searchbox__chip searchbox__chip--action" data-quick-geo>' +
+          ICONS.target + "<span>" + escapeHtml(i18n.t("search.nearMe")) + "</span></button>"
+      ];
+
+      top.forEach(function (city) {
+        chips.push(
+          '<button type="button" class="searchbox__chip" data-quick-city="' + escapeHtml(city) + '"' +
+          (city === state.where ? ' aria-pressed="true"' : ' aria-pressed="false"') + ">" +
+          escapeHtml(city) + "</button>"
+        );
+      });
+
+      quickList.innerHTML = chips.join("");
+    }
+
+    function announce(message) {
+      if (liveStatus) liveStatus.textContent = message;
+    }
+
     function renderAll() {
       renderValues();
       renderCities();
       renderChoices(dayList, DAY_OPTIONS, state.day, "data-day");
       renderChoices(timeList, TIME_OPTIONS, state.time, "data-time");
+      renderQuick();
       renderGeoStatus();
     }
 
     /* ---------------------------------------------------------------
        Seleção
        --------------------------------------------------------------- */
+    function chooseCity(city, advance) {
+      state.where = city;
+      if (whereInput) whereInput.value = city;
+      rememberCity(city);
+      clearGeoStatus();
+      renderAll();
+      announce(cityCountLabel(city));
+      if (advance) advanceFrom("where");
+      else closePanels(null);
+    }
+
     if (cityList) {
       cityList.addEventListener("click", function (event) {
         var option = event.target.closest("[data-city]");
         if (!option) return;
-        state.where = option.getAttribute("data-city");
-        if (whereInput) whereInput.value = state.where;
-        rememberCity(state.where);
+        chooseCity(option.getAttribute("data-city"), true);
+      });
+    }
+
+    if (quickList) {
+      quickList.addEventListener("click", function (event) {
+        var cityChip = event.target.closest("[data-quick-city]");
+        if (cityChip) {
+          chooseCity(cityChip.getAttribute("data-quick-city"), false);
+          return;
+        }
+        if (event.target.closest("[data-quick-geo]")) {
+          openPanel("where", false);
+          locate();
+        }
+      });
+    }
+
+    if (clearWhere) {
+      clearWhere.addEventListener("click", function () {
+        state.where = "";
+        if (whereInput) whereInput.value = "";
         clearGeoStatus();
         renderAll();
-        closePanels(null);
+        announce(i18n.t("search.whereAny"));
+        var trigger = triggerOf("where");
+        if (trigger) trigger.focus();
       });
     }
 
@@ -915,6 +1125,7 @@
         clearGeoStatus();
         renderValues();
         renderCities();
+        renderQuick();
       });
     }
 
@@ -924,7 +1135,11 @@
         if (!option) return;
         state.day = option.getAttribute("data-day");
         renderAll();
-        closePanels(null);
+        announce(i18n.t("search.selected", {
+          field: i18n.t("search.whenLabel"),
+          value: labelOf(DAY_OPTIONS, state.day)
+        }));
+        advanceFrom("day");
       });
     }
 
@@ -934,7 +1149,11 @@
         if (!option) return;
         state.time = option.getAttribute("data-time");
         renderAll();
-        closePanels(null);
+        announce(i18n.t("search.selected", {
+          field: i18n.t("search.timeLabel"),
+          value: labelOf(TIME_OPTIONS, state.time)
+        }));
+        advanceFrom("time");
       });
     }
 
@@ -965,35 +1184,39 @@
       geoStatus.textContent = i18n.t(geoState.key, geoState.city ? { city: geoState.city } : null);
     }
 
-    if (geoButton) {
-      geoButton.addEventListener("click", function () {
-        if (!navigator.geolocation) {
-          setGeoStatus("geo.unsupported", "error");
-          return;
-        }
-        setGeoStatus("geo.locating", "info");
+    function locate() {
+      if (!navigator.geolocation) {
+        setGeoStatus("geo.unsupported", "error");
+        return;
+      }
+      setGeoStatus("geo.locating", "info");
 
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            var match = data.nearestCity(position.coords.latitude, position.coords.longitude);
-            if (!match || match.distanceKm > MAX_CITY_DISTANCE_KM) {
-              setGeoStatus("geo.tooFar", "error");
-              return;
-            }
-            state.where = match.city;
-            if (whereInput) whereInput.value = match.city;
-            rememberCity(match.city);
-            setGeoStatus("geo.matched", "success", match.city);
-            renderValues();
-            renderCities();
-          },
-          function () {
-            setGeoStatus("geo.error", "error");
-          },
-          { timeout: 8000, maximumAge: 300000 }
-        );
-      });
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          var match = data.nearestCity(position.coords.latitude, position.coords.longitude);
+          if (!match || match.distanceKm > MAX_CITY_DISTANCE_KM) {
+            setGeoStatus("geo.tooFar", "error");
+            announce(i18n.t("geo.tooFar"));
+            return;
+          }
+          state.where = match.city;
+          if (whereInput) whereInput.value = match.city;
+          rememberCity(match.city);
+          setGeoStatus("geo.matched", "success", match.city);
+          renderValues();
+          renderCities();
+          renderQuick();
+          announce(cityCountLabel(match.city));
+        },
+        function () {
+          setGeoStatus("geo.error", "error");
+          announce(i18n.t("geo.error"));
+        },
+        { timeout: 8000, maximumAge: 300000 }
+      );
     }
+
+    if (geoButton) geoButton.addEventListener("click", locate);
 
     /* ---------------------------------------------------------------
        Envio

@@ -46,7 +46,12 @@ await home.waitForSelector(".featured__slide", { timeout: 5000 });
 const nomes = await home.$$eval(".featured__name", (ns) => ns.map((n) => n.textContent.trim()));
 checar("Vigência: contrato vencido fica fora do ar", !nomes.includes("Casa do Barbeiro"), nomes.join(", "));
 checar("Vigência: contratos válidos entram", nomes.length >= 2, `${nomes.length} slides`);
-checar("Escassez: respeita o teto de 5 slots", nomes.length <= 5, `${nomes.length} slides`);
+const tetoSlots = await home.evaluate(() => window.INBARBER_FEATURED.maxSlots);
+checar(
+  `Escassez: respeita o teto de ${tetoSlots} slots`,
+  nomes.length <= tetoSlots,
+  `${nomes.length} slides`
+);
 checar(
   "Destaques só usam barbearias reais do data.js",
   await home.evaluate(

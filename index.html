@@ -106,7 +106,6 @@
   </header>
 
   <main id="main">
-
     <!-- ==================================================================
          SEÇÃO 1 — HERO
          ================================================================== -->
@@ -120,25 +119,30 @@
 
       <div class="container hero__inner">
         <div class="hero__content">
-          <span class="badge badge--cyan" data-reveal><span class="badge__dot"></span><span data-i18n="hero.badge"></span></span>
+          <h1 class="hero__title" id="hero-title" data-i18n-html="hero.titleHtml" data-reveal></h1>
 
-          <h1 class="hero__title" id="hero-title" data-i18n-html="hero.titleHtml" data-reveal style="--reveal-delay:60ms"></h1>
+          <p class="hero__subtitle" data-i18n="hero.subtitle" data-reveal style="--reveal-delay:80ms"></p>
 
-          <p class="hero__subtitle" data-i18n="hero.subtitle" data-reveal style="--reveal-delay:120ms"></p>
-
-          <div class="hero__search" data-reveal style="--reveal-delay:180ms">
-            <form class="searchbox" data-hero-search novalidate>
+          <div class="hero__search" data-reveal style="--reveal-delay:160ms">
+            <form class="searchbox" data-hero-search novalidate role="search"
+                  data-i18n-attr="aria-label:search.formLabel">
               <div class="searchbox__grid">
 
                 <!-- Onde: cidade digitada, escolhida na lista ou pela localização -->
-                <div class="searchbox__seg">
+                <div class="searchbox__seg searchbox__seg--where">
                   <button type="button" class="searchbox__field" data-popover-trigger="where"
-                          aria-expanded="false" aria-controls="pop-where">
+                          aria-expanded="false" aria-controls="pop-where"
+                          data-i18n-attr="aria-label:search.openWhere">
                     <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span data-i18n="search.whereLabel"></span></span>
                     <span class="searchbox__value is-empty" data-value="where"></span>
                   </button>
 
-                  <div class="popover" id="pop-where" data-popover="where" hidden>
+                  <button type="button" class="searchbox__clear" data-clear-where hidden
+                          data-i18n-attr="aria-label:search.clearWhere">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                  </button>
+
+                  <div class="popover popover--wide" id="pop-where" data-popover="where" hidden>
                     <div class="popover__search">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
                       <label class="visually-hidden" for="where-input" data-i18n="search.whereLabel"></label>
@@ -159,7 +163,8 @@
                 <!-- Quando -->
                 <div class="searchbox__seg">
                   <button type="button" class="searchbox__field" data-popover-trigger="day"
-                          aria-expanded="false" aria-controls="pop-day">
+                          aria-expanded="false" aria-controls="pop-day"
+                          data-i18n-attr="aria-label:search.openWhen">
                     <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 9.5h18"/></svg><span data-i18n="search.whenLabel"></span></span>
                     <span class="searchbox__value" data-value="day"></span>
                   </button>
@@ -171,7 +176,8 @@
                 <!-- Período do dia -->
                 <div class="searchbox__seg">
                   <button type="button" class="searchbox__field" data-popover-trigger="time"
-                          aria-expanded="false" aria-controls="pop-time">
+                          aria-expanded="false" aria-controls="pop-time"
+                          data-i18n-attr="aria-label:search.openTime">
                     <span class="searchbox__label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.4 2"/></svg><span data-i18n="search.timeLabel"></span></span>
                     <span class="searchbox__value" data-value="time"></span>
                   </button>
@@ -185,6 +191,15 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><span data-i18n="search.submit"></span>
               </button>
             </form>
+
+            <!-- Atalhos: localização e as cidades com mais barbearias.
+                 Montados por js/main.js a partir de js/data.js. -->
+            <div class="searchbox__quick">
+              <span class="searchbox__quick-label" data-i18n="search.quickLabel"></span>
+              <div class="searchbox__quick-list" data-quick-list></div>
+            </div>
+
+            <p class="visually-hidden" role="status" aria-live="polite" data-search-status></p>
           </div>
 
           <ul class="hero__stats" data-reveal style="--reveal-delay:240ms">
@@ -213,7 +228,28 @@
     </section>
 
     <!-- ==================================================================
-         SEÇÃO 2 — COMO FUNCIONA
+         SEÇÃO 2 — BARBEARIAS RECOMENDADAS
+         ================================================================== -->
+    <section class="section" id="barbearias" aria-labelledby="shops-title">
+      <div class="container">
+        <div class="section__header section__header--center" data-reveal>
+          <span class="eyebrow" data-i18n="shops.eyebrow"></span>
+          <h2 class="section__title" id="shops-title" data-i18n="shops.title"></h2>
+          <p class="section__subtitle" data-i18n="shops.subtitle"></p>
+        </div>
+
+        <div class="shops-grid" data-featured-shops></div>
+
+        <div class="shops__footer" data-reveal>
+          <a class="btn btn--ghost btn--lg" href="barbearias.html" data-i18n="shops.viewAll"></a>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section__divider">
+
+    <!-- ==================================================================
+         SEÇÃO 3 — COMO FUNCIONA
          ================================================================== -->
     <section class="section" id="como-funciona" aria-labelledby="how-title">
       <div class="container">
@@ -413,44 +449,8 @@
       </div>
     </section>
 
-    <hr class="section__divider">
-
     <!-- ==================================================================
-         SEÇÃO 3 — BARBEARIAS RECOMENDADAS
-         ================================================================== -->
-    <section class="section" id="barbearias" aria-labelledby="shops-title">
-      <div class="container">
-        <div class="section__header section__header--center" data-reveal>
-          <span class="eyebrow" data-i18n="shops.eyebrow"></span>
-          <h2 class="section__title" id="shops-title" data-i18n="shops.title"></h2>
-          <p class="section__subtitle" data-i18n="shops.subtitle"></p>
-        </div>
-
-        <div class="shops-grid" data-featured-shops></div>
-
-        <div class="shops__footer" data-reveal>
-          <a class="btn btn--ghost btn--lg" href="barbearias.html" data-i18n="shops.viewAll"></a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================================================================
-         SEÇÃO 4 — TENDÊNCIAS & ESTILOS
-         ================================================================== -->
-    <section class="section" id="tendencias" aria-labelledby="trends-title">
-      <div class="container">
-        <div class="section__header" data-reveal>
-          <span class="eyebrow" data-i18n="trends.eyebrow"></span>
-          <h2 class="section__title" id="trends-title" data-i18n="trends.title"></h2>
-          <p class="section__subtitle" data-i18n="trends.subtitle"></p>
-        </div>
-
-        <div class="trends-grid" id="trends" data-trends-grid></div>
-      </div>
-    </section>
-
-    <!-- ==================================================================
-         SEÇÃO 5 — AVALIAÇÕES DA INBARBER
+         SEÇÃO 4 — AVALIAÇÕES DA INBARBER
          ================================================================== -->
     <section class="section" id="avaliacoes" aria-labelledby="reviews-title">
       <div class="container">
@@ -486,6 +486,21 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         SEÇÃO 5 — TENDÊNCIAS & ESTILOS
+         ================================================================== -->
+    <section class="section" id="tendencias" aria-labelledby="trends-title">
+      <div class="container">
+        <div class="section__header" data-reveal>
+          <span class="eyebrow" data-i18n="trends.eyebrow"></span>
+          <h2 class="section__title" id="trends-title" data-i18n="trends.title"></h2>
+          <p class="section__subtitle" data-i18n="trends.subtitle"></p>
+        </div>
+
+        <div class="trends-grid" id="trends" data-trends-grid></div>
       </div>
     </section>
 
@@ -556,6 +571,7 @@
         </div>
       </div>
     </section>
+
   </main>
 
   <!-- ====================================================================

@@ -72,14 +72,27 @@
   }
 
   .searchbox__seg + .searchbox__seg::before {
-    content: "";
-    position: absolute;
     top: 50%;
+    right: auto;
     left: 0;
     width: 1px;
     height: 26px;
-    background: var(--color-border-subtle);
     transform: translateY(-50%);
+  }
+
+  /* Os painéis deixam de acompanhar a largura do segmento. */
+  .popover {
+    right: auto;
+    width: min(340px, calc(100vw - 2.5rem));
+  }
+
+  .popover--right {
+    right: 0;
+    left: auto;
+  }
+
+  .popover--wide {
+    width: min(390px, calc(100vw - 2.5rem));
   }
 
 

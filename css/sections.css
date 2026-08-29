@@ -55,14 +55,16 @@
 }
 
 .hero__title {
-  margin-top: var(--space-lg);
+  text-wrap: balance;
 }
 
 .hero__subtitle {
-  max-width: 34rem;
+  max-width: 36rem;
   margin-top: var(--space-lg);
   font-size: var(--text-md);
   line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
 /* --------------------------------------------------------------------------
@@ -74,25 +76,37 @@
   margin-top: clamp(1.75rem, 3vw, 2.5rem);
 }
 
+/* A barra é uma casca de vidro com uma auréola sutil por baixo: a auréola
+   acende no foco e dá ao componente o peso de "ação principal do hero". */
 .searchbox {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
   padding: 0.4375rem;
-  background: var(--color-bg-glass);
+  background:
+    linear-gradient(180deg, rgba(250, 250, 250, 0.05) 0%, rgba(250, 250, 250, 0) 60%),
+    var(--color-bg-glass);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transition:
     border-color var(--duration-base) var(--ease-out),
     box-shadow var(--duration-base) var(--ease-out);
 }
 
+.searchbox:hover {
+  border-color: rgba(55, 65, 81, 0.75);
+  box-shadow: var(--shadow-lg);
+}
+
 .searchbox:focus-within {
-  border-color: rgba(0, 240, 255, 0.4);
-  box-shadow: var(--glow-cyan);
+  border-color: rgba(0, 240, 255, 0.45);
+  box-shadow:
+    var(--glow-cyan),
+    0 22px 60px rgba(0, 71, 255, 0.18);
 }
 
 .searchbox__grid {
@@ -111,13 +125,26 @@
   z-index: 2;
 }
 
+/* Empilhados no celular, os segmentos são separados por uma linha fina;
+   a partir de 768px ela vira o divisor vertical (responsive.css). */
+.searchbox__seg + .searchbox__seg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0.9375rem;
+  right: 0.9375rem;
+  height: 1px;
+  background: var(--color-border-subtle);
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
 .searchbox__field {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.1875rem;
   width: 100%;
-  padding: 0.625rem 0.875rem;
+  padding: 0.6875rem 0.9375rem;
   text-align: left;
   border-radius: var(--radius-lg);
   transition:
@@ -129,9 +156,21 @@
   background: rgba(250, 250, 250, 0.05);
 }
 
+.searchbox__field:focus-visible {
+  outline: none;
+  background: rgba(250, 250, 250, 0.06);
+  box-shadow: inset 0 0 0 2px var(--color-secondary);
+}
+
 .searchbox__field[aria-expanded="true"] {
   background: rgba(250, 250, 250, 0.07);
   box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.32);
+}
+
+/* O segmento aberto apaga o divisor do vizinho da direita. */
+.searchbox__seg:has([aria-expanded="true"]) + .searchbox__seg::before,
+.searchbox__seg:hover + .searchbox__seg::before {
+  opacity: 0;
 }
 
 .searchbox__label {
@@ -144,6 +183,7 @@
   text-transform: uppercase;
   letter-spacing: var(--tracking-wide);
   color: var(--color-text-subtle);
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
 .searchbox__label svg {
@@ -152,11 +192,16 @@
   color: var(--color-secondary);
 }
 
+.searchbox__field:hover .searchbox__label,
+.searchbox__field[aria-expanded="true"] .searchbox__label {
+  color: var(--color-text-muted);
+}
+
 .searchbox__value {
   max-width: 100%;
   overflow: hidden;
   font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-text);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -167,8 +212,110 @@
   color: var(--color-text-subtle);
 }
 
+/* Limpar a cidade escolhida, sem abrir o painel. */
+.searchbox__clear {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: var(--color-text-subtle);
+  background: rgba(250, 250, 250, 0.07);
+  border-radius: var(--radius-pill);
+  transform: translateY(-50%);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.searchbox__clear svg {
+  width: 12px;
+  height: 12px;
+}
+
+.searchbox__clear:hover {
+  color: var(--color-text);
+  background: rgba(250, 250, 250, 0.14);
+}
+
+.searchbox__seg--where .searchbox__field {
+  padding-right: 2.5rem;
+}
+
 .searchbox__submit {
   width: 100%;
+}
+
+/* Atalhos abaixo da barra: localização e cidades com mais barbearias. */
+.searchbox__quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  padding-left: 0.25rem;
+}
+
+.searchbox__quick-label {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-subtle);
+}
+
+.searchbox__quick-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.searchbox__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.3125rem 0.6875rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  background: rgba(250, 250, 250, 0.045);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.searchbox__chip:hover {
+  color: var(--color-text);
+  background: rgba(250, 250, 250, 0.09);
+  border-color: var(--color-border);
+}
+
+.searchbox__chip[aria-pressed="true"] {
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  border-color: rgba(0, 240, 255, 0.32);
+}
+
+.searchbox__chip svg {
+  width: 13px;
+  height: 13px;
+}
+
+.searchbox__chip--action {
+  color: var(--color-secondary);
+  border-color: rgba(0, 240, 255, 0.24);
+}
+
+.searchbox__chip--action:hover {
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  border-color: rgba(0, 240, 255, 0.45);
 }
 
 /* --------------------------------------------------------------------------
@@ -178,18 +325,38 @@
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
+  right: 0;
   z-index: var(--z-drawer);
-  width: min(340px, calc(100vw - 2.5rem));
+  width: auto;
   padding: var(--space-sm);
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+  animation: popover-in var(--duration-base) var(--ease-out) both;
 }
 
-.popover--right {
-  right: 0;
-  left: auto;
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popover {
+    animation: none;
+  }
+}
+
+/* No celular os painéis ocupam a largura do segmento; de tablet para cima
+   ganham largura própria (ver responsive.css). */
+
+/* Trecho digitado, destacado na lista de cidades. */
+.popover__mark {
+  color: var(--color-secondary);
+  background: transparent;
+  font-weight: var(--weight-semibold);
 }
 
 .popover__search {
@@ -292,6 +459,14 @@
 .popover__option:hover {
   color: var(--color-text);
   background: rgba(250, 250, 250, 0.06);
+}
+
+.popover__option:focus-visible,
+.popover__action:focus-visible {
+  outline: none;
+  color: var(--color-text);
+  background: rgba(250, 250, 250, 0.1);
+  box-shadow: inset 0 0 0 1.5px var(--color-secondary);
 }
 
 .popover__option[aria-current="true"] {

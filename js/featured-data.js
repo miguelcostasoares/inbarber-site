@@ -112,6 +112,75 @@ window.INBARBER_FEATURED = (function () {
       }
     },
     {
+      shopId: "tesoura-de-ouro",
+      plan: "city",
+      start: "2026-08-01",
+      end: "2026-12-31",
+      pitch: {
+        pt: "Barbearia de bairro em Moema: barbeiro fixo e hora marcada.",
+        en: "A neighbourhood shop in Moema: your own barber, by appointment.",
+        es: "Barbería de barrio en Moema: barbero fijo y con cita previa."
+      }
+    },
+    {
+      shopId: "ilha-barber-club",
+      plan: "national",
+      start: "2026-07-15",
+      end: "2026-12-31",
+      pitch: {
+        pt: "Corte e barba com vista para a Lagoa. Reserve pelo site.",
+        en: "Cut and beard with a view over the Lagoa. Book online.",
+        es: "Corte y barba con vista a la Lagoa. Reserva por el sitio."
+      }
+    },
+    {
+      shopId: "norte-barbearia",
+      plan: "city",
+      start: "2026-08-01",
+      end: "2027-01-15",
+      pitch: {
+        pt: "Meireles, aberto até as 22h. Agende depois do expediente.",
+        en: "Meireles, open until 10pm. Book a slot after work.",
+        es: "Meireles, abierto hasta las 22h. Reserva al salir del trabajo."
+      }
+    },
+    {
+      /* Oficina do Corte (Brasília) segue de propósito sem contrato: é a
+         barbearia de controle: aparece na busca e no perfil como qualquer
+         outra, mas sem selo de destaque em lugar nenhum. */
+      shopId: "barbearia-central",
+      plan: "city",
+      start: "2026-08-05",
+      end: "2027-01-31",
+      pitch: {
+        pt: "No Centro Histórico, a dois minutos do Mercado Público.",
+        en: "In the Centro Histórico, two minutes from the Mercado Público.",
+        es: "En el Centro Histórico, a dos minutos del Mercado Público."
+      }
+    },
+    {
+      shopId: "mineira-barbearia",
+      plan: "city",
+      start: "2026-08-18",
+      end: "2026-12-31",
+      pitch: {
+        pt: "Funcionários: navalha, toalha quente e café coado na hora.",
+        en: "Funcionários: straight razor, hot towel and fresh-brewed coffee.",
+        es: "Funcionários: navaja, toalla caliente y café recién hecho."
+      }
+    },
+    {
+      shopId: "sertao-barber",
+      plan: "national",
+      start: "2026-08-01",
+      end: "2026-11-30",
+      pitch: {
+        pt: "Preço fechado, sem surpresa na hora de pagar.",
+        en: "One flat price — no surprises when you pay.",
+        es: "Precio cerrado, sin sorpresas a la hora de pagar."
+      }
+    },
+    {
       /* Contrato encerrado em julho. Fica no arquivo como histórico e some do
          site sozinho — é a prova viva de que a vigência funciona sem ninguém
          precisar editar código no dia do vencimento. */
@@ -130,8 +199,12 @@ window.INBARBER_FEATURED = (function () {
   return {
     contracts: contracts,
 
-    /* Escassez sustenta o preço e garante exposição real a cada anunciante. */
-    maxSlots: 5,
+    /* Escassez sustenta o preço e garante exposição real a cada anunciante.
+       Com a carteira de contratos maior, o teto subiu de 5 para 8: ainda é
+       finito (o slide continua valendo dinheiro), mas o baralho do hero tem
+       fôlego para mostrar a cidade do visitante e ainda completar com o pool
+       nacional. */
+    maxSlots: 8,
 
     /* Tempo de cada slide no autoplay. */
     intervalMs: 7000,
