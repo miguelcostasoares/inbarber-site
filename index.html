@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/featured.css">
   <link rel="stylesheet" href="css/responsive.css">
 
   <script type="application/ld+json">
@@ -202,26 +203,12 @@
           </ul>
         </div>
 
-        <div class="hero__visual" data-reveal="scale" style="--reveal-delay:200ms">
-          <figure class="framed framed--glow hero__photo">
-            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&amp;fit=crop&amp;w=900&amp;q=75"
-                 data-i18n-attr="alt:hero.imageAlt" alt="" width="900" height="1125" decoding="async">
-          </figure>
-
-          <div class="hero__floating-card">
-            <span class="stars" role="img" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>
-            </span>
-            <div>
-              <p class="stat__value">4,9</p>
-              <p class="stat__label" data-i18n="reviews.scoreLabel"></p>
-            </div>
-          </div>
-        </div>
+        <!-- Barbearias em Destaque: espaço comercial do hero.
+             O conteúdo é montado por js/featured.js a partir dos contratos em
+             js/featured-data.js cruzados com as barbearias de js/data.js.
+             A prova social da plataforma (4,9) continua na lista .hero__stats
+             logo acima, então nada de credibilidade se perdeu aqui. -->
+        <div class="hero__visual" data-featured-carousel data-reveal="scale" style="--reveal-delay:200ms"></div>
       </div>
     </section>
 
@@ -663,7 +650,9 @@
   <!-- Scripts: ordem obrigatória (dicionário → dados → i18n → interações) -->
   <script src="js/translations.js" defer></script>
   <script src="js/data.js" defer></script>
+  <script src="js/featured-data.js" defer></script>
   <script src="js/i18n.js" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/featured.js" defer></script>
 </body>
 </html>

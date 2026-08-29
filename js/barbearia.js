@@ -1,286 +1,286 @@
-/* =============================================================================
-   InBarber — perfil individual da barbearia (barbearia.html?id=)
-   -----------------------------------------------------------------------------
-   Destino do clique no carrossel de destaques. Lê o `id` da query string e monta
-   a página a partir da base de barbearias do projeto (`window.INBARBER_DATA`)
-   ou, na ausência dela, da base de destaques.
+/* ==========================================================================
+   InBarber — Perfil individual da barbearia (barbearia.html?id=)
 
-   Sem backend: o botão de agendamento dispara o evento `inbarber:agendar` no
-   document — mesmo padrão do `inbarber:signin` do header — para o fluxo real ser
-   plugado depois sem tocar nesta página.
-============================================================================= */
-(function (global, doc) {
-  'use strict';
+   Destino do clique no carrossel de destaques e nos cards de barbearia. Lê o
+   `id` da query string e monta a página a partir do js/data.js — nenhum dado é
+   duplicado aqui.
 
-  var PADRAO = 'pt-BR';
+   Sem backend: o botão de agendamento dispara o evento "inbarber:booking" no
+   document, mesmo padrão do "inbarber:signin" do header, para o fluxo real ser
+   ligado depois sem tocar nesta página.
+   ========================================================================== */
 
-  function normalizarIdioma(tag) {
-    if (!tag) return PADRAO;
-    var base = String(tag).toLowerCase().slice(0, 2);
-    if (base === 'en') return 'en-US';
-    if (base === 'es') return 'es-ES';
-    return PADRAO;
+(function (window, document) {
+  "use strict";
+
+  var i18n = window.InBarberI18n;
+  var data = window.INBARBER_DATA;
+  var featured = window.INBARBER_FEATURED;
+
+  var ICONS = {
+    star:
+      '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.95-4.7 4.58 1.11 6.47L12 17.4l-5.81 3.05 1.11-6.47-4.7-4.58 6.5-.95L12 2.5z"/></svg>',
+    pin:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
+    back:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>',
+    /* Mesmo brilho do selo no carrossel: o visitante reconhece o que já viu. */
+    sparkle:
+      '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' +
+      '<path d="M13.1 2.6a1.15 1.15 0 0 0-2.2 0l-1.1 3.6a3.4 3.4 0 0 1-2.25 2.25L3.95 9.55a1.15 1.15 0 0 0 0 2.2l3.6 1.1a3.4 3.4 0 0 1 2.25 2.25l1.1 3.6a1.15 1.15 0 0 0 2.2 0l1.1-3.6a3.4 3.4 0 0 1 2.25-2.25l3.6-1.1a1.15 1.15 0 0 0 0-2.2l-3.6-1.1a3.4 3.4 0 0 1-2.25-2.25z"/>' +
+      '<path d="M18.6 16.1a.62.62 0 0 0-1.2 0l-.36 1.18a1.5 1.5 0 0 1-.96.96l-1.18.36a.62.62 0 0 0 0 1.2l1.18.36c.45.14.82.5.96.96l.36 1.18a.62.62 0 0 0 1.2 0l.36-1.18c.14-.46.5-.82.96-.96l1.18-.36a.62.62 0 0 0 0-1.2l-1.18-.36a1.5 1.5 0 0 1-.96-.96z"/>' +
+      "</svg>"
+  };
+
+  function qs(selector, scope) {
+    return (scope || document).querySelector(selector);
+  }
+  function el(tag, className, html) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (html !== undefined) node.innerHTML = html;
+    return node;
+  }
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function onLanguageChange(handler) {
+    document.addEventListener("inbarber:languagechange", handler);
   }
 
-  function idiomaAtivo() {
-    return normalizarIdioma(doc.documentElement.getAttribute('lang') || global.navigator.language);
-  }
-
-  function t(chave, vars) {
-    var dic = global.INBARBER_TRANSLATIONS || {};
-    var atual = dic[idiomaAtivo()] || {};
-    var base = dic[PADRAO] || {};
-    var texto = atual[chave] || base[chave] || chave;
-    if (vars) {
-      Object.keys(vars).forEach(function (k) {
-        texto = texto.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
-      });
-    }
-    return texto;
-  }
-
-  function numero(valor, casas) {
-    try {
-      return new Intl.NumberFormat(idiomaAtivo(), {
-        minimumFractionDigits: casas || 0,
-        maximumFractionDigits: casas || 0
-      }).format(valor);
-    } catch (e) { return String(valor); }
-  }
-
-  function moeda(valor) {
-    try {
-      return new Intl.NumberFormat(idiomaAtivo(), {
-        style: 'currency', currency: 'BRL', maximumFractionDigits: 0
-      }).format(valor);
-    } catch (e) { return 'R$ ' + valor; }
-  }
-
-  function el(tag, classe, texto) {
-    var n = doc.createElement(tag);
-    if (classe) n.className = classe;
-    if (texto != null) n.textContent = texto;
-    return n;
-  }
-
-  /* Mesma regra de vigência de destaques.js, replicada aqui para a página não
-     depender da ordem de carregamento dos scripts. */
-  function hojeISO() {
-    var d = new Date();
-    var m = String(d.getMonth() + 1), dia = String(d.getDate());
-    return d.getFullYear() + '-' + (m.length < 2 ? '0' + m : m) + '-' + (dia.length < 2 ? '0' + dia : dia);
-  }
-
-  function vigente(d) {
-    var hoje = hojeISO();
-    return (!d.inicio || d.inicio <= hoje) && (!d.fim || d.fim >= hoje);
-  }
-
-  function parametro(nome) {
-    var busca = global.location.search.replace(/^\?/, '').split('&');
-    var valor = null;
-    busca.forEach(function (par) {
-      var partes = par.split('=');
-      if (decodeURIComponent(partes[0]) === nome) {
-        valor = decodeURIComponent((partes[1] || '').replace(/\+/g, ' '));
-      }
-    });
-    return valor;
-  }
-
-  function fonteDeDados() {
-    var base = global.INBARBER_DADOS || global.INBARBER_DATA || {};
-    var lista = base.barbearias || [];
-    var destaques = (global.INBARBER_DESTAQUES && global.INBARBER_DESTAQUES.destaques) || [];
-
-    /* A base oficial manda; os destaques completam quem ainda não estiver lá. */
-    var mapa = {};
-    lista.forEach(function (b) { mapa[b.id] = b; });
-    destaques.forEach(function (d) { if (!mapa[d.id]) mapa[d.id] = d; });
-    return mapa;
-  }
-
-  function cidadePorId(id) {
-    var cidades = (global.INBARBER_DESTAQUES && global.INBARBER_DESTAQUES.cidades) || [];
-    var achada = null;
-    cidades.forEach(function (c) { if (c.id === id) achada = c; });
-    return achada;
-  }
-
-  function montarEstrelas(nota) {
-    var caixa = el('span', 'estrelas');
-    caixa.setAttribute('aria-hidden', 'true');
-    var fundo = el('span', 'estrelas__fundo', '★★★★★');
-    var frente = el('span', 'estrelas__frente', '★★★★★');
-    frente.style.width = Math.max(0, Math.min(100, (nota / 5) * 100)) + '%';
-    caixa.appendChild(fundo);
-    caixa.appendChild(frente);
-    return caixa;
-  }
-
-  /* ==========================================================================
-     Renderização
-     ========================================================================== */
-
-  function renderizarVazio(raiz) {
-    raiz.innerHTML = '';
-    var caixa = el('div', 'perfil__vazio');
-    caixa.appendChild(el('h1', 'perfil__nome', t('perfil.naoEncontradaTitulo')));
-    caixa.appendChild(el('p', null, t('perfil.naoEncontradaTexto')));
-    var link = el('a', 'destaque__cta', t('perfil.verTodas'));
-    link.href = 'barbearias.html';
-    caixa.appendChild(link);
-    raiz.appendChild(caixa);
-    doc.title = t('perfil.naoEncontradaTitulo') + ' — InBarber';
-  }
-
-  function renderizar(raiz, b) {
-    raiz.innerHTML = '';
-
-    doc.title = t('perfil.tituloPagina', { nome: b.nome });
-    var descricao = doc.querySelector('meta[name="description"]');
-    if (descricao && b.chamada) {
-      descricao.setAttribute('content', b.chamada[idiomaAtivo()] || b.chamada[PADRAO] || '');
-    }
-
-    /* Voltar --------------------------------------------------------------- */
-    var voltar = el('a', 'perfil__voltar', '← ' + t('perfil.voltar'));
-    voltar.href = 'barbearias.html';
-    raiz.appendChild(voltar);
-
-    /* Capa ------------------------------------------------------------------ */
-    var capa = el('div', 'perfil__capa');
-    var img = doc.createElement('img');
-    img.className = 'perfil__foto';
-    img.src = b.foto;
-    img.alt = b.nome + ' — ' + (b.bairro || '');
-    img.loading = 'eager';
-    img.setAttribute('fetchpriority', 'high');
-    img.decoding = 'async';
-    img.addEventListener('error', function () { img.remove(); });
-    capa.appendChild(img);
-
-    if (vigente(b) && b.plano) {
-      capa.appendChild(el('span', 'perfil__selo', t('perfil.destaqueAtivo')));
-    }
-
-    /* Cabeçalho sobre a foto, com o mesmo scrim do card do hero. ------------- */
-    var cabecalho = el('header', 'perfil__cabecalho');
-    cabecalho.appendChild(el('h1', 'perfil__nome', b.nome));
-
-    var cidade = cidadePorId(b.cidade);
-    cabecalho.appendChild(el('p', 'perfil__local',
-      (b.bairro || '') + (cidade ? ' · ' + cidade.nome + '/' + cidade.uf : '')));
-
-    var nota = el('div', 'perfil__nota');
-    nota.appendChild(montarEstrelas(b.nota));
-    nota.appendChild(el('strong', null, numero(b.nota, 1)));
-    nota.appendChild(el('span', 'destaque__avaliacoes',
-      t('perfil.avaliacoes', { n: numero(b.avaliacoes) })));
-    cabecalho.appendChild(nota);
-    capa.appendChild(cabecalho);
-    raiz.appendChild(capa);
-
-    /* Grade ------------------------------------------------------------------ */
-    var grade = el('div', 'perfil__grade');
-
-    /* Serviços */
-    var blocoServicos = el('section', 'perfil__bloco');
-    blocoServicos.appendChild(el('h2', 'perfil__blocoTitulo', t('perfil.servicos')));
-    var lista = el('ul', 'perfil__servicos');
-    (b.servicos || []).forEach(function (s) {
-      var li = el('li', 'perfil__servico');
-      li.appendChild(el('span', null, t('servicos.' + s.chave)));
-      li.appendChild(el('span', 'perfil__preco', moeda(s.preco)));
-      lista.appendChild(li);
-    });
-    blocoServicos.appendChild(lista);
-    grade.appendChild(blocoServicos);
-
-    /* Lateral: horários + contato + agendar */
-    var lateral = el('div');
-
-    var blocoHorarios = el('section', 'perfil__bloco');
-    blocoHorarios.appendChild(el('h2', 'perfil__blocoTitulo', t('perfil.horarios')));
-
-    var dias = el('ul', 'perfil__dias');
-    for (var d = 0; d < 7; d++) {
-      var aberto = (b.dias || []).indexOf(d) !== -1;
-      var item = el('li', 'perfil__dia' + (aberto ? ' perfil__dia--aberto' : ''), t('dias.' + d));
-      item.setAttribute('aria-label', t('dias.' + d));
-      dias.appendChild(item);
-    }
-    blocoHorarios.appendChild(dias);
-
-    var periodos = el('ul', 'perfil__periodos');
-    (b.periodos || []).forEach(function (p) {
-      periodos.appendChild(el('li', 'perfil__periodo', t('periodos.' + p)));
-    });
-    blocoHorarios.appendChild(periodos);
-    lateral.appendChild(blocoHorarios);
-
-    var blocoContato = el('section', 'perfil__bloco');
-    blocoContato.style.marginTop = '1rem';
-    blocoContato.appendChild(el('h2', 'perfil__blocoTitulo', t('perfil.contato')));
-    var contato = el('address', 'perfil__contato');
-    contato.style.fontStyle = 'normal';
-    if (b.endereco) { contato.appendChild(el('span', null, b.endereco)); contato.appendChild(doc.createElement('br')); }
-    if (b.telefone) {
-      var tel = el('a', null, b.telefone);
-      tel.href = 'tel:' + b.telefone.replace(/[^+\d]/g, '');
-      contato.appendChild(tel);
-    }
-    blocoContato.appendChild(contato);
-
-    var agendar = el('button', 'perfil__agendar', t('perfil.agendar'));
-    agendar.type = 'button';
-    agendar.addEventListener('click', function () {
-      doc.dispatchEvent(new CustomEvent('inbarber:agendar', {
-        detail: { id: b.id, nome: b.nome, origem: parametro('ref') || 'perfil' }
-      }));
-      try {
-        if (typeof global.gtag === 'function') {
-          global.gtag('event', 'agendamento_intencao', {
-            barbearia_id: b.id, barbearia_nome: b.nome, origem: parametro('ref') || 'perfil'
-          });
+  function param(name) {
+    var found = null;
+    window.location.search
+      .replace(/^\?/, "")
+      .split("&")
+      .forEach(function (pair) {
+        var parts = pair.split("=");
+        if (decodeURIComponent(parts[0]) === name) {
+          found = decodeURIComponent((parts[1] || "").replace(/\+/g, " "));
         }
-      } catch (e) { /* medição nunca derruba a página */ }
-    });
-    blocoContato.appendChild(agendar);
-    lateral.appendChild(blocoContato);
-
-    grade.appendChild(lateral);
-    raiz.appendChild(grade);
+      });
+    return found;
   }
 
-  /* ==========================================================================
-     Inicialização
-     ========================================================================== */
+  function starsMarkup(rating) {
+    var full = Math.round(rating);
+    var out =
+      '<span class="stars stars--lg" role="img" aria-label="' +
+      escapeHtml(i18n.t("reviews.starsAlt", { rating: i18n.formatRating(rating) })) +
+      '">';
+    for (var i = 1; i <= 5; i += 1) {
+      out += i <= full ? ICONS.star : '<span class="stars__empty">' + ICONS.star + "</span>";
+    }
+    return out + "</span>";
+  }
 
-  function iniciar() {
-    var raiz = doc.querySelector('[data-perfil]');
-    if (!raiz) return;
+  function shopById(id) {
+    var found = null;
+    data.barbershops.forEach(function (shop) {
+      if (shop.id === id) found = shop;
+    });
+    return found;
+  }
 
-    var id = parametro('id');
-    var barbearia = id ? fonteDeDados()[id] : null;
+  /* Mesma regra de vigência do featured.js, replicada em três linhas para a
+     página não depender da ordem de carregamento dos scripts. */
+  function hasLiveContract(shopId) {
+    if (!featured || !featured.contracts) return false;
+    var now = new Date();
+    var month = String(now.getMonth() + 1);
+    var day = String(now.getDate());
+    var today =
+      now.getFullYear() + "-" +
+      (month.length < 2 ? "0" + month : month) + "-" +
+      (day.length < 2 ? "0" + day : day);
 
-    var pintar = function () {
-      if (barbearia) renderizar(raiz, barbearia);
-      else renderizarVazio(raiz);
-    };
+    return featured.contracts.some(function (contract) {
+      return (
+        contract.shopId === shopId &&
+        (!contract.start || contract.start <= today) &&
+        (!contract.end || contract.end >= today)
+      );
+    });
+  }
 
-    pintar();
-
-    /* Repinta ao trocar de idioma, qualquer que seja o mecanismo do projeto. */
-    doc.addEventListener('inbarber:idioma', pintar);
-    doc.addEventListener('inbarber:languagechange', pintar);
-    if (global.MutationObserver) {
-      new global.MutationObserver(pintar).observe(doc.documentElement, {
-        attributes: true, attributeFilter: ['lang']
+  function track(event, params) {
+    try {
+      if (typeof window.gtag === "function") {
+        window.gtag("event", event, params);
+        return;
+      }
+      window.dataLayer = window.dataLayer || [];
+      var payload = { event: event };
+      Object.keys(params).forEach(function (key) {
+        payload[key] = params[key];
       });
+      window.dataLayer.push(payload);
+    } catch (err) {
+      /* medição nunca pode derrubar a página */
     }
   }
 
-  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', iniciar);
-  else iniciar();
+  /* ======================================================================
+     Renderização
+     ====================================================================== */
+
+  function renderNotFound(root) {
+    root.innerHTML =
+      '<div class="shop-profile__empty">' +
+        '<h1 class="shop-profile__name">' + escapeHtml(i18n.t("profile.notFoundTitle")) + "</h1>" +
+        "<p>" + escapeHtml(i18n.t("profile.notFoundText")) + "</p>" +
+        '<a class="btn btn--gradient" href="barbearias.html">' +
+          escapeHtml(i18n.t("profile.seeAll")) + "</a>" +
+      "</div>";
+
+    document.title = i18n.t("profile.notFoundTitle") + " — InBarber";
+  }
+
+  function renderMeta(shop) {
+    var title = i18n.t("meta.shop.title", { name: shop.name });
+    var description = i18n.t("meta.shop.description", { name: shop.name, city: shop.city });
+
+    document.title = title;
+    var metaDescription = qs('meta[name="description"]');
+    if (metaDescription) metaDescription.setAttribute("content", description);
+    var ogTitle = qs('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute("content", title);
+    var ogDescription = qs('meta[property="og:description"]');
+    if (ogDescription) ogDescription.setAttribute("content", description);
+  }
+
+  function renderShop(root, shop) {
+    var isSponsored = hasLiveContract(shop.id);
+    var statusClass = shop.openNow ? "badge--success" : "badge--muted";
+    var statusText = i18n.t(shop.openNow ? "shops.openNow" : "shops.closed");
+
+    var services = shop.serviceKeys
+      .map(function (key) {
+        return '<li class="chip">' + escapeHtml(i18n.t("service." + key)) + "</li>";
+      })
+      .join("");
+
+    var days = "";
+    for (var day = 0; day < 7; day += 1) {
+      var open = shop.days.indexOf(day) !== -1;
+      days +=
+        '<li class="shop-profile__day' + (open ? " shop-profile__day--open" : "") + '">' +
+        escapeHtml(i18n.t("day.short" + day)) +
+        "</li>";
+    }
+
+    var periods = shop.periods
+      .map(function (period) {
+        return '<li class="chip">' + escapeHtml(i18n.t("time." + period)) + "</li>";
+      })
+      .join("");
+
+    root.innerHTML =
+      '<a class="shop-profile__back" href="barbearias.html">' + ICONS.back +
+        "<span>" + escapeHtml(i18n.t("profile.back")) + "</span></a>" +
+
+      '<figure class="framed framed--glow shop-profile__cover">' +
+        '<img src="' + escapeHtml(shop.image) + '" alt="' +
+          escapeHtml(i18n.t("shops.photoAlt", { name: shop.name, city: shop.city })) + '"' +
+          ' width="1200" height="675" fetchpriority="high" decoding="async">' +
+
+        (isSponsored
+          ? '<span class="shop-profile__badge">' + ICONS.sparkle +
+            "<span>" + escapeHtml(i18n.t("profile.featuredBadge")) + "</span></span>"
+          : "") +
+
+        '<figcaption class="shop-profile__head">' +
+          '<h1 class="shop-profile__name">' + escapeHtml(shop.name) + "</h1>" +
+          '<p class="shop-profile__location">' + ICONS.pin +
+            escapeHtml(shop.neighborhood + " · " + shop.city) + "</p>" +
+          '<p class="shop-profile__rating">' + starsMarkup(shop.rating) +
+            '<strong class="rating-value">' + escapeHtml(i18n.formatRating(shop.rating)) + "</strong>" +
+            '<span class="shop-profile__reviews">' + escapeHtml(i18n.formatNumber(shop.reviews)) +
+              " " + escapeHtml(i18n.t("shops.reviewsSuffix")) + "</span>" +
+          "</p>" +
+        "</figcaption>" +
+      "</figure>" +
+
+      '<div class="shop-profile__grid">' +
+        '<section class="shop-profile__block">' +
+          '<h2 class="shop-profile__block-title">' + escapeHtml(i18n.t("profile.services")) + "</h2>" +
+          '<ul class="shop-card__services">' + services + "</ul>" +
+          '<p class="shop-profile__service shop-profile__price-row">' +
+            "<span>" + escapeHtml(i18n.t("shops.from")) + "</span>" +
+            '<strong class="shop-profile__price">' + escapeHtml(i18n.formatPrice(shop.priceFrom)) + "</strong>" +
+          "</p>" +
+          '<p class="shop-profile__note">' + escapeHtml(i18n.t("profile.priceNote")) + "</p>" +
+        "</section>" +
+
+        '<div class="shop-profile__aside">' +
+          '<section class="shop-profile__block">' +
+            '<h2 class="shop-profile__block-title">' + escapeHtml(i18n.t("profile.hours")) + "</h2>" +
+            '<span class="badge ' + statusClass + '"><span class="badge__dot"></span>' +
+              escapeHtml(statusText) + "</span>" +
+            '<ul class="shop-profile__days">' + days + "</ul>" +
+            '<ul class="shop-profile__periods">' + periods + "</ul>" +
+          "</section>" +
+
+          '<button type="button" class="btn btn--gradient btn--lg btn--block" data-book>' +
+            escapeHtml(i18n.t("shops.book")) + "</button>" +
+        "</div>" +
+      "</div>";
+
+    /* Foto que não carrega não pode deixar o alt exposto no meio da capa:
+       o .framed já tem o gradiente de fallback por trás. */
+    var cover = qs(".shop-profile__cover img", root);
+    if (cover) {
+      cover.addEventListener("error", function () {
+        cover.remove();
+      });
+    }
+
+    var bookButton = qs("[data-book]", root);
+    if (bookButton) {
+      bookButton.addEventListener("click", function () {
+        var origin = param("ref") || "profile";
+        document.dispatchEvent(
+          new CustomEvent("inbarber:booking", {
+            detail: { id: shop.id, name: shop.name, origin: origin }
+          })
+        );
+        track("booking_intent", { shop_id: shop.id, shop_name: shop.name, origin: origin });
+        if (window.console) {
+          console.info('[InBarber] Agendamento: ligue o fluxo real ao evento "inbarber:booking".');
+        }
+      });
+    }
+
+    renderMeta(shop);
+  }
+
+  /* ======================================================================
+     Boot
+     ====================================================================== */
+  function boot() {
+    var root = qs("[data-shop-profile]");
+    if (!root) return;
+
+    if (!i18n || !data) {
+      if (window.console) console.error("[InBarber] perfil: i18n ou data não carregados.");
+      return;
+    }
+
+    var shop = shopById(param("id") || "");
+
+    function render() {
+      if (shop) renderShop(root, shop);
+      else renderNotFound(root);
+    }
+
+    render();
+    onLanguageChange(render);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })(window, document);

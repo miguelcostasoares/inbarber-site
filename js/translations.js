@@ -113,6 +113,43 @@ window.INBARBER_TRANSLATIONS = {
       "Seleção baseada em avaliações verificadas de clientes que agendaram pela InBarber nos últimos 30 dias.",
     "shops.viewAll": "Ver todas as barbearias",
     "shops.viewProfile": "Ver perfil",
+
+    /* ---------- Barbearias em Destaque (carrossel patrocinado do hero) ---------- */
+    "featured.title": "Barbearias em Destaque",
+    "featured.sponsored": "Destaque pago",
+    "featured.sponsoredNote": "Espaço publicitário da InBarber. Esta barbearia pagou para aparecer aqui.",
+    "featured.carousel": "Barbearias em destaque",
+    "featured.slide": "{current} de {total}",
+    "featured.prev": "Barbearia anterior",
+    "featured.next": "Próxima barbearia",
+    "featured.pause": "Pausar a rotação",
+    "featured.resume": "Retomar a rotação",
+    "featured.goTo": "Ir para a barbearia {n}",
+    "featured.counter": "{current} de {total}",
+    "featured.emptyTitle": "Seu espaço começa aqui",
+    "featured.emptyText": "Nenhuma barbearia em destaque no momento.",
+    "featured.advertise": "Anuncie sua barbearia",
+
+    /* ---------- Perfil individual da barbearia ---------- */
+    "profile.back": "Voltar às barbearias",
+    "profile.featuredBadge": "Destaque pago",
+    "profile.services": "Serviços e preços",
+    "profile.hours": "Quando abre",
+    "profile.priceNote": "Valor a partir de, por serviço.",
+    "profile.notFoundTitle": "Barbearia não encontrada",
+    "profile.notFoundText": "O endereço acessado não corresponde a nenhuma barbearia cadastrada.",
+    "profile.seeAll": "Ver todas as barbearias",
+    "meta.shop.title": "{name} — InBarber",
+    "meta.shop.description": "Serviços, preços, horários e agendamento na {name}, em {city}. Reserve pelo navegador, na InBarber.",
+
+    /* ---------- Dias da semana (abreviados) ---------- */
+    "day.short0": "Dom",
+    "day.short1": "Seg",
+    "day.short2": "Ter",
+    "day.short3": "Qua",
+    "day.short4": "Qui",
+    "day.short5": "Sex",
+    "day.short6": "Sáb",
     "shops.book": "Agendar",
     "shops.from": "a partir de",
     "shops.reviewsSuffix": "avaliações",
@@ -494,6 +531,43 @@ window.INBARBER_TRANSLATIONS = {
       "Picked from verified reviews left by clients who booked through InBarber in the last 30 days.",
     "shops.viewAll": "See all barbershops",
     "shops.viewProfile": "View profile",
+
+    /* ---------- Featured Barbershops (sponsored hero carousel) ---------- */
+    "featured.title": "Featured Barbershops",
+    "featured.sponsored": "Paid placement",
+    "featured.sponsoredNote": "InBarber advertising space. This barbershop paid to appear here.",
+    "featured.carousel": "Featured barbershops",
+    "featured.slide": "{current} of {total}",
+    "featured.prev": "Previous barbershop",
+    "featured.next": "Next barbershop",
+    "featured.pause": "Pause rotation",
+    "featured.resume": "Resume rotation",
+    "featured.goTo": "Go to barbershop {n}",
+    "featured.counter": "{current} of {total}",
+    "featured.emptyTitle": "Your spot starts here",
+    "featured.emptyText": "No featured barbershops at the moment.",
+    "featured.advertise": "Advertise your barbershop",
+
+    /* ---------- Individual barbershop profile ---------- */
+    "profile.back": "Back to barbershops",
+    "profile.featuredBadge": "Paid placement",
+    "profile.services": "Services and prices",
+    "profile.hours": "Opening times",
+    "profile.priceNote": "Starting price, per service.",
+    "profile.notFoundTitle": "Barbershop not found",
+    "profile.notFoundText": "This address does not match any registered barbershop.",
+    "profile.seeAll": "See all barbershops",
+    "meta.shop.title": "{name} — InBarber",
+    "meta.shop.description": "Services, prices, opening times and booking at {name}, in {city}. Book straight from your browser on InBarber.",
+
+    /* ---------- Days of the week (short) ---------- */
+    "day.short0": "Sun",
+    "day.short1": "Mon",
+    "day.short2": "Tue",
+    "day.short3": "Wed",
+    "day.short4": "Thu",
+    "day.short5": "Fri",
+    "day.short6": "Sat",
     "shops.book": "Book",
     "shops.from": "from",
     "shops.reviewsSuffix": "reviews",
@@ -875,6 +949,43 @@ window.INBARBER_TRANSLATIONS = {
       "Selección basada en valoraciones verificadas de clientes que reservaron por InBarber en los últimos 30 días.",
     "shops.viewAll": "Ver todas las barberías",
     "shops.viewProfile": "Ver perfil",
+
+    /* ---------- Barberías Destacadas (carrusel patrocinado del hero) ---------- */
+    "featured.title": "Barberías Destacadas",
+    "featured.sponsored": "Destacado pagado",
+    "featured.sponsoredNote": "Espacio publicitario de InBarber. Esta barbería pagó para aparecer aquí.",
+    "featured.carousel": "Barberías destacadas",
+    "featured.slide": "{current} de {total}",
+    "featured.prev": "Barbería anterior",
+    "featured.next": "Barbería siguiente",
+    "featured.pause": "Pausar la rotación",
+    "featured.resume": "Reanudar la rotación",
+    "featured.goTo": "Ir a la barbería {n}",
+    "featured.counter": "{current} de {total}",
+    "featured.emptyTitle": "Tu espacio empieza aquí",
+    "featured.emptyText": "No hay barberías destacadas en este momento.",
+    "featured.advertise": "Anuncia tu barbería",
+
+    /* ---------- Perfil individual de la barbería ---------- */
+    "profile.back": "Volver a las barberías",
+    "profile.featuredBadge": "Destacado pagado",
+    "profile.services": "Servicios y precios",
+    "profile.hours": "Horario",
+    "profile.priceNote": "Precio desde, por servicio.",
+    "profile.notFoundTitle": "Barbería no encontrada",
+    "profile.notFoundText": "Esta dirección no corresponde a ninguna barbería registrada.",
+    "profile.seeAll": "Ver todas las barberías",
+    "meta.shop.title": "{name} — InBarber",
+    "meta.shop.description": "Servicios, precios, horarios y reservas en {name}, en {city}. Reserva desde el navegador, en InBarber.",
+
+    /* ---------- Días de la semana (abreviados) ---------- */
+    "day.short0": "Dom",
+    "day.short1": "Lun",
+    "day.short2": "Mar",
+    "day.short3": "Mié",
+    "day.short4": "Jue",
+    "day.short5": "Vie",
+    "day.short6": "Sáb",
     "shops.book": "Reservar",
     "shops.from": "desde",
     "shops.reviewsSuffix": "valoraciones",
@@ -1149,187 +1260,3 @@ window.INBARBER_TRANSLATIONS = {
     "footer.madeIn": "Hecho para barberías y para quien no se conforma con un mal corte."
   }
 };
-
-/* =============================================================================
-   InBarber — chaves de tradução do carrossel de destaques e do perfil
-   -----------------------------------------------------------------------------
-   Este arquivo faz merge automático no dicionário existente. Se o projeto já
-   expõe `window.INBARBER_TRANSLATIONS` (ou `window.translations`), as chaves
-   abaixo são acrescentadas sem sobrescrever nada. Se não existir, ele cria.
-
-   Ao reintegrar no translations.js definitivo, basta copiar os três blocos
-   para dentro dos respectivos idiomas e apagar este arquivo.
-
-   Interpolação: `{cidade}`, `{atual}`, `{total}`, `{n}` são substituídos em
-   tempo de execução por destaques.js / barbearia.js.
-============================================================================= */
-(function (global) {
-  'use strict';
-
-  var NOVAS = {
-    'pt-BR': {
-      'destaques.titulo': 'Barbearias em Destaque',
-      'destaques.rotulo': 'Patrocinado',
-      'destaques.rotuloAria': 'Anúncio pago: esta barbearia contratou este espaço.',
-      'destaques.carrossel': 'Barbearias em destaque',
-      'destaques.slide': '{atual} de {total}',
-      'destaques.anterior': 'Barbearia anterior',
-      'destaques.proximo': 'Próxima barbearia',
-      'destaques.pausar': 'Pausar a rotação',
-      'destaques.retomar': 'Retomar a rotação',
-      'destaques.irPara': 'Ir para a barbearia {n}',
-      'destaques.avaliacoes': '{n} avaliações',
-      'destaques.verPerfil': 'Ver barbearia',
-      'destaques.pertoDeVoce': 'Ver perto de mim',
-      'destaques.escopoPerto': 'Perto de você',
-      'destaques.escopoCidade': 'Em {cidade}',
-      'destaques.escopoNacional': 'Brasil',
-      'destaques.localizando': 'Procurando destaques perto de você…',
-      'destaques.foraDeArea': 'Ainda não atendemos sua região. Mostrando destaques do Brasil.',
-      'destaques.semLocalizacao': 'Não foi possível obter sua localização.',
-      'destaques.vazioTitulo': 'Seu espaço começa aqui',
-      'destaques.vazioTexto': 'Nenhuma barbearia em destaque no momento.',
-      'destaques.anuncie': 'Anuncie sua barbearia',
-
-      'perfil.voltar': 'Voltar às barbearias',
-      'perfil.destaqueAtivo': 'Barbearia em destaque',
-      'perfil.avaliacoes': '{n} avaliações',
-      'perfil.servicos': 'Serviços e preços',
-      'perfil.horarios': 'Quando abre',
-      'perfil.contato': 'Contato',
-      'perfil.agendar': 'Agendar horário',
-      'perfil.naoEncontradaTitulo': 'Barbearia não encontrada',
-      'perfil.naoEncontradaTexto': 'O endereço acessado não corresponde a nenhuma barbearia cadastrada.',
-      'perfil.verTodas': 'Ver todas as barbearias',
-      'perfil.tituloPagina': '{nome} — InBarber',
-
-      'servicos.corte': 'Corte',
-      'servicos.barba': 'Barba',
-      'servicos.combo': 'Corte + barba',
-      'servicos.infantil': 'Corte infantil',
-      'servicos.pigmentacao': 'Pigmentação',
-      'servicos.sobrancelha': 'Sobrancelha',
-
-      'dias.0': 'Dom', 'dias.1': 'Seg', 'dias.2': 'Ter', 'dias.3': 'Qua',
-      'dias.4': 'Qui', 'dias.5': 'Sex', 'dias.6': 'Sáb',
-
-      'periodos.manha': 'Manhã',
-      'periodos.tarde': 'Tarde',
-      'periodos.noite': 'Noite'
-    },
-
-    'en-US': {
-      'destaques.titulo': 'Featured Barbershops',
-      'destaques.rotulo': 'Sponsored',
-      'destaques.rotuloAria': 'Paid placement: this barbershop bought this spot.',
-      'destaques.carrossel': 'Featured barbershops',
-      'destaques.slide': '{atual} of {total}',
-      'destaques.anterior': 'Previous barbershop',
-      'destaques.proximo': 'Next barbershop',
-      'destaques.pausar': 'Pause rotation',
-      'destaques.retomar': 'Resume rotation',
-      'destaques.irPara': 'Go to barbershop {n}',
-      'destaques.avaliacoes': '{n} reviews',
-      'destaques.verPerfil': 'View barbershop',
-      'destaques.pertoDeVoce': 'See near me',
-      'destaques.escopoPerto': 'Near you',
-      'destaques.escopoCidade': 'In {cidade}',
-      'destaques.escopoNacional': 'Brazil',
-      'destaques.localizando': 'Looking for featured shops near you…',
-      'destaques.foraDeArea': 'We don’t cover your area yet. Showing featured shops from Brazil.',
-      'destaques.semLocalizacao': 'We couldn’t get your location.',
-      'destaques.vazioTitulo': 'Your spot starts here',
-      'destaques.vazioTexto': 'No featured barbershops at the moment.',
-      'destaques.anuncie': 'Advertise your barbershop',
-
-      'perfil.voltar': 'Back to barbershops',
-      'perfil.destaqueAtivo': 'Featured barbershop',
-      'perfil.avaliacoes': '{n} reviews',
-      'perfil.servicos': 'Services and prices',
-      'perfil.horarios': 'Opening times',
-      'perfil.contato': 'Contact',
-      'perfil.agendar': 'Book a time',
-      'perfil.naoEncontradaTitulo': 'Barbershop not found',
-      'perfil.naoEncontradaTexto': 'This address doesn’t match any registered barbershop.',
-      'perfil.verTodas': 'See all barbershops',
-      'perfil.tituloPagina': '{nome} — InBarber',
-
-      'servicos.corte': 'Haircut',
-      'servicos.barba': 'Beard',
-      'servicos.combo': 'Haircut + beard',
-      'servicos.infantil': 'Kids’ haircut',
-      'servicos.pigmentacao': 'Pigmentation',
-      'servicos.sobrancelha': 'Eyebrows',
-
-      'dias.0': 'Sun', 'dias.1': 'Mon', 'dias.2': 'Tue', 'dias.3': 'Wed',
-      'dias.4': 'Thu', 'dias.5': 'Fri', 'dias.6': 'Sat',
-
-      'periodos.manha': 'Morning',
-      'periodos.tarde': 'Afternoon',
-      'periodos.noite': 'Evening'
-    },
-
-    'es-ES': {
-      'destaques.titulo': 'Barberías Destacadas',
-      'destaques.rotulo': 'Patrocinado',
-      'destaques.rotuloAria': 'Anuncio pagado: esta barbería contrató este espacio.',
-      'destaques.carrossel': 'Barberías destacadas',
-      'destaques.slide': '{atual} de {total}',
-      'destaques.anterior': 'Barbería anterior',
-      'destaques.proximo': 'Barbería siguiente',
-      'destaques.pausar': 'Pausar la rotación',
-      'destaques.retomar': 'Reanudar la rotación',
-      'destaques.irPara': 'Ir a la barbería {n}',
-      'destaques.avaliacoes': '{n} reseñas',
-      'destaques.verPerfil': 'Ver barbería',
-      'destaques.pertoDeVoce': 'Ver cerca de mí',
-      'destaques.escopoPerto': 'Cerca de ti',
-      'destaques.escopoCidade': 'En {cidade}',
-      'destaques.escopoNacional': 'Brasil',
-      'destaques.localizando': 'Buscando destacadas cerca de ti…',
-      'destaques.foraDeArea': 'Todavía no cubrimos tu zona. Mostrando destacadas de Brasil.',
-      'destaques.semLocalizacao': 'No pudimos obtener tu ubicación.',
-      'destaques.vazioTitulo': 'Tu espacio empieza aquí',
-      'destaques.vazioTexto': 'No hay barberías destacadas en este momento.',
-      'destaques.anuncie': 'Anuncia tu barbería',
-
-      'perfil.voltar': 'Volver a las barberías',
-      'perfil.destaqueAtivo': 'Barbería destacada',
-      'perfil.avaliacoes': '{n} reseñas',
-      'perfil.servicos': 'Servicios y precios',
-      'perfil.horarios': 'Horario',
-      'perfil.contato': 'Contacto',
-      'perfil.agendar': 'Reservar hora',
-      'perfil.naoEncontradaTitulo': 'Barbería no encontrada',
-      'perfil.naoEncontradaTexto': 'Esta dirección no corresponde a ninguna barbería registrada.',
-      'perfil.verTodas': 'Ver todas las barberías',
-      'perfil.tituloPagina': '{nome} — InBarber',
-
-      'servicos.corte': 'Corte',
-      'servicos.barba': 'Barba',
-      'servicos.combo': 'Corte + barba',
-      'servicos.infantil': 'Corte infantil',
-      'servicos.pigmentacao': 'Pigmentación',
-      'servicos.sobrancelha': 'Cejas',
-
-      'dias.0': 'Dom', 'dias.1': 'Lun', 'dias.2': 'Mar', 'dias.3': 'Mié',
-      'dias.4': 'Jue', 'dias.5': 'Vie', 'dias.6': 'Sáb',
-
-      'periodos.manha': 'Mañana',
-      'periodos.tarde': 'Tarde',
-      'periodos.noite': 'Noche'
-    }
-  };
-
-  /* Merge não destrutivo no dicionário que já existir no projeto. */
-  var alvo = global.INBARBER_TRANSLATIONS || global.translations || (global.INBARBER_TRANSLATIONS = {});
-
-  Object.keys(NOVAS).forEach(function (idioma) {
-    var destino = alvo[idioma] || (alvo[idioma] = {});
-    Object.keys(NOVAS[idioma]).forEach(function (chave) {
-      if (!(chave in destino)) destino[chave] = NOVAS[idioma][chave];
-    });
-  });
-
-  global.INBARBER_TRANSLATIONS = alvo;
-})(window);

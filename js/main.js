@@ -91,6 +91,21 @@
     document.addEventListener("inbarber:languagechange", handler);
   }
 
+  /**
+   * Guarda a cidade escolhida pelo visitante (na lista ou pela geolocalização)
+   * e avisa quem depende dela. Hoje o ouvinte é o carrossel de Barbearias em
+   * Destaque: quem buscou "Curitiba" passa a ver os anúncios de Curitiba sem
+   * precisar autorizar a localização de novo.
+   */
+  function rememberCity(city) {
+    try {
+      window.localStorage.setItem("inbarber:city", city);
+    } catch (err) {
+      /* silencioso: a sessão atual continua funcionando */
+    }
+    document.dispatchEvent(new CustomEvent("inbarber:citychange", { detail: { city: city } }));
+  }
+
   function starsMarkup(rating, size) {
     var full = Math.round(rating);
     var out = '<span class="stars' + (size ? " stars--" + size : "") + '" role="img" aria-label="' +
@@ -342,7 +357,7 @@
           '<p class="shop-card__price">' + escapeHtml(i18n.t("shops.from")) +
             "<strong>" + escapeHtml(i18n.formatPrice(shop.priceFrom)) + "</strong>" +
           "</p>" +
-          '<a class="btn btn--ghost btn--sm" href="barbearias.html#' + shop.id + '">' +
+          '<a class="btn btn--ghost btn--sm" href="barbearia.html?id=' + encodeURIComponent(shop.id) + '">' +
             escapeHtml(i18n.t("shops.viewProfile")) +
           "</a>" +
         "</div>" +
@@ -887,6 +902,7 @@
         if (!option) return;
         state.where = option.getAttribute("data-city");
         if (whereInput) whereInput.value = state.where;
+        rememberCity(state.where);
         clearGeoStatus();
         renderAll();
         closePanels(null);
@@ -966,6 +982,7 @@
             }
             state.where = match.city;
             if (whereInput) whereInput.value = match.city;
+            rememberCity(match.city);
             setGeoStatus("geo.matched", "success", match.city);
             renderValues();
             renderCities();
