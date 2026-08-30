@@ -141,6 +141,13 @@ window.INBARBER_TRANSLATIONS = {
     "recs.slotsEmpty": "Agenda fechada nos próximos dias",
     "recs.slotAria": "Agendar {day} às {time} — {name}",
     "recs.reviewsCount": "{count} avaliações",
+    "recs.railLabel": "Demais barbearias recomendadas",
+    "recs.railHint": "Arraste para o lado ou use as setas do teclado para percorrer a lista.",
+    "recs.prev": "Ver as anteriores",
+    "recs.next": "Ver as próximas",
+    "recs.galleryLabel": "Fotos de {name}",
+    "recs.galleryHint": "Passe o cursor sobre a foto para ver mais imagens do salão.",
+    "recs.galleryPhoto": "Foto {index} de {total}",
 
     /* ---------- HOME · Novas na InBarber ---------- */
     "news.title": "Novas na InBarber",
@@ -171,6 +178,11 @@ window.INBARBER_TRANSLATIONS = {
     "open.nextLabel": "Próximo horário",
     "open.until": "Fecha às {time}",
     "open.reviewsShort": "{count} avaliações",
+    "open.closingSoon": "Fecha em breve",
+    "open.railHint": "Arraste para o lado ou use as setas do teclado para percorrer a lista.",
+    "open.prev": "Ver as anteriores",
+    "open.next": "Ver as próximas",
+    "open.dot": "Ver a barbearia {index} de {total}",
     "open.empty": "Nenhuma barbearia está aberta neste momento. Os horários de amanhã já aparecem no ranking acima.",
 
     /* ---------- Conta do usuário ---------- */
@@ -646,6 +658,13 @@ window.INBARBER_TRANSLATIONS = {
     "recs.slotsEmpty": "No open slots in the next few days",
     "recs.slotAria": "Book {day} at {time} — {name}",
     "recs.reviewsCount": "{count} reviews",
+    "recs.railLabel": "Other recommended barbershops",
+    "recs.railHint": "Drag sideways or use the arrow keys to move through the list.",
+    "recs.prev": "See previous",
+    "recs.next": "See next",
+    "recs.galleryLabel": "Photos of {name}",
+    "recs.galleryHint": "Hover over the photo to see more images of the shop.",
+    "recs.galleryPhoto": "Photo {index} of {total}",
 
     /* ---------- HOME · New on InBarber ---------- */
     "news.title": "New on InBarber",
@@ -676,6 +695,11 @@ window.INBARBER_TRANSLATIONS = {
     "open.nextLabel": "Next slot",
     "open.until": "Closes at {time}",
     "open.reviewsShort": "{count} reviews",
+    "open.closingSoon": "Closing soon",
+    "open.railHint": "Drag sideways or use the arrow keys to move through the list.",
+    "open.prev": "See previous",
+    "open.next": "See next",
+    "open.dot": "See barbershop {index} of {total}",
     "open.empty": "No barbershop is open at this moment. Tomorrow's slots are already showing in the ranking above.",
 
     /* ---------- User account ---------- */
@@ -1151,6 +1175,13 @@ window.INBARBER_TRANSLATIONS = {
     "recs.slotsEmpty": "Sin horas libres en los próximos días",
     "recs.slotAria": "Reservar {day} a las {time} — {name}",
     "recs.reviewsCount": "{count} valoraciones",
+    "recs.railLabel": "Las demás barberías recomendadas",
+    "recs.railHint": "Arrastra hacia los lados o usa las flechas del teclado para recorrer la lista.",
+    "recs.prev": "Ver las anteriores",
+    "recs.next": "Ver las siguientes",
+    "recs.galleryLabel": "Fotos de {name}",
+    "recs.galleryHint": "Pasa el cursor sobre la foto para ver más imágenes del local.",
+    "recs.galleryPhoto": "Foto {index} de {total}",
 
     /* ---------- HOME · Nuevas en InBarber ---------- */
     "news.title": "Nuevas en InBarber",
@@ -1181,6 +1212,11 @@ window.INBARBER_TRANSLATIONS = {
     "open.nextLabel": "Próxima hora",
     "open.until": "Cierra a las {time}",
     "open.reviewsShort": "{count} valoraciones",
+    "open.closingSoon": "Cierra pronto",
+    "open.railHint": "Arrastra hacia los lados o usa las flechas del teclado para recorrer la lista.",
+    "open.prev": "Ver las anteriores",
+    "open.next": "Ver las siguientes",
+    "open.dot": "Ver la barbería {index} de {total}",
     "open.empty": "Ninguna barbería está abierta en este momento. Las horas de mañana ya aparecen en el ranking de arriba.",
 
     /* ---------- Cuenta del usuario ---------- */

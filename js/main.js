@@ -447,16 +447,26 @@
      cada card mostra a distância. Sem cidade conhecida, o ranking é nacional
      e a linha de distância simplesmente não existe — nada é estimado.
      ====================================================================== */
-  /* 1 destaque + 6 cards fecham duas fileiras de três no desktop. No celular,
-     onde tudo empilha, a lista cai para 5 — o resto está a um toque em
-     "Ver todas as barbearias", e a home não vira um rolo sem fim. */
-  var RECS_LIMIT = 7;
-  var RECS_LIMIT_SMALL = 5;
+  /* 1 destaque + 8 cards em um trilho de uma linha só. A grade de duas
+     fileiras virou trilho: em vez de empurrar a seção para baixo, a lista
+     anda para o lado, e cabe mais barbearia sem custar altura de página. */
+  var RECS_LIMIT = 9;
+  var RECS_LIMIT_SMALL = 7;
   var RECS_BREAKPOINT = "(min-width: 640px)";
   var NEWS_LIMIT = 6;
-  /* "Abertas agora" é uma lista de ação, não de vitrine: seis cabem em duas
-     fileiras de três e ninguém precisa rolar para decidir. */
-  var OPEN_LIMIT = 6;
+  /* "Abertas agora" é uma lista de ação, não de vitrine — e agora também um
+     trilho de uma linha: oito cabem sem que ninguém precise rolar a página
+     para decidir onde cortar hoje. */
+  var OPEN_LIMIT = 8;
+
+  /* Quanto tempo cada foto do card de destaque fica na tela enquanto o cursor
+     está em cima. O mesmo valor alimenta a barra de progresso no CSS
+     (--hero-photo-duration), então mexer aqui exige mexer lá. */
+  var HERO_PHOTO_MS = 1400;
+
+  /* Faltando isso ou menos para fechar, a barbearia ganha o aviso de "fecha
+     em breve": ainda dá tempo de chegar, mas não dá para deixar para depois. */
+  var CLOSING_SOON_MIN = 90;
 
   /** Cidade guardada pela busca do hero, se for uma cidade atendida. */
   function visitorCity() {
@@ -632,7 +642,127 @@
 
   /* ----------------------------------------------------------------------
      Card #1 — o destaque do ranking
+
+     A foto do destaque virou galeria: parado, o card mostra a capa; com o
+     cursor em cima, as demais fotos do salão passam sozinhas, com uma régua
+     de progresso no alto para dizer quantas são e em qual delas se está.
+     As fotos seguintes só são baixadas no primeiro hover (data-src) — quem
+     nunca passa o mouse não paga por elas.
      ---------------------------------------------------------------------- */
+  function heroGalleryMarkup(shop, altText) {
+    var photos = data.shopGallery(shop);
+
+    var slides = photos
+      .map(function (photo, index) {
+        var first = index === 0;
+        return (
+          '<img class="rec-hero__photo' + (first ? " is-active" : "") + '"' +
+            (first ? ' src="' + photo + '"' : ' data-src="' + photo + '"') +
+            ' alt="' + (first ? escapeHtml(altText) : "") + '"' +
+            (first ? "" : ' aria-hidden="true"') +
+            ' loading="lazy" decoding="async" width="800" height="600">'
+        );
+      })
+      .join("");
+
+    var gallery =
+      '<div class="rec-hero__gallery" data-hero-gallery' +
+        (photos.length > 1
+          ? ' role="group" aria-label="' + escapeHtml(i18n.t("recs.galleryLabel", { name: shop.name })) + '"'
+          : "") +
+      ">" + slides + "</div>";
+
+    if (photos.length < 2) return gallery;
+
+    var bars = "";
+    for (var i = 0; i < photos.length; i += 1) {
+      bars +=
+        '<span class="rec-hero__progress-bar' + (i === 0 ? " is-current" : "") + '"><i></i></span>';
+    }
+
+    return (
+      gallery +
+      '<div class="rec-hero__progress" aria-hidden="true">' + bars + "</div>" +
+      '<p class="visually-hidden" data-hero-gallery-status role="status" aria-live="polite"></p>'
+    );
+  }
+
+  /**
+   * Passagem de fotos no hover.
+   *
+   * Só com mouse e com foco de teclado: em tela de toque não existe "parar em
+   * cima", então o card fica na capa. Quem pediu menos movimento também fica —
+   * a régua de progresso some junto, porque ela só faz sentido em movimento.
+   */
+  function bindHeroGallery(card) {
+    var gallery = qs("[data-hero-gallery]", card);
+    if (!gallery) return;
+
+    var photos = qsa(".rec-hero__photo", gallery);
+    if (photos.length < 2) return;
+
+    var bars = qsa(".rec-hero__progress-bar", card);
+    var status = qs("[data-hero-gallery-status]", card);
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var index = 0;
+    var timer = null;
+
+    function load(node) {
+      var src = node.getAttribute("data-src");
+      if (!src) return;
+      node.src = src;
+      node.removeAttribute("data-src");
+    }
+
+    function show(next) {
+      photos[index].classList.remove("is-active");
+      if (bars[index]) bars[index].classList.remove("is-current");
+
+      index = next;
+      load(photos[index]);
+      photos[index].classList.add("is-active");
+
+      bars.forEach(function (bar, position) {
+        bar.classList.toggle("is-done", index !== 0 && position < index);
+      });
+      if (bars[index]) bars[index].classList.add("is-current");
+
+      if (status) {
+        status.textContent = i18n.t("recs.galleryPhoto", {
+          index: index + 1,
+          total: photos.length
+        });
+      }
+    }
+
+    function start() {
+      if (timer || reduced.matches) return;
+      photos.forEach(load); /* uma vez só: o resto da galeria entra em cache */
+      card.classList.add("is-playing");
+      timer = window.setInterval(function () {
+        show((index + 1) % photos.length);
+      }, HERO_PHOTO_MS);
+    }
+
+    function stop() {
+      if (timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+      card.classList.remove("is-playing");
+      if (index !== 0) show(0);
+      if (status) status.textContent = "";
+    }
+
+    card.addEventListener("mouseenter", start);
+    card.addEventListener("mouseleave", stop);
+    card.addEventListener("focusin", start);
+    card.addEventListener("focusout", function (event) {
+      if (card.contains(event.relatedTarget)) return;
+      stop();
+    });
+  }
+
   function recHeroCard(shop, city) {
     var card = el("article", "rec-hero");
     card.setAttribute("data-reveal", "");
@@ -642,7 +772,7 @@
 
     card.innerHTML =
       '<div class="rec-hero__media">' +
-        '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="800" height="600">' +
+        heroGalleryMarkup(shop, altText) +
         '<span class="rec-hero__medal" aria-hidden="true">' + ICONS.crown + "</span>" +
         favButtonMarkup(shop) +
         statusMarkup(shop, "rec-hero__status") +
@@ -675,11 +805,12 @@
         "</div>" +
       "</div>";
 
+    bindHeroGallery(card);
     return card;
   }
 
   /* ----------------------------------------------------------------------
-     Cards #2 em diante
+     Cards #2 em diante — itens do trilho horizontal
      ---------------------------------------------------------------------- */
   function recCard(shop, city) {
     var card = el("article", "rec-card");
@@ -712,7 +843,9 @@
         "</div>" +
       "</div>";
 
-    return card;
+    var item = el("li", "recs-item");
+    item.appendChild(card);
+    return item;
   }
 
   /* ----------------------------------------------------------------------
@@ -774,22 +907,32 @@
   }
 
   /**
-   * Navegação do trilho.
+   * Navegação do trilho — a mesma para os três trilhos da seção.
    *
    * Quatro formas de percorrer a mesma lista, porque cada aparelho tem a sua:
    * setas nas laterais (mouse), arrastar (mouse e toque), setas do teclado
    * (o trilho é focável) e os pontos, que também dizem onde se está. As setas
    * e os pontos só existem quando há mesmo o que rolar.
+   *
+   * `options` diz de que trilho se trata: qual seletor identifica um item,
+   * que classe têm os pontos e de que chave sai o rótulo deles. Sem opções,
+   * o padrão é o trilho de "Novas na InBarber".
    */
-  function bindRailControls(rail, prevBtn, nextBtn, dots) {
+  function bindRailControls(rail, prevBtn, nextBtn, dots, options) {
     if (!rail) return;
 
+    var config = options || {};
+    var itemSelector = config.itemSelector || ".news-item";
+    var dotClass = config.dotClass || "news__dot";
+    var dotAttr = config.dotAttr || "data-news-dot";
+    var dotLabelKey = config.dotLabelKey || "news.dot";
+
     function items() {
-      return qsa(".news-item", rail);
+      return qsa(itemSelector, rail);
     }
 
     function step() {
-      var card = qs(".news-item", rail);
+      var card = qs(itemSelector, rail);
       if (!card) return rail.clientWidth * 0.8;
       var gap = parseFloat(window.getComputedStyle(rail).columnGap || "16") || 16;
       return card.getBoundingClientRect().width + gap;
@@ -839,13 +982,13 @@
         var markup = "";
         for (var i = 0; i < total; i += 1) {
           markup +=
-            '<button type="button" class="news__dot" data-news-dot="' + i + '" aria-label="' +
-            escapeHtml(i18n.t("news.dot", { index: i + 1, total: total })) + '"></button>';
+            '<button type="button" class="' + dotClass + '" ' + dotAttr + '="' + i + '" aria-label="' +
+            escapeHtml(i18n.t(dotLabelKey, { index: i + 1, total: total })) + '"></button>';
         }
         dots.innerHTML = markup;
       }
       var current = activeIndex();
-      qsa("[data-news-dot]", dots).forEach(function (dot, index) {
+      qsa("[" + dotAttr + "]", dots).forEach(function (dot, index) {
         var isCurrent = index === current;
         dot.classList.toggle("is-current", isCurrent);
         if (isCurrent) dot.setAttribute("aria-current", "true");
@@ -880,9 +1023,9 @@
 
     if (dots) {
       dots.addEventListener("click", function (event) {
-        var dot = event.target.closest("[data-news-dot]");
+        var dot = event.target.closest("[" + dotAttr + "]");
         if (!dot) return;
-        goTo(Number(dot.getAttribute("data-news-dot")));
+        goTo(Number(dot.getAttribute(dotAttr)));
       });
     }
 
@@ -944,11 +1087,12 @@
      Abertas agora
 
      A terceira lista da seção responde a uma pergunta que as outras duas não
-     respondem: "dá para cortar o cabelo hoje?". Por isso o card é horizontal
-     e curto — o que importa é o nome, onde fica e o próximo horário livre,
-     que já é um link de agendamento. Acento verde, o mesmo do selo "Aberto
-     agora", para não disputar com o dourado do ranking nem com o violeta das
-     novas.
+     respondem: "dá para cortar o cabelo hoje?". O trilho é o mesmo do bloco
+     de novas — uma linha, setas, arrasto, teclado e pontos —, e a diferença
+     está no que cada card diz: até que horas a barbearia fica aberta, se ela
+     está perto de fechar e qual é o próximo horário livre, já clicável.
+     Acento verde, o mesmo do selo "Aberta agora", para não disputar com o
+     dourado do ranking nem com o violeta das novas.
      ---------------------------------------------------------------------- */
   /** "21:00" em PT/ES, "9:00 PM" em EN — mesmo formatador dos horários livres. */
   function formatClock(value) {
@@ -956,6 +1100,20 @@
     var date = new Date();
     date.setHours(Number(parts[0]) || 0, Number(parts[1]) || 0, 0, 0);
     return formatTime(date);
+  }
+
+  /**
+   * Minutos que faltam para a barbearia fechar hoje.
+   * Devolve null quando não há horário de fechamento cadastrado ou quando ele
+   * já passou — nesses casos o card não inventa urgência nenhuma.
+   */
+  function minutesUntilClose(shop) {
+    if (!shop.closesAt) return null;
+    var parts = String(shop.closesAt).split(":");
+    var closes = new Date();
+    closes.setHours(Number(parts[0]) || 0, Number(parts[1]) || 0, 0, 0);
+    var diff = Math.round((closes.getTime() - Date.now()) / 60000);
+    return diff > 0 ? diff : null;
   }
 
   function openCard(shop, city) {
@@ -967,7 +1125,12 @@
     var altText = i18n.t("shops.photoAlt", { name: shop.name, city: shop.city });
     var slots = data.nextSlots(shop, 1);
     var slot = slots.length ? slots[0] : null;
+    var left = minutesUntilClose(shop);
+    var soon = left !== null && left <= CLOSING_SOON_MIN;
 
+    /* O próximo horário livre ocupa uma faixa inteira, e não um canto do
+       rodapé: é a razão de a lista existir. Sem horário na agenda, a faixa
+       some — o card não finge disponibilidade que não tem. */
     var slotMarkup = "";
     if (slot) {
       var day = slotDayLabel(slot);
@@ -977,64 +1140,58 @@
           profileHref(shop, "home-open", "&slot=" + encodeURIComponent(localISO(slot.date))) +
           '" aria-label="' + escapeHtml(i18n.t("recs.slotAria", { day: day, time: time, name: shop.name })) + '">' +
           '<span class="rec-slot__day">' + escapeHtml(i18n.t("open.nextLabel")) + "</span>" +
-          '<span class="rec-slot__time">' + escapeHtml(day + " · " + time) + "</span>" +
+          '<span class="rec-slot__time">' + escapeHtml(day + " \u00b7 " + time) + "</span>" +
         "</a>";
     }
 
-    /* A foto é um retrato de proporção fixa (4/5) embutido no card, e não a
-       coluna esticada de antes: em uma grade onde os cards se igualam pela
-       altura, a foto esticada virava uma tira estreita que cortava rostos. */
     card.innerHTML =
       '<div class="open-card__media">' +
-        "<picture>" +
-          /* Até 519px a coluna vira uma faixa deitada no topo do card; acima
-             disso é um retrato. Cada recorte vem pronto do servidor de
-             imagens, em vez de sair de um corte do object-fit. */
-          '<source media="(max-width: 519px)" srcset="' + shop.image + '">' +
-          '<img src="' + data.portraitPhoto(shop) + '" alt="' + escapeHtml(altText) +
-            '" loading="lazy" decoding="async" width="480" height="760">' +
-        "</picture>" +
+        '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="480" height="300">' +
         '<span class="open-card__live">' +
           '<span class="badge__dot"></span>' + escapeHtml(i18n.t("open.badge")) +
         "</span>" +
+        (soon
+          ? '<span class="open-card__soon">' + ICONS.clock +
+              "<span>" + escapeHtml(i18n.t("open.closingSoon")) + "</span>" +
+            "</span>"
+          : "") +
+        favButtonMarkup(shop) +
       "</div>" +
       '<div class="open-card__body">' +
-        '<div class="open-card__head">' +
-          '<h4 class="open-card__name">' +
-            '<a class="rec-link" href="' + profileHref(shop, "home-open") + '">' + escapeHtml(shop.name) + "</a>" +
-          "</h4>" +
-          '<p class="open-card__meta">' + ICONS.pin +
-            "<span>" + escapeHtml(shop.neighborhood + " · " + shop.city) + "</span>" +
-          "</p>" +
-          (proximity ? '<p class="open-card__near"><span class="rec-near">' + escapeHtml(proximity) + "</span></p>" : "") +
-        "</div>" +
-        '<p class="open-card__until">' + ICONS.clock +
+        '<h4 class="open-card__name">' +
+          '<a class="rec-link" href="' + profileHref(shop, "home-open") + '">' + escapeHtml(shop.name) + "</a>" +
+        "</h4>" +
+        '<div class="open-card__rating">' + ratingMarkup(shop) + "</div>" +
+        '<p class="open-card__meta">' + ICONS.pin +
+          "<span>" + escapeHtml(shop.neighborhood + " \u00b7 " + shop.city) + "</span>" +
+        "</p>" +
+        (proximity ? '<p class="open-card__near"><span class="rec-near">' + escapeHtml(proximity) + "</span></p>" : "") +
+        '<p class="open-card__until' + (soon ? " open-card__until--soon" : "") + '">' + ICONS.clock +
           "<span>" + escapeHtml(i18n.t("open.until", { time: formatClock(shop.closesAt) })) + "</span>" +
         "</p>" +
         '<p class="open-card__reason">' + ICONS.trend +
           "<span>" + escapeHtml(reasonFor(shop)) + "</span>" +
         "</p>" +
         '<ul class="rec-services">' + servicesMarkup(shop, 2) + "</ul>" +
-        '<div class="open-card__stats">' +
-          ratingMarkup(shop) +
-          priceMarkup(shop) +
-        "</div>" +
+        slotMarkup +
         '<div class="open-card__footer">' +
-          slotMarkup +
+          priceMarkup(shop) +
           '<span class="rec-card__cta">' + escapeHtml(i18n.t("shops.viewProfile")) + ICONS.arrowRight + "</span>" +
         "</div>" +
-      "</div>" +
-      favButtonMarkup(shop, "fav-btn--sm");
+      "</div>";
 
     item.appendChild(card);
     return item;
   }
 
+
   function initRecommendedShops() {
     var grid = qs("[data-featured-shops]");
+    var heroSlot = qs("[data-recs-hero]");
+    var recsRail = qs("[data-recs-shops]");
     var rail = qs("[data-new-shops]");
-    var openGrid = qs("[data-open-shops]");
-    if (!grid && !rail && !openGrid) return;
+    var openRail = qs("[data-open-shops]");
+    if (!grid && !rail && !openRail) return;
 
     var title = qs("[data-recs-title]");
     var subtitle = qs("[data-recs-subtitle]");
@@ -1043,32 +1200,58 @@
     var openSubtitle = qs("[data-open-subtitle]");
     var openCount = qs("[data-open-count]");
     var openEmpty = qs("[data-open-empty]");
+
+    /* Três trilhos, um controlador só. Cada um se identifica pelo seletor do
+       item e pela classe dos pontos; o de recomendadas anda apenas pelas
+       setas, pelo arrasto e pelo teclado, porque os pontos já são o trabalho
+       do ranking logo acima. */
+    var syncRecsRail = bindRailControls(
+      recsRail,
+      qs("[data-recs-prev]"),
+      qs("[data-recs-next]"),
+      null,
+      { itemSelector: ".recs-item" }
+    );
     var syncRail = bindRailControls(
       rail,
       qs("[data-news-prev]"),
       qs("[data-news-next]"),
       qs("[data-news-dots]")
     );
+    var syncOpenRail = bindRailControls(
+      openRail,
+      qs("[data-open-prev]"),
+      qs("[data-open-next]"),
+      qs("[data-open-dots]"),
+      {
+        itemSelector: ".open-item",
+        dotClass: "open__dot",
+        dotAttr: "data-open-dot",
+        dotLabelKey: "open.dot"
+      }
+    );
     var wide = window.matchMedia(RECS_BREAKPOINT);
 
     function renderRanking(city) {
-      if (!grid) return;
-      grid.innerHTML = "";
-      grid.setAttribute("aria-label", i18n.t("recs.listLabel"));
+      if (!heroSlot || !recsRail) return;
+      heroSlot.innerHTML = "";
+      recsRail.innerHTML = "";
+      if (grid) grid.setAttribute("aria-label", i18n.t("recs.listLabel"));
+      recsRail.setAttribute("aria-label", i18n.t("recs.railLabel"));
 
       var shops = data.recommended(city, wide.matches ? RECS_LIMIT : RECS_LIMIT_SMALL);
       if (!shops.length) return;
 
-      grid.appendChild(recHeroCard(shops[0], city));
+      heroSlot.appendChild(recHeroCard(shops[0], city));
 
-      var rest = el("div", "recs__grid");
       shops.slice(1).forEach(function (shop, index) {
-        var card = recCard(shop, city);
-        card.style.setProperty("--reveal-delay", index * 70 + "ms");
-        rest.appendChild(card);
+        var item = recCard(shop, city);
+        qs(".rec-card", item).style.setProperty("--reveal-delay", index * 70 + "ms");
+        recsRail.appendChild(item);
       });
-      grid.appendChild(rest);
-      observeNew(grid);
+
+      observeNew(grid || recsRail);
+      if (syncRecsRail) syncRecsRail();
     }
 
     function renderNews() {
@@ -1104,9 +1287,9 @@
     }
 
     function renderOpenNow(city) {
-      if (!openGrid) return;
-      openGrid.innerHTML = "";
-      openGrid.setAttribute("aria-label", i18n.t("open.listLabel"));
+      if (!openRail) return;
+      openRail.innerHTML = "";
+      openRail.setAttribute("aria-label", i18n.t("open.listLabel"));
 
       var total = data.openNowCount();
       var shops = data.openNowShops(city, OPEN_LIMIT);
@@ -1129,9 +1312,10 @@
       shops.forEach(function (shop, index) {
         var item = openCard(shop, city);
         qs(".open-card", item).style.setProperty("--reveal-delay", index * 55 + "ms");
-        openGrid.appendChild(item);
+        openRail.appendChild(item);
       });
-      observeNew(openGrid);
+      observeNew(openRail);
+      if (syncOpenRail) syncOpenRail();
     }
 
     function render() {

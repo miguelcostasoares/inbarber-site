@@ -456,14 +456,18 @@ await recs.reload({ waitUntil: "domcontentloaded" });
 await recs.waitForSelector(".rec-hero__name");
 
 const esperado = await recs.evaluate(() =>
-  window.INBARBER_DATA.recommended(null, 7).map((s) => s.name)
+  window.INBARBER_DATA.recommended(null, 9).map((s) => s.name)
 );
 const exibido = await recs.$$eval(".rec-hero__name, .rec-card__name a", (ns) =>
   ns.map((n) => (n.lastChild ? n.lastChild.textContent : n.textContent).trim())
 );
 checar(
-  "Ranking mostra 1 destaque + 6 cards no desktop",
-  (await recs.$$(".rec-hero")).length === 1 && (await recs.$$(".rec-card")).length === 6
+  "Ranking mostra 1 destaque + 8 cards no trilho do desktop",
+  (await recs.$$(".rec-hero")).length === 1 && (await recs.$$(".rec-card")).length === 8
+);
+checar(
+  "Cards do ranking ficam em uma linha só",
+  (await recs.$$eval(".recs-item", (ns) => new Set(ns.map((n) => Math.round(n.getBoundingClientRect().top))).size)) === 1
 );
 checar(
   "Ranking segue o mérito do data.js (nota + avaliações de 30 dias)",
@@ -494,7 +498,7 @@ checar(
 );
 checar(
   "Todo card do ranking mostra os próximos horários",
-  (await recs.$$eval(".recs .rec-slots", (ns) => ns.length)) === 7
+  (await recs.$$eval(".recs .rec-slots", (ns) => ns.length)) === 9
 );
 const horarios = await recs.$$eval(".rec-slot", (as) => as.map((a) => a.getAttribute("href")));
 checar(
@@ -582,8 +586,8 @@ await recsMobile.setViewportSize({ width: 375, height: 800 });
 await recsMobile.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
 await recsMobile.waitForSelector(".rec-hero__name");
 checar(
-  "No celular o ranking cai para 5 barbearias",
-  (await recsMobile.$$(".rec-card")).length === 4
+  "No celular o ranking cai para 7 barbearias",
+  (await recsMobile.$$(".rec-card")).length === 6
 );
 await recsMobile.close();
 
@@ -596,7 +600,7 @@ await abertas.reload({ waitUntil: "domcontentloaded" });
 await abertas.waitForSelector(".open-card");
 
 const abertasEsperadas = await abertas.evaluate(() =>
-  window.INBARBER_DATA.openNowShops(null, 6).map((s) => s.name)
+  window.INBARBER_DATA.openNowShops(null, 8).map((s) => s.name)
 );
 const abertasExibidas = await abertas.$$eval(".open-card__name a", (ns) =>
   ns.map((n) => n.textContent.trim())
@@ -674,7 +678,8 @@ checar(
     (await abertas.$$(".open-card")).length
 );
 
-/* A foto era uma tira esticada (1:2.6) que cortava rostos. */
+/* O card virou vertical, irmão do de "Novas na InBarber": foto deitada no
+   topo, na mesma proporção, e a lista inteira em uma linha só. */
 const proporcoes = await abertas.$$eval(".open-card__media", (ns) =>
   ns.map((n) => {
     const r = n.getBoundingClientRect();
@@ -682,25 +687,31 @@ const proporcoes = await abertas.$$eval(".open-card__media", (ns) =>
   })
 );
 checar(
-  "A foto de cada aberta fica num retrato normal, sem virar tira",
-  proporcoes.length > 0 && proporcoes.every((r) => r >= 1 && r <= 1.9),
+  "A foto de cada aberta é deitada, na mesma proporção do card das novas",
+  proporcoes.length > 0 && proporcoes.every((r) => r > 0.55 && r < 0.7),
   proporcoes.map((r) => "1:" + r.toFixed(2)).join(", ")
 );
 checar(
-  "O recorte retrato vem pronto do servidor de imagens, com a versão deitada para o celular",
-  await abertas.evaluate(() =>
-    Array.from(document.querySelectorAll(".open-card__media")).every((media) => {
-      const img = media.querySelector("picture > img");
-      const fonte = media.querySelector("picture > source");
-      return (
-        img &&
-        fonte &&
-        /w=480&h=760/.test(img.getAttribute("src")) &&
-        fonte.getAttribute("media") === "(max-width: 519px)" &&
-        /w=800/.test(fonte.getAttribute("srcset"))
-      );
-    })
-  )
+  "Abertas agora fica em uma linha só, como o trilho das novas",
+  (await abertas.$$eval(".open-item", (ns) =>
+    new Set(ns.map((n) => Math.round(n.getBoundingClientRect().top))).size
+  )) === 1
+);
+checar(
+  "O trilho das abertas tem setas e pontos, como o das novas",
+  (await abertas.$$("[data-open-prev]:not([hidden])")).length === 1 &&
+    (await abertas.$$("[data-open-next]:not([hidden])")).length === 1 &&
+    (await abertas.$$eval("[data-open-dots] .open__dot", (ns) => ns.length)) > 1
+);
+checar(
+  "A seta avança o trilho das abertas",
+  await abertas.evaluate(async () => {
+    const rail = document.querySelector(".open__rail");
+    const antes = rail.scrollLeft;
+    document.querySelector("[data-open-next]").click();
+    await new Promise((r) => setTimeout(r, 700));
+    return rail.scrollLeft > antes;
+  })
 );
 
 /* Com cidade escolhida na busca do hero, as da cidade encabeçam a lista. */
@@ -888,6 +899,123 @@ checar(
   (await trilhoMobile.$eval("[data-news-next]", (n) => getComputedStyle(n).display)) === "none"
 );
 await trilhoMobile.close();
+
+/* --- 15.4b Trilho das recomendadas e galeria do destaque --------------------- */
+const destaque = await ctx.newPage();
+vigiar(destaque, "destaque-recomendadas");
+await destaque.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await destaque.waitForSelector(".rec-hero__name");
+await destaque.evaluate(() =>
+  document.querySelectorAll("[data-reveal]").forEach((n) => n.classList.add("is-visible"))
+);
+await destaque.waitForTimeout(300);
+
+checar(
+  "O card de destaque é menor que a largura da seção",
+  await destaque.evaluate(() => {
+    const hero = document.querySelector(".rec-hero").getBoundingClientRect().width;
+    const secao = document.querySelector(".recs").getBoundingClientRect().width;
+    return hero < secao - 40;
+  }),
+  await destaque.evaluate(
+    () =>
+      `${Math.round(document.querySelector(".rec-hero").getBoundingClientRect().width)}px de ` +
+      `${Math.round(document.querySelector(".recs").getBoundingClientRect().width)}px`
+  )
+);
+checar(
+  "O destaque traz a galeria da barbearia, e não uma foto só",
+  await destaque.evaluate(() => {
+    const fotos = document.querySelectorAll(".rec-hero__photo");
+    const barras = document.querySelectorAll(".rec-hero__progress-bar");
+    return fotos.length > 1 && barras.length === fotos.length;
+  })
+);
+checar(
+  "Só a capa é baixada antes do hover",
+  await destaque.evaluate(() => {
+    const fotos = Array.from(document.querySelectorAll(".rec-hero__photo"));
+    return fotos[0].hasAttribute("src") && fotos.slice(1).every((n) => n.hasAttribute("data-src"));
+  })
+);
+checar(
+  "Com o cursor sobre o card, as fotos passam sozinhas",
+  await destaque.evaluate(async () => {
+    const card = document.querySelector(".rec-hero");
+    card.dispatchEvent(new MouseEvent("mouseenter"));
+    await new Promise((r) => setTimeout(r, 1800));
+    const ativa = Array.from(document.querySelectorAll(".rec-hero__photo")).findIndex((n) =>
+      n.classList.contains("is-active")
+    );
+    return card.classList.contains("is-playing") && ativa > 0;
+  })
+);
+checar(
+  "Ao tirar o cursor, o card volta para a capa",
+  await destaque.evaluate(async () => {
+    const card = document.querySelector(".rec-hero");
+    card.dispatchEvent(new MouseEvent("mouseleave"));
+    await new Promise((r) => setTimeout(r, 200));
+    const ativa = Array.from(document.querySelectorAll(".rec-hero__photo")).findIndex((n) =>
+      n.classList.contains("is-active")
+    );
+    return !card.classList.contains("is-playing") && ativa === 0;
+  })
+);
+checar(
+  "As fotos extras da galeria são decorativas para o leitor de tela",
+  await destaque.evaluate(() =>
+    Array.from(document.querySelectorAll(".rec-hero__photo"))
+      .slice(1)
+      .every((n) => n.getAttribute("aria-hidden") === "true" && n.getAttribute("alt") === "")
+  )
+);
+checar(
+  "A seta avança o trilho das recomendadas",
+  await destaque.evaluate(async () => {
+    const rail = document.querySelector(".recs__rail");
+    const antes = rail.scrollLeft;
+    document.querySelector("[data-recs-next]").click();
+    await new Promise((r) => setTimeout(r, 700));
+    return rail.scrollLeft > antes;
+  })
+);
+checar(
+  "O trilho das recomendadas não rola na vertical",
+  await destaque.evaluate(() => {
+    const rail = document.querySelector(".recs__rail");
+    return getComputedStyle(rail).overflowY === "hidden" && rail.scrollHeight - rail.clientHeight <= 0;
+  })
+);
+await destaque.close();
+
+/* Os dois painéis de trilho passaram a ser mais largos que o container. */
+const largura = await ctx.newPage();
+vigiar(largura, "paineis-largos");
+await largura.setViewportSize({ width: 1440, height: 900 });
+await largura.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await largura.waitForSelector(".open-card");
+checar(
+  "Novas e Abertas agora são mais largas que o container, sem estourar a janela",
+  await largura.evaluate(() => {
+    const container = document.querySelector("#barbearias .container").getBoundingClientRect().width;
+    const novas = document.querySelector(".news").getBoundingClientRect();
+    const abertas = document.querySelector(".open").getBoundingClientRect();
+    const estouro = document.documentElement.scrollWidth - document.documentElement.clientWidth;
+    return (
+      novas.width > container + 60 &&
+      Math.round(novas.width) === Math.round(abertas.width) &&
+      novas.left > 0 &&
+      estouro === 0
+    );
+  }),
+  await largura.evaluate(
+    () =>
+      `container ${Math.round(document.querySelector("#barbearias .container").getBoundingClientRect().width)}px, ` +
+      `painel ${Math.round(document.querySelector(".news").getBoundingClientRect().width)}px`
+  )
+);
+await largura.close();
 
 /* --- 15.5 Favoritar exige conta ---------------------------------------------- */
 /* Contexto próprio: esta bateria cria sessão e favoritas, e nada disso pode

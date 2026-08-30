@@ -255,7 +255,28 @@
           <p class="section__subtitle" data-recs-subtitle></p>
         </div>
 
-        <div class="recs" data-featured-shops></div>
+        <!-- O ranking tem duas peças: o card de destaque (o #1 da semana, com
+             passagem de fotos no hover) e o trilho horizontal com o restante
+             da lista, em uma linha só. Ambos são montados por js/main.js. -->
+        <div class="recs" role="group" data-featured-shops>
+          <div class="recs__hero" data-recs-hero></div>
+
+          <div class="recs__viewport">
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--prev" data-recs-prev
+                    data-i18n-attr="aria-label:recs.prev" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
+            </button>
+
+            <ul class="recs__rail" data-recs-shops aria-describedby="recs-hint"></ul>
+
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--next" data-recs-next
+                    data-i18n-attr="aria-label:recs.next" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <p class="visually-hidden" id="recs-hint" data-i18n="recs.railHint"></p>
+        </div>
 
         <!-- ================================================================
              Novas na InBarber
@@ -305,6 +326,12 @@
              barbearias com as portas abertas neste momento, ordenadas pelo
              mesmo mérito do ranking, e o próximo horário livre já é um link
              de agendamento.
+
+             Mesmo trilho horizontal do bloco de novas — uma linha só, setas,
+             arrasto, teclado e pontos —, porque a pergunta aqui é "onde dá
+             para cortar agora?" e percorrer é mais rápido do que rolar. O que
+             muda é o acento verde e o que cada card mostra: até que horas a
+             barbearia fica aberta e o próximo horário livre.
              ================================================================ -->
         <div class="open" data-open-block data-reveal aria-labelledby="open-title">
           <div class="open__header">
@@ -323,7 +350,22 @@
             </p>
           </div>
 
-          <ul class="open__grid" data-open-shops></ul>
+          <div class="open__viewport">
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--prev" data-open-prev
+                    data-i18n-attr="aria-label:open.prev" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
+            </button>
+
+            <ul class="open__rail" data-open-shops aria-describedby="open-hint"></ul>
+
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--next" data-open-next
+                    data-i18n-attr="aria-label:open.next" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <p class="visually-hidden" id="open-hint" data-i18n="open.railHint"></p>
+          <div class="open__dots" data-open-dots hidden></div>
           <p class="open__empty" data-open-empty data-i18n="open.empty" hidden></p>
         </div>
 

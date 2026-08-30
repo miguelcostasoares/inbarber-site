@@ -3,10 +3,11 @@
 
    Três listas na mesma seção da home, com pesos visuais diferentes:
 
-     .rec-hero   card de destaque (#1 do ranking), duas colunas no desktop
-     .rec-card   cards #2 em diante, em grade
+     .rec-hero   card de destaque (#1 do ranking), duas colunas no desktop,
+                 com as fotos do salão passando enquanto o cursor está em cima
+     .rec-card   cards #2 em diante, em trilho horizontal de uma linha
      .news-*     trilho horizontal das barbearias que acabaram de entrar
-     .open-*     grade horizontal de quem está aberto neste momento
+     .open-*     trilho horizontal de quem está aberto neste momento
 
    Acentos: dourado para o ranking (mérito), violeta para o que é novo,
    verde para o que está aberto agora.
@@ -80,10 +81,71 @@
   gap: var(--space-lg);
 }
 
-.recs__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
-  gap: var(--space-lg);
+/* O destaque deixou de ocupar a largura toda da seção: ele é um card, não um
+   banner, e encolhido sobra espaço para o trilho abaixo respirar. */
+.recs__hero {
+  display: block;
+}
+
+/* Trilho das demais recomendadas: uma linha só, percorrida pelas setas, pelo
+   arrasto e pelas setas do teclado. A grade de duas fileiras empurrava a
+   seção inteira para baixo; o trilho mostra mais barbearias sem custar
+   altura de página. */
+.recs__viewport {
+  position: relative;
+  --rail-btn-size: 42px;
+  --rail-btn-inset: -21px;
+}
+
+.recs__rail {
+  display: flex;
+  gap: var(--space-md);
+  /* Mesmo motivo do trilho de novas: o respiro é padding para a sombra do
+     hover não ser cortada, e o eixo vertical fica travado. */
+  padding: 0.75rem 0.25rem var(--space-md);
+  margin: -0.75rem -0.25rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 240, 255, 0.45) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.recs__rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.recs__rail::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.45);
+  border-radius: var(--radius-pill);
+}
+
+.recs__rail:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+
+.recs__rail.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+.recs__rail.is-dragging .rec-card {
+  cursor: grabbing;
+}
+
+.recs-item {
+  display: flex;
+  flex: 0 0 min(78vw, 286px);
+  scroll-snap-align: start;
+}
+
+.recs-item > .rec-card {
+  width: 100%;
 }
 
 /* ==========================================================================
@@ -289,6 +351,10 @@
    5. CARD DE DESTAQUE — #1 DO RANKING
    ========================================================================== */
 .rec-hero {
+  /* Tempo de cada foto na tela enquanto o cursor está em cima. O mesmo valor
+     está em js/main.js (HERO_PHOTO_MS): a barra de progresso daqui e o
+     relógio de lá precisam contar o mesmo. */
+  --hero-photo-duration: 1400ms;
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -325,15 +391,84 @@
   background: var(--gradient-image-fallback);
 }
 
-.rec-hero__media img {
+/* ----------------------------------------------------------------------
+   Galeria do destaque
+
+   Parado, o card mostra a capa. Com o cursor em cima (ou com o foco dentro
+   dele), as demais fotos do salão passam sozinhas: cada uma entra por
+   fusão, e a régua no alto diz quantas são e em qual delas se está — o
+   mesmo contrato visual de um álbum de stories, que todo mundo já sabe ler.
+   ---------------------------------------------------------------------- */
+.rec-hero__gallery {
+  position: absolute;
+  inset: 0;
+}
+
+.rec-hero__photo {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--duration-slower) var(--ease-out);
+  opacity: 0;
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform 1.8s linear;
 }
 
-.rec-hero:hover .rec-hero__media img {
-  transform: scale(1.04);
+.rec-hero__photo.is-active {
+  opacity: 1;
+}
+
+/* O leve avanço na foto ativa dá a sensação de a galeria estar rodando, e
+   não de as imagens simplesmente trocarem de lugar. */
+.rec-hero.is-playing .rec-hero__photo.is-active {
+  transform: scale(1.05);
+}
+
+.rec-hero__progress {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.75rem;
+  left: 0.75rem;
+  z-index: 3;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out);
+}
+
+.rec-hero:hover .rec-hero__progress,
+.rec-hero:focus-within .rec-hero__progress {
+  opacity: 1;
+}
+
+.rec-hero__progress-bar {
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(250, 250, 250, 0.3);
+  border-radius: var(--radius-pill);
+}
+
+.rec-hero__progress-bar i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--gradient-gold);
+}
+
+.rec-hero__progress-bar.is-done i {
+  width: 100%;
+}
+
+.rec-hero.is-playing .rec-hero__progress-bar.is-current i {
+  animation: rec-hero-photo var(--hero-photo-duration) linear forwards;
+}
+
+@keyframes rec-hero-photo {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 .rec-hero__media::after {
@@ -347,14 +482,14 @@
 /* Coroa: o lugar do primeiro colocado, no lugar do antigo numeral. */
 .rec-hero__medal {
   position: absolute;
-  top: var(--space-md);
+  top: var(--space-lg);
   left: var(--space-md);
   z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   color: var(--color-text-inverse);
   background: var(--gradient-gold);
   border-radius: 50%;
@@ -362,8 +497,8 @@
 }
 
 .rec-hero__medal svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .rec-hero__status {
@@ -407,7 +542,7 @@
 
 .rec-hero__name {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: var(--weight-bold);
   line-height: var(--leading-snug);
   letter-spacing: var(--tracking-tight);
@@ -428,7 +563,7 @@
 }
 
 .rec-hero__metrics li {
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
@@ -437,7 +572,7 @@
 .rec-hero__metrics strong {
   display: block;
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--weight-bold);
   line-height: 1.1;
   letter-spacing: var(--tracking-tight);
@@ -586,6 +721,8 @@
    dourado continua sendo só do ranking.
    ========================================================================== */
 .news {
+  --rail-btn-size: 42px;
+  --rail-btn-inset: -21px;
   position: relative;
   padding: clamp(1.25rem, 3vw, 2rem);
   margin-top: clamp(2.5rem, 5vw, 4rem);
@@ -713,8 +850,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: var(--rail-btn-size, 42px);
+  height: var(--rail-btn-size, 42px);
   color: var(--color-text);
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border-subtle);
@@ -743,7 +880,12 @@
 
 /* Setas nas laterais do trilho: ficam sempre à vista no desktop, onde não há
    gesto de arrastar com o dedo. No celular o trilho se rola com o polegar e
-   as setas dariam menos espaço ao card. */
+   as setas dariam menos espaço ao card.
+
+   A distância até o trilho é --rail-btn-inset, definida por cada bloco: nos
+   painéis de "Novas" e "Abertas agora" as setas ficam inteiramente fora do
+   trilho, no respiro da moldura; no trilho das recomendadas, que não tem
+   moldura, elas encostam na borda. */
 .rail-btn--edge {
   position: absolute;
   top: 50%;
@@ -757,11 +899,11 @@
 }
 
 .rail-btn--prev {
-  left: -18px;
+  left: var(--rail-btn-inset, -18px);
 }
 
 .rail-btn--next {
-  right: -18px;
+  right: var(--rail-btn-inset, -18px);
 }
 
 .news__rail {
@@ -994,6 +1136,8 @@
    e virava uma tira estreita que cortava rostos.
    ========================================================================== */
 .open {
+  --rail-btn-size: 42px;
+  --rail-btn-inset: -21px;
   position: relative;
   padding: clamp(1.25rem, 3vw, 2rem);
   margin-top: clamp(2rem, 4vw, 3rem);
@@ -1013,10 +1157,6 @@
   left: 0;
   height: 2px;
   background: linear-gradient(90deg, rgba(34, 197, 94, 0) 0%, var(--color-success) 34%, var(--color-secondary) 72%, rgba(0, 240, 255, 0) 100%);
-}
-
-.open--empty .open__grid {
-  display: none;
 }
 
 .open__header {
@@ -1084,25 +1224,110 @@
   border-radius: var(--radius-lg);
 }
 
-/* Uma coluna por padrão: o card é horizontal e precisa de largura para caber
-   foto, descrição e horário sem espremer nada. Duas colunas só quando sobra
-   espaço de verdade (ver bloco 9). */
-.open__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+/* ----------------------------------------------------------------------
+   Trilho
+
+   Mesmo mecanismo do bloco de novas — o controlador de trilho em
+   js/main.js é o mesmo —, com o acento verde da categoria no lugar do
+   violeta: barra de rolagem, foco e pontos mudam de cor, e nada mais.
+   ---------------------------------------------------------------------- */
+.open__viewport {
+  position: relative;
+}
+
+.open__rail {
+  display: flex;
   gap: var(--space-md);
+  padding: 0.75rem 0.25rem var(--space-md);
+  margin: -0.75rem -0.25rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 197, 94, 0.5) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.open__rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.open__rail::-webkit-scrollbar-thumb {
+  background: rgba(34, 197, 94, 0.5);
+  border-radius: var(--radius-pill);
+}
+
+.open__rail:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+
+.open__rail.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
+.open__rail.is-dragging .open-card {
+  cursor: grabbing;
+}
+
+.open--empty .open__viewport,
+.open--empty .open__dots {
+  display: none;
+}
+
+.open__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4375rem;
+  margin-top: var(--space-md);
+}
+
+.open__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-border);
+  border: none;
+  border-radius: var(--radius-pill);
+  transition:
+    width var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+.open__dot:hover {
+  background: var(--color-border-strong);
+}
+
+.open__dot.is-current {
+  width: 22px;
+  background: var(--color-success);
 }
 
 /* ----------------------------------------------------------------------
    Card
+
+   O card é irmão do de "Novas na InBarber": mesma proporção de foto, mesma
+   ordem de leitura, mesma altura de linha. O que muda é o que só existe
+   nesta categoria — o selo de "aberta agora" e o aviso de fechamento na
+   foto, a hora de fechar em verde e o próximo horário livre ocupando uma
+   faixa inteira, porque é ele que a lista veio responder.
    ---------------------------------------------------------------------- */
+.open-item {
+  flex: 0 0 min(80vw, 292px);
+  scroll-snap-align: start;
+}
+
 .open-card {
   position: relative;
-  display: grid;
-  grid-template-columns: 132px minmax(0, 1fr);
-  gap: var(--space-md);
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  padding: var(--space-md);
+  overflow: hidden;
   background: var(--color-bg-surface);
   background-image: var(--gradient-surface);
   border: 1px solid var(--color-border-subtle);
@@ -1114,9 +1339,9 @@
 }
 
 .open-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
   border-color: rgba(34, 197, 94, 0.42);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
 }
 
 .open-card:focus-within {
@@ -1124,80 +1349,91 @@
   box-shadow: var(--glow-cyan);
 }
 
-/* Coluna de foto com altura própria: acompanha o card, mas a largura de
-   132–148px mantém um retrato normal (~1:1.7). Antes eram 104px esticados até
-   a altura da fileira — uma tira de 1:2.6 que cortava rostos ao meio. */
 .open-card__media {
   position: relative;
-  align-self: stretch;
-  min-height: 168px;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--gradient-image-fallback);
-  border-radius: var(--radius-md);
-}
-
-/* O <picture> não pode virar uma caixa entre a moldura e a imagem: sem isto o
-   height: 100% do <img> não teria pai com altura definida. */
-.open-card__media picture {
-  display: contents;
 }
 
 .open-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
   transition: transform var(--duration-slow) var(--ease-out);
 }
 
 .open-card:hover .open-card__media img {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 .open-card__media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(9, 9, 11, 0) 42%, rgba(9, 9, 11, 0.82) 100%);
+  background: linear-gradient(180deg, rgba(9, 9, 11, 0.55) 0%, rgba(9, 9, 11, 0) 52%);
   pointer-events: none;
 }
 
-/* O selo de "aberta agora" foi para cima da foto: libera uma linha do corpo
-   e amarra o estado à imagem, como nos outros cards do site. */
+/* O selo fica onde o de "Novo" fica no card das novas: mesmo canto, mesma
+   altura, para que as duas listas se leiam como uma família. */
 .open-card__live {
   position: absolute;
-  right: 0.375rem;
-  bottom: 0.375rem;
-  left: 0.375rem;
+  top: var(--space-sm);
+  left: var(--space-sm);
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 0.3125rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.6875rem;
+  padding: 0.25rem 0.625rem;
+  font-size: var(--text-xs);
   font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
   color: var(--color-success);
   background: rgba(9, 9, 11, 0.72);
-  border: 1px solid rgba(34, 197, 94, 0.4);
+  border: 1px solid rgba(34, 197, 94, 0.45);
   border-radius: var(--radius-pill);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
-.open-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4375rem;
-  /* espaço reservado para o coração, no canto superior direito */
-  padding-right: 2.5rem;
+.open-card__live .badge__dot {
+  background: currentColor;
 }
 
-.open-card__head {
+/* Só aparece quando falta pouco para fechar. É âmbar, e não verde: a cor
+   avisa que a janela está se fechando sem contradizer o selo ao lado. */
+.open-card__soon {
+  position: absolute;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3125rem;
+  padding: 0.25rem 0.5625rem;
+  font-size: 0.6875rem;
+  font-weight: var(--weight-bold);
+  color: var(--color-warning);
+  background: rgba(9, 9, 11, 0.76);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.open-card__soon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.open-card__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.4375rem;
+  padding: var(--space-md);
 }
 
 .open-card__name {
@@ -1205,6 +1441,11 @@
   font-size: var(--text-base);
   font-weight: var(--weight-bold);
   line-height: var(--leading-snug);
+}
+
+.open-card__rating {
+  display: flex;
+  align-items: center;
 }
 
 /* O ícone fica fora do fluxo do texto: antes o pin caía sozinho numa linha
@@ -1256,6 +1497,10 @@
   color: var(--color-success);
 }
 
+.open-card__until--soon {
+  color: var(--color-warning);
+}
+
 .open-card__reason {
   color: var(--color-text-muted);
 }
@@ -1264,28 +1509,16 @@
   color: var(--color-text-subtle);
 }
 
-.open-card__stats {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-xs);
-  padding-top: var(--space-xs);
-  margin-top: auto;
-}
-
-.open-card__stats .rec-price {
-  text-align: right;
-}
-
-.open-card__footer {
-  display: flex;
-  flex-wrap: wrap;
+/* A faixa do próximo horário é o botão da lista: largura inteira, empurrada
+   para o fim do card pelo margin-top automático, para que todos os cards da
+   fileira terminem no mesmo lugar. */
+.open-card__slot {
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-xs);
-  padding-top: var(--space-sm);
-  border-top: 1px solid var(--color-border-subtle);
+  padding: 0.5rem 0.75rem;
+  margin-top: auto;
 }
 
 .open-card__slot .rec-slot__day {
@@ -1294,6 +1527,27 @@
 
 .open-card:hover .open-card__slot {
   border-color: rgba(34, 197, 94, 0.45);
+}
+
+.open-card__footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.open-card__footer .rec-price {
+  text-align: left;
+}
+
+.open-card__footer .rec-price strong {
+  font-size: var(--text-sm);
+}
+
+.open-card__footer .rec-card__cta {
+  font-size: var(--text-xs);
 }
 
 .open-card .rec-services {
@@ -1305,18 +1559,6 @@
   font-size: 0.6875rem;
 }
 
-.fav-btn--sm {
-  top: var(--space-xs);
-  right: var(--space-xs);
-  width: 32px;
-  height: 32px;
-}
-
-.fav-btn--sm svg {
-  width: 16px;
-  height: 16px;
-}
-
 /* ==========================================================================
    9. RESPONSIVO
    ========================================================================== */
@@ -1324,16 +1566,25 @@
   .news-item {
     flex-basis: 268px;
   }
+
+  .recs-item {
+    flex-basis: 286px;
+  }
+
+  .open-item {
+    flex-basis: 292px;
+  }
 }
 
 @media (min-width: 768px) {
   .rec-hero__body {
-    padding: var(--space-xl);
+    padding: var(--space-lg) var(--space-xl);
   }
 
   /* A moldura do trilho ganha respiro lateral para as setas caberem sem
      encostar no card. */
-  .news {
+  .news,
+  .open {
     padding-right: clamp(2rem, 3.5vw, 2.75rem);
     padding-left: clamp(2rem, 3.5vw, 2.75rem);
   }
@@ -1341,20 +1592,17 @@
   .rail-btn--edge {
     display: inline-flex;
   }
-
-  .rail-btn--prev {
-    left: -20px;
-  }
-
-  .rail-btn--next {
-    right: -20px;
-  }
 }
 
 @media (min-width: 900px) {
+  /* O destaque encolheu: duas colunas, mas em uma caixa que não passa de
+     960px e fica centrada na seção. O trilho abaixo é que corre de ponta a
+     ponta — o card do #1 não precisa competir em tamanho para ser o #1. */
   .rec-hero {
-    grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1fr);
     align-items: stretch;
+    max-width: 960px;
+    margin-inline: auto;
   }
 
   .rec-hero__media {
@@ -1374,13 +1622,19 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Painéis largos
+
+   A partir daqui os dois painéis de trilho saem da largura do container e
+   ocupam quase toda a janela: são listas que se percorrem, e cada pixel a
+   mais de largura é um card a mais à vista. A conta desconta a barra de
+   rolagem com folga, então nada escapa para os lados.
+
+   Com a moldura larga, as setas deixam de encostar no trilho: elas passam a
+   ficar inteiramente fora dele, dentro do respiro da moldura.
+   -------------------------------------------------------------------------- */
 @media (min-width: 1024px) {
   .recs {
-    gap: var(--space-xl);
-  }
-
-  .recs__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-xl);
   }
 
@@ -1388,43 +1642,29 @@
     gap: var(--space-sm);
   }
 
-}
-
-/* Duas colunas só a partir daqui: em 1024px o corpo do card ficava com 200px
-   e a descrição quebrava em tiras de duas linhas. Entre 520 e 1200 o card
-   ocupa a largura toda — e fica bem melhor de ler. */
-@media (min-width: 1200px) {
-  .open__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-lg);
-  }
-
-  .open-card {
-    grid-template-columns: 148px minmax(0, 1fr);
+  .news,
+  .open {
+    --panel-width: min(1560px, 100vw - clamp(2.5rem, 4vw, 5rem));
+    --rail-btn-size: 46px;
+    --rail-btn-inset: calc(-1 * (var(--rail-btn-size) + 1rem));
+    width: var(--panel-width);
+    padding-right: clamp(4.25rem, 5vw, 6rem);
+    padding-left: clamp(4.25rem, 5vw, 6rem);
+    margin-inline: calc(50% - var(--panel-width) / 2);
   }
 }
 
-/* Abaixo de 520px a foto lateral come metade da largura útil: o card vira uma
-   coluna só, com a foto larga no topo. */
-@media (max-width: 519px) {
-  .open-card {
-    grid-template-columns: minmax(0, 1fr);
+@media (min-width: 1440px) {
+  .recs-item {
+    flex-basis: 300px;
   }
 
-  .open-card__media {
-    align-self: auto;
-    min-height: 0;
-    aspect-ratio: 16 / 10;
+  .news-item {
+    flex-basis: 288px;
   }
 
-  .open-card__live {
-    right: auto;
-    left: 0.5rem;
-    justify-content: flex-start;
-  }
-
-  .open-card__body {
-    padding-right: 0;
+  .open-item {
+    flex-basis: 306px;
   }
 }
 
@@ -1438,15 +1678,22 @@
     transform: none;
   }
 
-  .rec-hero:hover .rec-hero__media img,
   .rec-card:hover .rec-card__media img,
   .news-card:hover .news-card__media img,
   .open-card:hover .open-card__media img,
-  .rec-card:hover .rec-card__cta svg {
+  .rec-card:hover .rec-card__cta svg,
+  .rec-hero.is-playing .rec-hero__photo.is-active {
     transform: none;
   }
 
+  /* Sem passagem automática de fotos, a régua de progresso não teria o que
+     medir — e o card fica na capa, que é o que o JS já faz. */
+  .rec-hero__progress {
+    display: none;
+  }
+
   .news__dot,
+  .open__dot,
   .section-mark--success::after {
     transition: none;
     animation: none;

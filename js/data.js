@@ -24,13 +24,18 @@ window.INBARBER_DATA = (function () {
   }
 
   /**
-   * A mesma foto da barbearia, recortada em retrato pelo servidor de imagens.
-   * Os cards horizontais ("Abertas agora") têm uma coluna de foto mais alta do
-   * que larga; pedir o recorte certo na origem é melhor do que mandar uma foto
-   * deitada e deixar o object-fit cortar as laterais — e baixa menos bytes.
+   * Todas as fotos de uma barbearia, começando pela capa.
+   * É o que alimenta a passagem de imagens do card de destaque do ranking
+   * quando o cursor para em cima dele: a capa continua sendo a primeira, e as
+   * demais só entram em cena a partir da segunda. Sem galeria cadastrada, o
+   * retorno é a capa sozinha — e o card simplesmente não passa nada.
    */
-  function portraitPhoto(shop) {
-    return String(shop.image).split("?")[0] + "?auto=format&fit=crop&w=480&h=760&q=70";
+  function shopGallery(shop) {
+    var photos = [shop.image];
+    (shop.gallery || []).forEach(function (photo) {
+      if (photos.indexOf(photo) === -1) photos.push(photo);
+    });
+    return photos;
   }
 
   /* ----------------------------------------------------------------------
@@ -47,6 +52,9 @@ window.INBARBER_DATA = (function () {
        closesAt    horário de fechamento do dia ("HH:MM"). É o que a faixa
                    "Abertas agora" mostra — quem está decidindo cortar hoje
                    precisa saber até quando dá tempo de chegar.
+       gallery     demais fotos do salão, além da capa. O card de destaque do
+                   ranking passa por elas enquanto o cursor está em cima, para
+                   mostrar o lugar e não só uma foto escolhida a dedo.
 
      São dados de demonstração, como o resto do arquivo: quando houver backend,
      eles vêm de lá. Nada disso é estimado no cliente.
@@ -69,7 +77,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "beard", "hotTowel"],
-      image: shopPhoto("1585747860715-2ba37e788b70")
+      image: shopPhoto("1585747860715-2ba37e788b70"),
+      gallery: [
+        shopPhoto("1599351431202-1e0f0137899a"),
+        shopPhoto("1593702275687-f8b402bf1fb5"),
+        shopPhoto("1622286342621-4bd786c2447c")
+      ]
     },
     {
       id: "distrito-barber",
@@ -88,7 +101,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "classic", "grooming"],
-      image: shopPhoto("1503951914875-452162b0f3f1")
+      image: shopPhoto("1503951914875-452162b0f3f1"),
+      gallery: [
+        shopPhoto("1596728325488-58c87691e9af"),
+        shopPhoto("1599351431613-18ef1fdd27e1"),
+        shopPhoto("1629189784191-9afdcbcb0398")
+      ]
     },
     {
       id: "corte-real",
@@ -107,7 +125,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["classic", "beard", "kids"],
-      image: shopPhoto("1621605815971-fbc98d665033")
+      image: shopPhoto("1621605815971-fbc98d665033"),
+      gallery: [
+        shopPhoto("1678356164573-9a534fe43958"),
+        shopPhoto("1493256338651-d82f7acb2b38"),
+        shopPhoto("1599351431202-1e0f0137899a")
+      ]
     },
     {
       id: "estudio-lamina",
@@ -126,7 +149,12 @@ window.INBARBER_DATA = (function () {
       days: [2, 3, 4, 5, 6, 0],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "hotTowel"],
-      image: shopPhoto("1599351431202-1e0f0137899a")
+      image: shopPhoto("1599351431202-1e0f0137899a"),
+      gallery: [
+        shopPhoto("1560066984-138dadb4c035"),
+        shopPhoto("1503951914875-452162b0f3f1"),
+        shopPhoto("1596728325488-58c87691e9af")
+      ]
     },
     {
       id: "barbearia-do-porto",
@@ -145,7 +173,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "beard", "grooming"],
-      image: shopPhoto("1605497788044-5a32c7078486")
+      image: shopPhoto("1605497788044-5a32c7078486"),
+      gallery: [
+        shopPhoto("1630827020718-3433092696e7"),
+        shopPhoto("1621645582931-d1d3e6564943"),
+        shopPhoto("1678356164573-9a534fe43958")
+      ]
     },
     {
       id: "cabana-barbearia",
@@ -164,7 +197,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "braids", "kids"],
-      image: shopPhoto("1647140655214-e4a2d914971f")
+      image: shopPhoto("1647140655214-e4a2d914971f"),
+      gallery: [
+        shopPhoto("1605497788044-5a32c7078486"),
+        shopPhoto("1657105052497-f996284ffff8"),
+        shopPhoto("1560066984-138dadb4c035")
+      ]
     },
     {
       id: "casa-do-barbeiro",
@@ -183,7 +221,12 @@ window.INBARBER_DATA = (function () {
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["braids", "fade", "beard"],
-      image: shopPhoto("1621645582931-d1d3e6564943")
+      image: shopPhoto("1621645582931-d1d3e6564943"),
+      gallery: [
+        shopPhoto("1517832606299-7ae9b720a186"),
+        shopPhoto("1521590832167-7bcbfaa6381f"),
+        shopPhoto("1630827020718-3433092696e7")
+      ]
     },
     {
       id: "oficina-do-corte",
@@ -202,7 +245,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "grooming", "hotTowel"],
-      image: shopPhoto("1536520002442-39764a41e987")
+      image: shopPhoto("1536520002442-39764a41e987"),
+      gallery: [
+        shopPhoto("1635273051937-a0ddef9573b6"),
+        shopPhoto("1522337360788-8b13dee7a37e"),
+        shopPhoto("1605497788044-5a32c7078486")
+      ]
     },
     {
       id: "norte-barbearia",
@@ -221,7 +269,12 @@ window.INBARBER_DATA = (function () {
       days: [0, 1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "kids", "beard"],
-      image: shopPhoto("1596728325488-58c87691e9af")
+      image: shopPhoto("1596728325488-58c87691e9af"),
+      gallery: [
+        shopPhoto("1512690459411-b9245aed614b"),
+        shopPhoto("1621605815971-fbc98d665033"),
+        shopPhoto("1517832606299-7ae9b720a186")
+      ]
     },
     {
       id: "ilha-barber-club",
@@ -240,7 +293,12 @@ window.INBARBER_DATA = (function () {
       days: [2, 3, 4, 5, 6, 0],
       periods: ["afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "grooming"],
-      image: shopPhoto("1517832606299-7ae9b720a186")
+      image: shopPhoto("1517832606299-7ae9b720a186"),
+      gallery: [
+        shopPhoto("1585747860715-2ba37e788b70"),
+        shopPhoto("1536520002442-39764a41e987"),
+        shopPhoto("1635273051937-a0ddef9573b6")
+      ]
     },
     {
       id: "tesoura-de-ouro",
@@ -259,7 +317,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "coloring", "hotTowel"],
-      image: shopPhoto("1593702275687-f8b402bf1fb5")
+      image: shopPhoto("1593702275687-f8b402bf1fb5"),
+      gallery: [
+        shopPhoto("1647140655214-e4a2d914971f"),
+        shopPhoto("1592647420148-bfcc177e2117"),
+        shopPhoto("1512690459411-b9245aed614b")
+      ]
     },
     {
       id: "zona-sul-cortes",
@@ -278,7 +341,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "evening"],
       serviceKeys: ["fade", "beard", "kids"],
-      image: shopPhoto("1657105052497-f996284ffff8")
+      image: shopPhoto("1657105052497-f996284ffff8"),
+      gallery: [
+        shopPhoto("1593702275687-f8b402bf1fb5"),
+        shopPhoto("1622286342621-4bd786c2447c"),
+        shopPhoto("1585747860715-2ba37e788b70")
+      ]
     },
     {
       id: "barbearia-central",
@@ -297,7 +365,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "kids", "beard"],
-      image: shopPhoto("1592647420148-bfcc177e2117")
+      image: shopPhoto("1592647420148-bfcc177e2117"),
+      gallery: [
+        shopPhoto("1599351431613-18ef1fdd27e1"),
+        shopPhoto("1629189784191-9afdcbcb0398"),
+        shopPhoto("1647140655214-e4a2d914971f")
+      ]
     },
     {
       id: "atelie-do-fade",
@@ -316,7 +389,12 @@ window.INBARBER_DATA = (function () {
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "braids"],
-      image: shopPhoto("1678356164573-9a534fe43958")
+      image: shopPhoto("1678356164573-9a534fe43958"),
+      gallery: [
+        shopPhoto("1493256338651-d82f7acb2b38"),
+        shopPhoto("1599351431202-1e0f0137899a"),
+        shopPhoto("1593702275687-f8b402bf1fb5")
+      ]
     },
     {
       id: "mineira-barbearia",
@@ -335,7 +413,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["classic", "beard", "grooming"],
-      image: shopPhoto("1635273051937-a0ddef9573b6")
+      image: shopPhoto("1635273051937-a0ddef9573b6"),
+      gallery: [
+        shopPhoto("1503951914875-452162b0f3f1"),
+        shopPhoto("1596728325488-58c87691e9af"),
+        shopPhoto("1599351431613-18ef1fdd27e1")
+      ]
     },
     {
       id: "sertao-barber",
@@ -354,7 +437,12 @@ window.INBARBER_DATA = (function () {
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
       serviceKeys: ["fade", "kids", "braids"],
-      image: shopPhoto("1599351431613-18ef1fdd27e1")
+      image: shopPhoto("1599351431613-18ef1fdd27e1"),
+      gallery: [
+        shopPhoto("1621645582931-d1d3e6564943"),
+        shopPhoto("1678356164573-9a534fe43958"),
+        shopPhoto("1493256338651-d82f7acb2b38")
+      ]
     }
   ];
 
@@ -630,7 +718,7 @@ window.INBARBER_DATA = (function () {
     nearestCity: nearestCity,
     distanceKm: distanceKm,
     distanceFromCity: distanceFromCity,
-    portraitPhoto: portraitPhoto,
+    shopGallery: shopGallery,
     recommended: recommended,
     openNowShops: openNowShops,
     openNowCount: openNowCount,
