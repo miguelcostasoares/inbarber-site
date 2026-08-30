@@ -23,6 +23,16 @@ window.INBARBER_DATA = (function () {
     return UNSPLASH + id + EDITORIAL_PARAMS;
   }
 
+  /**
+   * A mesma foto da barbearia, recortada em retrato pelo servidor de imagens.
+   * Os cards horizontais ("Abertas agora") têm uma coluna de foto mais alta do
+   * que larga; pedir o recorte certo na origem é melhor do que mandar uma foto
+   * deitada e deixar o object-fit cortar as laterais — e baixa menos bytes.
+   */
+  function portraitPhoto(shop) {
+    return String(shop.image).split("?")[0] + "?auto=format&fit=crop&w=480&h=760&q=70";
+  }
+
   /* ----------------------------------------------------------------------
      Barbearias
      priceFrom está em reais; a exibição é convertida pelo i18n.
@@ -34,6 +44,9 @@ window.INBARBER_DATA = (function () {
        rebookRate  % de clientes que voltaram à mesma barbearia em 90 dias.
        joinedAt    data de entrada na plataforma (ISO). Ordena o trilho
                    "Novas na InBarber" e define o selo "Novo" (até 45 dias).
+       closesAt    horário de fechamento do dia ("HH:MM"). É o que a faixa
+                   "Abertas agora" mostra — quem está decidindo cortar hoje
+                   precisa saber até quando dá tempo de chegar.
 
      São dados de demonstração, como o resto do arquivo: quando houver backend,
      eles vêm de lá. Nada disso é estimado no cliente.
@@ -52,6 +65,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2024-03-12",
       priceFrom: 55,
       openNow: true,
+      closesAt: "21:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "beard", "hotTowel"],
@@ -70,6 +84,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2024-07-02",
       priceFrom: 48,
       openNow: true,
+      closesAt: "21:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "classic", "grooming"],
@@ -88,6 +103,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2023-11-20",
       priceFrom: 45,
       openNow: true,
+      closesAt: "22:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["classic", "beard", "kids"],
@@ -106,6 +122,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2023-05-08",
       priceFrom: 70,
       openNow: false,
+      closesAt: "21:30",
       days: [2, 3, 4, 5, 6, 0],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "hotTowel"],
@@ -124,6 +141,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2024-09-15",
       priceFrom: 40,
       openNow: true,
+      closesAt: "19:00",
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "beard", "grooming"],
@@ -142,6 +160,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2025-01-22",
       priceFrom: 42,
       openNow: true,
+      closesAt: "20:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "braids", "kids"],
@@ -160,6 +179,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2025-04-03",
       priceFrom: 38,
       openNow: true,
+      closesAt: "21:00",
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["braids", "fade", "beard"],
@@ -178,6 +198,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2025-06-18",
       priceFrom: 50,
       openNow: false,
+      closesAt: "18:30",
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "grooming", "hotTowel"],
@@ -196,6 +217,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2025-09-09",
       priceFrom: 35,
       openNow: true,
+      closesAt: "22:00",
       days: [0, 1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["fade", "kids", "beard"],
@@ -214,6 +236,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-05-30",
       priceFrom: 60,
       openNow: true,
+      closesAt: "22:00",
       days: [2, 3, 4, 5, 6, 0],
       periods: ["afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "grooming"],
@@ -232,6 +255,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2025-11-27",
       priceFrom: 65,
       openNow: true,
+      closesAt: "19:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "coloring", "hotTowel"],
@@ -250,6 +274,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-06-24",
       priceFrom: 45,
       openNow: false,
+      closesAt: "21:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "evening"],
       serviceKeys: ["fade", "beard", "kids"],
@@ -268,6 +293,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-07-16",
       priceFrom: 32,
       openNow: true,
+      closesAt: "18:00",
       days: [1, 2, 3, 4, 5],
       periods: ["morning", "afternoon"],
       serviceKeys: ["classic", "kids", "beard"],
@@ -286,6 +312,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-07-28",
       priceFrom: 58,
       openNow: true,
+      closesAt: "21:00",
       days: [2, 3, 4, 5, 6],
       periods: ["afternoon", "evening"],
       serviceKeys: ["fade", "coloring", "braids"],
@@ -304,6 +331,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-08-05",
       priceFrom: 36,
       openNow: true,
+      closesAt: "20:00",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon", "evening"],
       serviceKeys: ["classic", "beard", "grooming"],
@@ -322,6 +350,7 @@ window.INBARBER_DATA = (function () {
       joinedAt: "2026-08-19",
       priceFrom: 34,
       openNow: false,
+      closesAt: "18:30",
       days: [1, 2, 3, 4, 5, 6],
       periods: ["morning", "afternoon"],
       serviceKeys: ["fade", "kids", "braids"],
@@ -420,6 +449,40 @@ window.INBARBER_DATA = (function () {
     }
 
     return ranked.slice(0, limit || 6);
+  }
+
+  /**
+   * Barbearias com as portas abertas neste momento.
+   * Mesmo critério de mérito do ranking, aplicado só a quem está aberto —
+   * e, com cidade conhecida, as da cidade do visitante encabeçam a lista.
+   * A ordem não muda o fato: só entra aqui quem tem openNow verdadeiro.
+   */
+  function openNowShops(city, limit) {
+    var open = barbershops.filter(function (shop) {
+      return shop.openNow === true;
+    });
+
+    open.sort(function (a, b) {
+      return meritScore(b) - meritScore(a);
+    });
+
+    if (city && cityCoords[city]) {
+      var local = [];
+      var rest = [];
+      open.forEach(function (shop) {
+        (shop.city === city ? local : rest).push(shop);
+      });
+      open = local.concat(rest);
+    }
+
+    return limit ? open.slice(0, limit) : open;
+  }
+
+  /** Quantas barbearias estão abertas agora, antes de qualquer corte de lista. */
+  function openNowCount() {
+    return barbershops.filter(function (shop) {
+      return shop.openNow === true;
+    }).length;
   }
 
   /** As últimas barbearias a entrar na plataforma, da mais recente para a mais antiga. */
@@ -567,7 +630,10 @@ window.INBARBER_DATA = (function () {
     nearestCity: nearestCity,
     distanceKm: distanceKm,
     distanceFromCity: distanceFromCity,
+    portraitPhoto: portraitPhoto,
     recommended: recommended,
+    openNowShops: openNowShops,
+    openNowCount: openNowCount,
     newest: newest,
     nextSlots: nextSlots,
     isNewShop: isNewShop,

@@ -565,10 +565,14 @@ await recs.evaluate(() => window.InBarberI18n.setLanguage("es"));
 await recs.waitForTimeout(250);
 checar(
   "Seção inteira se re-renderiza ao trocar de idioma",
-  (await recs.$eval(".news__title", (n) => n.textContent)) === "Nuevas en InBarber" &&
+  (await recs.$eval(".news__title", (n) => n.textContent.replace(/\s+/g, " ").trim())) ===
+    "Nuevas en InBarber" &&
     (await recs.$eval(".rec-slots__label", (n) => n.textContent.trim())) === "Próximas horas libres",
-  await recs.$eval(".news__title", (n) => n.textContent)
+  await recs.$eval(".news__title", (n) => n.textContent.replace(/\s+/g, " ").trim())
 );
+/* O idioma fica guardado no localStorage do contexto: devolvemos o português
+   para que as baterias seguintes não leiam rótulos em espanhol. */
+await recs.evaluate(() => window.InBarberI18n.setLanguage("pt"));
 await recs.close();
 
 /* No celular a lista encurta em vez de virar um rolo sem fim. */
@@ -582,6 +586,458 @@ checar(
   (await recsMobile.$$(".rec-card")).length === 4
 );
 await recsMobile.close();
+
+/* --- 15.2 Abertas agora ------------------------------------------------------ */
+const abertas = await ctx.newPage();
+vigiar(abertas, "abertas-agora");
+await abertas.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await abertas.evaluate(() => localStorage.removeItem("inbarber:city"));
+await abertas.reload({ waitUntil: "domcontentloaded" });
+await abertas.waitForSelector(".open-card");
+
+const abertasEsperadas = await abertas.evaluate(() =>
+  window.INBARBER_DATA.openNowShops(null, 6).map((s) => s.name)
+);
+const abertasExibidas = await abertas.$$eval(".open-card__name a", (ns) =>
+  ns.map((n) => n.textContent.trim())
+);
+checar(
+  "Abertas agora segue a ordem de mérito do data.js",
+  abertasExibidas.join(" | ") === abertasEsperadas.join(" | "),
+  abertasExibidas.join(" | ")
+);
+checar(
+  "Abertas agora só traz barbearia com as portas abertas",
+  await abertas.evaluate(() => {
+    const nomes = Array.from(document.querySelectorAll(".open-card__name a")).map((a) => a.textContent.trim());
+    return nomes.every((nome) => {
+      const shop = window.INBARBER_DATA.barbershops.find((s) => s.name === nome);
+      return shop && shop.openNow === true;
+    });
+  })
+);
+checar(
+  "A contagem de abertas bate com os dados",
+  await abertas.evaluate(
+    () =>
+      document.querySelector("[data-open-count]").textContent.trim() ===
+      `${window.INBARBER_DATA.openNowCount()} abertas`
+  ),
+  await abertas.$eval("[data-open-count]", (n) => n.textContent.trim())
+);
+checar(
+  "Cada aberta leva ao perfil com origem home-open",
+  (await abertas.$$eval(".open-card .rec-link", (as) => as.map((a) => a.getAttribute("href")))).every((h) =>
+    h.includes("ref=home-open")
+  )
+);
+checar(
+  "O próximo horário das abertas já vai com a data escolhida na query",
+  (await abertas.$$eval(".open-card__slot", (as) => as.map((a) => a.getAttribute("href")))).every((h) =>
+    /slot=\d{4}-\d{2}-\d{2}T\d{2}%3A\d{2}/.test(h)
+  ),
+  await abertas.$eval(".open-card__slot", (a) => a.getAttribute("href"))
+);
+checar(
+  "Sem cidade conhecida, nenhuma aberta promete proximidade",
+  (await abertas.$$(".open-card .rec-near")).length === 0
+);
+
+/* Descrição de cada card: horário de fechamento, motivo, serviços e nota. */
+checar(
+  "Cada aberta diz até que horas fica aberta, com o dado do data.js",
+  await abertas.evaluate(() =>
+    Array.from(document.querySelectorAll(".open-card")).every((card) => {
+      const nome = card.querySelector(".open-card__name a").textContent.trim();
+      const shop = window.INBARBER_DATA.barbershops.find((s) => s.name === nome);
+      const texto = card.querySelector(".open-card__until").textContent.trim();
+      return shop && shop.closesAt && texto === `Fecha às ${shop.closesAt}`;
+    })
+  ),
+  await abertas.$eval(".open-card__until", (n) => n.textContent.trim())
+);
+checar(
+  "Cada aberta traz motivo, serviços, nota com avaliações e preço",
+  await abertas.evaluate(() =>
+    Array.from(document.querySelectorAll(".open-card")).every(
+      (card) =>
+        card.querySelector(".open-card__reason") &&
+        card.querySelectorAll(".rec-services .chip").length === 2 &&
+        card.querySelector(".rec-rating__count") &&
+        card.querySelector(".rec-price strong")
+    )
+  )
+);
+checar(
+  "O selo de aberta agora vive sobre a foto",
+  (await abertas.$$(".open-card__media .open-card__live")).length ===
+    (await abertas.$$(".open-card")).length
+);
+
+/* A foto era uma tira esticada (1:2.6) que cortava rostos. */
+const proporcoes = await abertas.$$eval(".open-card__media", (ns) =>
+  ns.map((n) => {
+    const r = n.getBoundingClientRect();
+    return r.height / r.width;
+  })
+);
+checar(
+  "A foto de cada aberta fica num retrato normal, sem virar tira",
+  proporcoes.length > 0 && proporcoes.every((r) => r >= 1 && r <= 1.9),
+  proporcoes.map((r) => "1:" + r.toFixed(2)).join(", ")
+);
+checar(
+  "O recorte retrato vem pronto do servidor de imagens, com a versão deitada para o celular",
+  await abertas.evaluate(() =>
+    Array.from(document.querySelectorAll(".open-card__media")).every((media) => {
+      const img = media.querySelector("picture > img");
+      const fonte = media.querySelector("picture > source");
+      return (
+        img &&
+        fonte &&
+        /w=480&h=760/.test(img.getAttribute("src")) &&
+        fonte.getAttribute("media") === "(max-width: 519px)" &&
+        /w=800/.test(fonte.getAttribute("srcset"))
+      );
+    })
+  )
+);
+
+/* Com cidade escolhida na busca do hero, as da cidade encabeçam a lista. */
+await abertas.evaluate(() => {
+  localStorage.setItem("inbarber:city", "Curitiba");
+  document.dispatchEvent(new CustomEvent("inbarber:citychange", { detail: { city: "Curitiba" } }));
+});
+await abertas.waitForTimeout(250);
+checar(
+  "Com cidade conhecida, as abertas da cidade vêm primeiro",
+  (await abertas.$eval(".open-card__name a", (a) => a.textContent.trim())) === "Distrito Barber",
+  await abertas.$eval(".open-card__name a", (a) => a.textContent.trim())
+);
+checar(
+  "A aberta da cidade recebe o selo \"Na sua cidade\"",
+  (await abertas.$eval(".open-card .rec-near", (n) => n.textContent.trim())) === "Na sua cidade"
+);
+await abertas.evaluate(() => localStorage.removeItem("inbarber:city"));
+await abertas.close();
+
+/* Ícone no lugar do ponto colorido, nos dois títulos de bloco. */
+const marcas = await ctx.newPage();
+vigiar(marcas, "marcas-de-bloco");
+await marcas.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await marcas.waitForSelector(".open-card");
+checar(
+  "\"Novas na InBarber\" e \"Abertas agora\" são anunciadas por ícone, não por bola",
+  await marcas.evaluate(() => {
+    const novas = document.querySelector(".news__title .section-mark--violet svg");
+    const abertas = document.querySelector(".open__title .section-mark--success svg");
+    const semPseudo = (sel) =>
+      getComputedStyle(document.querySelector(sel), "::before").content === "none";
+    return !!novas && !!abertas && semPseudo(".news__title") && semPseudo(".open__title");
+  })
+);
+checar(
+  "As marcas dos títulos são decorativas para o leitor de tela",
+  await marcas.evaluate(() =>
+    Array.from(document.querySelectorAll(".section-mark")).every(
+      (n) => n.getAttribute("aria-hidden") === "true"
+    )
+  )
+);
+checar(
+  "O título continua legível como texto para o leitor de tela",
+  (await marcas.$eval(".open__title", (n) => n.textContent.replace(/\s+/g, " ").trim())) ===
+    "Abertas agora"
+);
+await marcas.close();
+
+/* --- 15.3 Fechada em vermelho ------------------------------------------------ */
+const status = await ctx.newPage();
+vigiar(status, "status-fechada");
+await status.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await status.waitForSelector(".rec-hero__name");
+checar(
+  "Todo selo de fechada usa o vermelho de erro, e nenhum de aberta usa",
+  await status.evaluate(() => {
+    const selos = Array.from(document.querySelectorAll(".rec-hero__status, .rec-card__status, .news-card__status"));
+    if (!selos.length) return false;
+    return selos.every((selo) => {
+      const fechada = selo.textContent.trim() === "Fechada";
+      return selo.classList.contains("badge--danger") === fechada;
+    });
+  })
+);
+const corFechada = await status.evaluate(() => {
+  const selo = Array.from(document.querySelectorAll(".badge--danger"))[0];
+  return selo ? getComputedStyle(selo).color : "";
+});
+checar(
+  "O vermelho do selo é o --color-error do design system",
+  corFechada === "rgb(239, 68, 68)",
+  corFechada
+);
+await status.close();
+
+/* --- 15.4 Trilho de novas: navegação e nada de rolagem vertical --------------- */
+const trilho = await ctx.newPage();
+vigiar(trilho, "trilho-novas");
+await trilho.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await trilho.waitForSelector(".news-card");
+await trilho.evaluate(() =>
+  document.querySelectorAll("[data-reveal]").forEach((n) => n.classList.add("is-visible"))
+);
+await trilho.waitForTimeout(300);
+
+checar(
+  "O trilho de novas não rola na vertical",
+  await trilho.evaluate(() => {
+    const rail = document.querySelector(".news__rail");
+    return getComputedStyle(rail).overflowY === "hidden" && rail.scrollHeight - rail.clientHeight <= 0;
+  }),
+  await trilho.evaluate(() => {
+    const rail = document.querySelector(".news__rail");
+    return `${getComputedStyle(rail).overflowY} / sobra ${rail.scrollHeight - rail.clientHeight}px`;
+  })
+);
+checar(
+  "Setas ficam nas laterais do trilho no desktop",
+  await trilho.evaluate(() => {
+    const prev = document.querySelector("[data-news-prev]");
+    const rail = document.querySelector(".news__rail");
+    /* absoluto: o inline-flex do CSS é "blockificado" para flex pelo navegador */
+    if (prev.hidden || getComputedStyle(prev).display === "none") return false;
+    const caixa = prev.getBoundingClientRect();
+    const trilho = rail.getBoundingClientRect();
+    return caixa.right <= trilho.left + 24;
+  })
+);
+checar(
+  "Um ponto por barbearia do trilho, com o primeiro em destaque",
+  await trilho.evaluate(() => {
+    const pontos = document.querySelectorAll(".news__dot");
+    const cards = document.querySelectorAll(".news-card");
+    return pontos.length === cards.length && pontos[0].classList.contains("is-current");
+  })
+);
+checar(
+  "A seta avança o trilho e o ponto acompanha",
+  await trilho.evaluate(async () => {
+    const rail = document.querySelector(".news__rail");
+    document.querySelector("[data-news-next]").click();
+    await new Promise((r) => setTimeout(r, 600));
+    const pontoAtivo = Array.from(document.querySelectorAll(".news__dot")).findIndex((d) =>
+      d.classList.contains("is-current")
+    );
+    return rail.scrollLeft > 0 && pontoAtivo > 0;
+  })
+);
+checar(
+  "O ponto leva direto à barbearia escolhida",
+  await trilho.evaluate(async () => {
+    const rail = document.querySelector(".news__rail");
+    document.querySelectorAll(".news__dot")[0].click();
+    await new Promise((r) => setTimeout(r, 600));
+    return rail.scrollLeft < 8;
+  })
+);
+checar(
+  "As setas do teclado percorrem o trilho",
+  await trilho.evaluate(async () => {
+    const rail = document.querySelector(".news__rail");
+    rail.focus();
+    const antes = rail.scrollLeft;
+    rail.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+    await new Promise((r) => setTimeout(r, 600));
+    return document.activeElement === rail && rail.scrollLeft > antes;
+  })
+);
+checar(
+  "O card do trilho carrega nota, status, serviços e chamada para o perfil",
+  await trilho.evaluate(() => {
+    const card = document.querySelector(".news-card");
+    return (
+      !!card.querySelector(".rec-rating__count") &&
+      !!card.querySelector(".news-card__status") &&
+      card.querySelectorAll(".rec-services .chip").length > 0 &&
+      !!card.querySelector(".rec-card__cta")
+    );
+  })
+);
+checar(
+  "A contagem de novas bate com a janela do selo \"Novo\"",
+  await trilho.evaluate(() => {
+    const data = window.INBARBER_DATA;
+    const dentro = data.newest(6).filter((s) => data.isNewShop(s)).length;
+    const texto = document.querySelector("[data-news-count]").textContent.trim();
+    return dentro === 0
+      ? document.querySelector("[data-news-count]").hidden
+      : texto === `${dentro} novas nos últimos ${data.newShopDays} dias`;
+  }),
+  await trilho.$eval("[data-news-count]", (n) => n.textContent.trim())
+);
+await trilho.close();
+
+/* No celular as setas saem de cena: o trilho se rola com o polegar. */
+const trilhoMobile = await ctx.newPage();
+vigiar(trilhoMobile, "trilho-mobile");
+await trilhoMobile.setViewportSize({ width: 375, height: 800 });
+await trilhoMobile.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await trilhoMobile.waitForSelector(".news-card");
+checar(
+  "No celular o trilho não mostra setas",
+  (await trilhoMobile.$eval("[data-news-next]", (n) => getComputedStyle(n).display)) === "none"
+);
+await trilhoMobile.close();
+
+/* --- 15.5 Favoritar exige conta ---------------------------------------------- */
+/* Contexto próprio: esta bateria cria sessão e favoritas, e nada disso pode
+   vazar para as outras verificações. */
+const ctxConta = await navegador.newContext({ viewport: { width: 1280, height: 900 }, locale: "pt-BR" });
+const conta = await ctxConta.newPage();
+vigiar(conta, "conta");
+await conta.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+await conta.waitForSelector(".open-card");
+
+checar(
+  "Todo card de barbearia da home tem coração",
+  await conta.evaluate(() => {
+    const cards = document.querySelectorAll(".rec-hero, .rec-card, .news-card, .open-card");
+    return cards.length > 0 && Array.from(cards).every((c) => c.querySelector("[data-fav]"));
+  })
+);
+checar(
+  "Sem conta, o coração aparece bloqueado e vazio",
+  await conta.evaluate(() =>
+    Array.from(document.querySelectorAll("[data-fav]")).every(
+      (b) => b.hasAttribute("data-fav-locked") && b.getAttribute("aria-pressed") === "false"
+    )
+  )
+);
+checar(
+  "Sem conta, o rótulo do coração convida a entrar",
+  /^Entre na sua conta para salvar .+ nas favoritas$/.test(
+    await conta.$eval("[data-fav]", (b) => b.getAttribute("aria-label"))
+  ),
+  await conta.$eval("[data-fav]", (b) => b.getAttribute("aria-label"))
+);
+
+const urlAntes = conta.url();
+const alvo = await conta.$eval(".rec-hero [data-fav]", (b) => b.getAttribute("data-fav-name"));
+await conta.click(".rec-hero [data-fav]");
+await conta.waitForTimeout(300);
+checar("O coração não leva ao perfil por engano", conta.url() === urlAntes);
+checar(
+  "Sem conta, o clique no coração abre o painel de entrada",
+  await conta.evaluate(() => {
+    const painel = document.querySelector("[data-account-panel]");
+    return painel && !painel.hidden;
+  })
+);
+checar(
+  "O painel diz qual barbearia o visitante quis salvar",
+  (await conta.$eval("[data-account-intro]", (n) => n.textContent.trim())) ===
+    `Entre para salvar ${alvo} nas suas favoritas.`,
+  await conta.$eval("[data-account-intro]", (n) => n.textContent.trim())
+);
+checar(
+  "Sem conta, nada é salvo",
+  (await conta.evaluate(() => window.InBarberAccount.favorites().length)) === 0
+);
+
+/* E-mail inválido não abre sessão. */
+await conta.fill("#account-name", "Miguel Costa");
+await conta.fill("#account-email", "miguel");
+await conta.click(".account-panel__submit");
+await conta.waitForTimeout(200);
+checar(
+  "E-mail inválido não inicia sessão e explica o erro",
+  (await conta.evaluate(() => window.InBarberAccount.isSignedIn())) === false &&
+    (await conta.$eval("[data-account-error]", (n) => !n.hidden))
+);
+
+await conta.fill("#account-email", "miguel@exemplo.com");
+await conta.click(".account-panel__submit");
+await conta.waitForTimeout(400);
+
+checar("Entrar inicia a sessão", await conta.evaluate(() => window.InBarberAccount.isSignedIn()));
+checar(
+  "A barbearia que estava esperando entra nas favoritas assim que a conta existe",
+  await conta.evaluate(() => {
+    const shop = window.INBARBER_DATA.recommended(null, 7)[0];
+    return window.InBarberAccount.isFavorite(shop.id);
+  })
+);
+checar(
+  "O coração fica preenchido e muda o rótulo",
+  await conta.$eval(
+    ".rec-hero [data-fav]",
+    (b) =>
+      b.getAttribute("aria-pressed") === "true" &&
+      !b.hasAttribute("data-fav-locked") &&
+      b.getAttribute("aria-label").indexOf("Tirar") === 0
+  )
+);
+checar(
+  "O header passa a mostrar a conta do visitante",
+  (await conta.$eval("[data-signin] .account-avatar", (n) => n.textContent.trim())) === "MC",
+  await conta.$eval("[data-signin]", (n) => n.textContent.trim())
+);
+
+await conta.reload({ waitUntil: "domcontentloaded" });
+await conta.waitForSelector(".rec-hero__name");
+checar(
+  "A favorita e a sessão sobrevivem ao recarregar",
+  (await conta.evaluate(() => window.InBarberAccount.isSignedIn())) &&
+    (await conta.$eval(".rec-hero [data-fav]", (b) => b.getAttribute("aria-pressed"))) === "true"
+);
+
+/* Desfavoritar volta atrás sem apagar a sessão. */
+await conta.click(".rec-hero [data-fav]");
+await conta.waitForTimeout(250);
+checar(
+  "Clicar de novo tira das favoritas",
+  (await conta.evaluate(() => window.InBarberAccount.favorites().length)) === 0 &&
+    (await conta.$eval(".rec-hero [data-fav]", (b) => b.getAttribute("aria-pressed"))) === "false"
+);
+
+/* Menu da conta e saída. */
+await conta.click("[data-fav]");
+await conta.waitForTimeout(200);
+await conta.click("[data-signin]");
+await conta.waitForTimeout(200);
+checar(
+  "Com sessão, o botão do header abre o menu da conta",
+  await conta.$eval("[data-account-menu]", (n) => !n.hidden)
+);
+checar(
+  "O menu conta quantas favoritas o visitante tem",
+  (await conta.$eval(".account-menu__favorites", (n) => n.textContent.trim())) === "1 barbearia favorita",
+  await conta.$eval(".account-menu__favorites", (n) => n.textContent.trim())
+);
+await conta.click("[data-account-signout]");
+await conta.waitForTimeout(300);
+checar(
+  "Sair encerra a sessão e tranca o coração de novo",
+  (await conta.evaluate(() => window.InBarberAccount.isSignedIn())) === false &&
+    (await conta.$eval("[data-fav]", (b) => b.hasAttribute("data-fav-locked")))
+);
+checar(
+  "As favoritas continuam guardadas para quando a mesma conta voltar",
+  await conta.evaluate(() => {
+    window.InBarberAccount.signIn({ name: "Miguel Costa", email: "miguel@exemplo.com" });
+    return window.InBarberAccount.favorites().length === 1;
+  })
+);
+
+/* i18n dos rótulos do coração. */
+await conta.evaluate(() => window.InBarberI18n.setLanguage("en"));
+await conta.waitForTimeout(300);
+checar(
+  "O rótulo do coração acompanha o idioma",
+  /favourites$/.test(await conta.$eval("[data-fav]", (b) => b.getAttribute("aria-label"))),
+  await conta.$eval("[data-fav]", (b) => b.getAttribute("aria-label"))
+);
+await ctxConta.close();
 
 /* --- 16. Responsivo ---------------------------------------------------------- */
 const rotas = ["index.html", "barbearias.html", "barbearia.html?id=distrito-barber", "para-barbearias.html"];

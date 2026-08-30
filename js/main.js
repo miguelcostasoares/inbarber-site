@@ -49,6 +49,10 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>',
     chevronRight:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>',
+    heart:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.7c-.3 0-.6-.1-.8-.3C7.6 17.5 3 14 3 9.9A4.9 4.9 0 0 1 12 7.2a4.9 4.9 0 0 1 9 2.7c0 4.1-4.6 7.6-8.2 10.5-.2.2-.5.3-.8.3Z" stroke-linejoin="round"/></svg>',
+    door:
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v17h9"/><path d="M14 3l5 2.5V21h-5z"/><path d="M16.5 12.5v1.5"/></svg>',
     crown:
       '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 7.6a1.4 1.4 0 0 1 2.2 1.15l-.02.2 2.2 1.5a1 1 0 0 0 1.44-.32l2-3.46a1.4 1.4 0 1 1 1.56 0l2 3.46a1 1 0 0 0 1.44.32l2.2-1.5-.02-.2A1.4 1.4 0 1 1 20.4 10l-1.24 6.1a1.3 1.3 0 0 1-1.28 1.05H6.12a1.3 1.3 0 0 1-1.28-1.05L3.6 10a1.4 1.4 0 0 1-.2-2.4Z"/><rect x="5.6" y="18.35" width="12.8" height="2.15" rx="1.07"/></svg>'
   };
@@ -118,6 +122,36 @@
       /* silencioso: a sessão atual continua funcionando */
     }
     document.dispatchEvent(new CustomEvent("inbarber:citychange", { detail: { city: city } }));
+  }
+
+  /**
+   * Coração de favorita, em cima da foto do card.
+   *
+   * Favoritar exige conta: sem sessão o botão continua visível e clicável,
+   * mas o clique abre o painel de entrada em vez de salvar — quem não sabe
+   * que a função existe nunca cria conta por causa dela. O estado e o
+   * rótulo são mantidos pelo js/conta.js, que sincroniza todos os botões da
+   * mesma barbearia quando a sessão ou a lista de favoritas muda.
+   */
+  function favButtonMarkup(shop, className) {
+    var account = window.InBarberAccount;
+    var signedIn = !!(account && account.isSignedIn());
+    var active = !!(account && account.isFavorite(shop.id));
+    var label = signedIn
+      ? i18n.t(active ? "fav.remove" : "fav.add", { name: shop.name })
+      : i18n.t("fav.locked", { name: shop.name });
+
+    return (
+      '<button type="button" class="fav-btn' + (className ? " " + className : "") + '"' +
+        ' data-fav="' + escapeHtml(shop.id) + '"' +
+        ' data-fav-name="' + escapeHtml(shop.name) + '"' +
+        ' aria-pressed="' + (active ? "true" : "false") + '"' +
+        (signedIn ? "" : " data-fav-locked") +
+        ' aria-label="' + escapeHtml(label) + '"' +
+        ' title="' + escapeHtml(label) + '">' +
+        ICONS.heart +
+      "</button>"
+    );
   }
 
   function starsMarkup(rating, size) {
@@ -350,7 +384,8 @@
       })
       .join("");
 
-    var statusClass = shop.openNow ? "badge--success" : "badge--muted";
+    /* Fechada em vermelho: é o dado que muda a decisão de quem está olhando. */
+    var statusClass = shop.openNow ? "badge--success" : "badge--danger";
     var statusText = i18n.t(shop.openNow ? "shops.openNow" : "shops.closed");
     var altText = i18n.t("shops.photoAlt", { name: shop.name, city: shop.city });
 
@@ -358,6 +393,7 @@
       '<div class="shop-card__media">' +
         '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="800" height="500">' +
         '<span class="badge ' + statusClass + ' shop-card__status"><span class="badge__dot"></span>' + escapeHtml(statusText) + "</span>" +
+        favButtonMarkup(shop) +
         '<span class="shop-card__rating">' + ICONS.star +
           i18n.formatRating(shop.rating) +
           '<span class="shop-card__reviews">(' + i18n.formatNumber(shop.reviews) + ")</span>" +
@@ -392,14 +428,19 @@
   }
 
   /* ======================================================================
-     4.1 RECOMENDADAS — ranking da home + trilho de novas barbearias
+     4.1 RECOMENDADAS — ranking, novas barbearias e abertas agora
 
-     Duas listas com propósitos diferentes, montadas do mesmo data.js:
+     Três listas com propósitos diferentes, montadas do mesmo data.js:
 
        Ranking  — mérito puro (nota + avaliações dos últimos 30 dias). Não é
                   espaço comprado: quem paga aparece no carrossel do hero,
                   com selo de "Destaque pago". Aqui ninguém compra posição.
        Novas    — as últimas barbearias a entrar, ordenadas por joinedAt.
+       Abertas  — quem está de portas abertas agora, com o próximo horário
+                  livre já clicável. Responde ao "quero cortar hoje".
+
+     Em todos os cards o coração salva a barbearia nas favoritas, e favoritar
+     exige conta: sem sessão o clique abre o painel de entrada (js/conta.js).
 
      Quando o visitante já escolheu uma cidade (na busca do hero ou pela
      geolocalização), o ranking traz as barbearias dessa cidade primeiro e
@@ -413,6 +454,9 @@
   var RECS_LIMIT_SMALL = 5;
   var RECS_BREAKPOINT = "(min-width: 640px)";
   var NEWS_LIMIT = 6;
+  /* "Abertas agora" é uma lista de ação, não de vitrine: seis cabem em duas
+     fileiras de três e ninguém precisa rolar para decidir. */
+  var OPEN_LIMIT = 6;
 
   /** Cidade guardada pela busca do hero, se for uma cidade atendida. */
   function visitorCity() {
@@ -519,8 +563,10 @@
     );
   }
 
+  /* Aberta em verde, fechada em vermelho: o selo é a única pista de que não
+     adianta procurar horário para hoje, então ele precisa gritar. */
   function statusMarkup(shop, className) {
-    var badgeClass = shop.openNow ? "badge--success" : "badge--muted";
+    var badgeClass = shop.openNow ? "badge--success" : "badge--danger";
     var label = i18n.t(shop.openNow ? "shops.openNow" : "shops.closed");
     return (
       '<span class="badge ' + badgeClass + " " + className + '">' +
@@ -598,6 +644,7 @@
       '<div class="rec-hero__media">' +
         '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="800" height="600">' +
         '<span class="rec-hero__medal" aria-hidden="true">' + ICONS.crown + "</span>" +
+        favButtonMarkup(shop) +
         statusMarkup(shop, "rec-hero__status") +
       "</div>" +
       '<div class="rec-hero__body">' +
@@ -644,6 +691,7 @@
     card.innerHTML =
       '<div class="rec-card__media">' +
         '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="600" height="400">' +
+        favButtonMarkup(shop) +
         statusMarkup(shop, "rec-card__status") +
       "</div>" +
       '<div class="rec-card__body">' +
@@ -682,6 +730,11 @@
     return i18n.t("news.joinedSince", { month: formatMonth(joined), year: joined.getFullYear() });
   }
 
+  /* O card do trilho era o mais pobre da seção — foto, nome e data. Agora ele
+     carrega a mesma informação que decide uma escolha nos outros cards: nota
+     com o número de avaliações, se está aberta agora, serviços e preço. Só os
+     "próximos horários" ficam de fora, porque o trilho é uma vitrine de quem
+     chegou, e não a lista de agendamento. */
   function newsCard(shop) {
     var item = el("li", "news-item");
     var card = el("article", "news-card");
@@ -695,20 +748,24 @@
         (data.isNewShop(shop)
           ? '<span class="news-card__badge">' + ICONS.sparkle + escapeHtml(i18n.t("news.badge")) + "</span>"
           : "") +
+        favButtonMarkup(shop) +
+        statusMarkup(shop, "news-card__status") +
       "</div>" +
       '<div class="news-card__body">' +
         '<h4 class="news-card__name">' +
           '<a class="rec-link" href="' + profileHref(shop, "home-new") + '">' + escapeHtml(shop.name) + "</a>" +
         "</h4>" +
+        '<div class="news-card__rating">' + ratingMarkup(shop) + "</div>" +
         '<p class="rec-meta">' + ICONS.pin +
           "<span>" + escapeHtml(shop.neighborhood + " · " + shop.city) + "</span>" +
         "</p>" +
-        '<p class="news-card__joined">' + escapeHtml(joinedLabel(shop)) + "</p>" +
+        '<p class="news-card__joined">' + ICONS.sparkle +
+          "<span>" + escapeHtml(joinedLabel(shop)) + "</span>" +
+        "</p>" +
+        '<ul class="rec-services">' + servicesMarkup(shop, 3) + "</ul>" +
         '<div class="news-card__footer">' +
-          '<span class="rec-rating rec-rating--sm">' + ICONS.star +
-            "<strong>" + escapeHtml(i18n.formatRating(shop.rating)) + "</strong>" +
-          "</span>" +
           priceMarkup(shop) +
+          '<span class="rec-card__cta">' + escapeHtml(i18n.t("shops.viewProfile")) + ICONS.arrowRight + "</span>" +
         "</div>" +
       "</div>";
 
@@ -716,35 +773,166 @@
     return item;
   }
 
-  /** Setas do trilho: só existem quando há o que rolar. */
-  function bindRailControls(rail, prevBtn, nextBtn) {
-    if (!rail || !prevBtn || !nextBtn) return;
+  /**
+   * Navegação do trilho.
+   *
+   * Quatro formas de percorrer a mesma lista, porque cada aparelho tem a sua:
+   * setas nas laterais (mouse), arrastar (mouse e toque), setas do teclado
+   * (o trilho é focável) e os pontos, que também dizem onde se está. As setas
+   * e os pontos só existem quando há mesmo o que rolar.
+   */
+  function bindRailControls(rail, prevBtn, nextBtn, dots) {
+    if (!rail) return;
+
+    function items() {
+      return qsa(".news-item", rail);
+    }
 
     function step() {
       var card = qs(".news-item", rail);
-      return card ? card.getBoundingClientRect().width + 16 : rail.clientWidth * 0.8;
+      if (!card) return rail.clientWidth * 0.8;
+      var gap = parseFloat(window.getComputedStyle(rail).columnGap || "16") || 16;
+      return card.getBoundingClientRect().width + gap;
     }
 
-    function sync() {
-      var scrollable = rail.scrollWidth - rail.clientWidth > 4;
-      prevBtn.hidden = !scrollable;
-      nextBtn.hidden = !scrollable;
-      if (!scrollable) return;
-      prevBtn.disabled = rail.scrollLeft <= 4;
-      nextBtn.disabled = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 4;
+    function activeIndex() {
+      var list = items();
+      if (!list.length) return 0;
+      var railLeft = rail.getBoundingClientRect().left;
+      var best = 0;
+      var bestDistance = Infinity;
+      list.forEach(function (node, index) {
+        var distance = Math.abs(node.getBoundingClientRect().left - railLeft);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = index;
+        }
+      });
+      return best;
     }
 
-    function scrollBy(amount) {
+    function scrollAmount(amount) {
       var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       rail.scrollBy({ left: amount, behavior: reduced ? "auto" : "smooth" });
     }
 
-    prevBtn.addEventListener("click", function () {
-      scrollBy(-step());
+    function goTo(index) {
+      var list = items();
+      if (!list[index]) return;
+      var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      rail.scrollTo({
+        left: list[index].offsetLeft - list[0].offsetLeft,
+        behavior: reduced ? "auto" : "smooth"
+      });
+    }
+
+    function renderDots() {
+      if (!dots) return;
+      var total = items().length;
+      var scrollable = rail.scrollWidth - rail.clientWidth > 4;
+      dots.hidden = !scrollable || total < 2;
+      if (dots.hidden) {
+        dots.innerHTML = "";
+        return;
+      }
+      if (dots.children.length !== total) {
+        var markup = "";
+        for (var i = 0; i < total; i += 1) {
+          markup +=
+            '<button type="button" class="news__dot" data-news-dot="' + i + '" aria-label="' +
+            escapeHtml(i18n.t("news.dot", { index: i + 1, total: total })) + '"></button>';
+        }
+        dots.innerHTML = markup;
+      }
+      var current = activeIndex();
+      qsa("[data-news-dot]", dots).forEach(function (dot, index) {
+        var isCurrent = index === current;
+        dot.classList.toggle("is-current", isCurrent);
+        if (isCurrent) dot.setAttribute("aria-current", "true");
+        else dot.removeAttribute("aria-current");
+      });
+    }
+
+    function sync() {
+      var scrollable = rail.scrollWidth - rail.clientWidth > 4;
+      [prevBtn, nextBtn].forEach(function (button) {
+        if (!button) return;
+        button.hidden = !scrollable;
+        if (!scrollable) return;
+        button.disabled = button === prevBtn
+          ? rail.scrollLeft <= 4
+          : rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 4;
+      });
+      rail.setAttribute("tabindex", scrollable ? "0" : "-1");
+      renderDots();
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        scrollAmount(-step());
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        scrollAmount(step());
+      });
+    }
+
+    if (dots) {
+      dots.addEventListener("click", function (event) {
+        var dot = event.target.closest("[data-news-dot]");
+        if (!dot) return;
+        goTo(Number(dot.getAttribute("data-news-dot")));
+      });
+    }
+
+    /* Teclado: o trilho é uma região focável, então as setas percorrem os
+       cards em vez de rolar a página inteira. */
+    rail.addEventListener("keydown", function (event) {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      scrollAmount(event.key === "ArrowLeft" ? -step() : step());
     });
-    nextBtn.addEventListener("click", function () {
-      scrollBy(step());
+
+    /* Arrastar com o mouse. O toque já rola sozinho, e um arrasto que virou
+       clique não pode abrir o perfil da barbearia por acidente. */
+    var dragging = false;
+    var moved = false;
+    var startX = 0;
+    var startScroll = 0;
+
+    rail.addEventListener("pointerdown", function (event) {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      if (event.target.closest("a, button")) return;
+      dragging = true;
+      moved = false;
+      startX = event.clientX;
+      startScroll = rail.scrollLeft;
+      rail.classList.add("is-dragging");
     });
+
+    rail.addEventListener("pointermove", function (event) {
+      if (!dragging) return;
+      var delta = event.clientX - startX;
+      if (Math.abs(delta) > 4) moved = true;
+      rail.scrollLeft = startScroll - delta;
+    });
+
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      rail.classList.remove("is-dragging");
+    }
+
+    rail.addEventListener("pointerup", endDrag);
+    rail.addEventListener("pointercancel", endDrag);
+    rail.addEventListener("pointerleave", endDrag);
+    rail.addEventListener("click", function (event) {
+      if (!moved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      moved = false;
+    }, true);
 
     rail.addEventListener("scroll", sync, { passive: true });
     window.addEventListener("resize", sync);
@@ -752,14 +940,115 @@
     return sync;
   }
 
+  /* ----------------------------------------------------------------------
+     Abertas agora
+
+     A terceira lista da seção responde a uma pergunta que as outras duas não
+     respondem: "dá para cortar o cabelo hoje?". Por isso o card é horizontal
+     e curto — o que importa é o nome, onde fica e o próximo horário livre,
+     que já é um link de agendamento. Acento verde, o mesmo do selo "Aberto
+     agora", para não disputar com o dourado do ranking nem com o violeta das
+     novas.
+     ---------------------------------------------------------------------- */
+  /** "21:00" em PT/ES, "9:00 PM" em EN — mesmo formatador dos horários livres. */
+  function formatClock(value) {
+    var parts = String(value || "").split(":");
+    var date = new Date();
+    date.setHours(Number(parts[0]) || 0, Number(parts[1]) || 0, 0, 0);
+    return formatTime(date);
+  }
+
+  function openCard(shop, city) {
+    var item = el("li", "open-item");
+    var card = el("article", "open-card");
+    card.setAttribute("data-reveal", "");
+
+    var proximity = proximityLabel(shop, city);
+    var altText = i18n.t("shops.photoAlt", { name: shop.name, city: shop.city });
+    var slots = data.nextSlots(shop, 1);
+    var slot = slots.length ? slots[0] : null;
+
+    var slotMarkup = "";
+    if (slot) {
+      var day = slotDayLabel(slot);
+      var time = formatTime(slot.date);
+      slotMarkup =
+        '<a class="rec-slot open-card__slot" href="' +
+          profileHref(shop, "home-open", "&slot=" + encodeURIComponent(localISO(slot.date))) +
+          '" aria-label="' + escapeHtml(i18n.t("recs.slotAria", { day: day, time: time, name: shop.name })) + '">' +
+          '<span class="rec-slot__day">' + escapeHtml(i18n.t("open.nextLabel")) + "</span>" +
+          '<span class="rec-slot__time">' + escapeHtml(day + " · " + time) + "</span>" +
+        "</a>";
+    }
+
+    /* A foto é um retrato de proporção fixa (4/5) embutido no card, e não a
+       coluna esticada de antes: em uma grade onde os cards se igualam pela
+       altura, a foto esticada virava uma tira estreita que cortava rostos. */
+    card.innerHTML =
+      '<div class="open-card__media">' +
+        "<picture>" +
+          /* Até 519px a coluna vira uma faixa deitada no topo do card; acima
+             disso é um retrato. Cada recorte vem pronto do servidor de
+             imagens, em vez de sair de um corte do object-fit. */
+          '<source media="(max-width: 519px)" srcset="' + shop.image + '">' +
+          '<img src="' + data.portraitPhoto(shop) + '" alt="' + escapeHtml(altText) +
+            '" loading="lazy" decoding="async" width="480" height="760">' +
+        "</picture>" +
+        '<span class="open-card__live">' +
+          '<span class="badge__dot"></span>' + escapeHtml(i18n.t("open.badge")) +
+        "</span>" +
+      "</div>" +
+      '<div class="open-card__body">' +
+        '<div class="open-card__head">' +
+          '<h4 class="open-card__name">' +
+            '<a class="rec-link" href="' + profileHref(shop, "home-open") + '">' + escapeHtml(shop.name) + "</a>" +
+          "</h4>" +
+          '<p class="open-card__meta">' + ICONS.pin +
+            "<span>" + escapeHtml(shop.neighborhood + " · " + shop.city) + "</span>" +
+          "</p>" +
+          (proximity ? '<p class="open-card__near"><span class="rec-near">' + escapeHtml(proximity) + "</span></p>" : "") +
+        "</div>" +
+        '<p class="open-card__until">' + ICONS.clock +
+          "<span>" + escapeHtml(i18n.t("open.until", { time: formatClock(shop.closesAt) })) + "</span>" +
+        "</p>" +
+        '<p class="open-card__reason">' + ICONS.trend +
+          "<span>" + escapeHtml(reasonFor(shop)) + "</span>" +
+        "</p>" +
+        '<ul class="rec-services">' + servicesMarkup(shop, 2) + "</ul>" +
+        '<div class="open-card__stats">' +
+          ratingMarkup(shop) +
+          priceMarkup(shop) +
+        "</div>" +
+        '<div class="open-card__footer">' +
+          slotMarkup +
+          '<span class="rec-card__cta">' + escapeHtml(i18n.t("shops.viewProfile")) + ICONS.arrowRight + "</span>" +
+        "</div>" +
+      "</div>" +
+      favButtonMarkup(shop, "fav-btn--sm");
+
+    item.appendChild(card);
+    return item;
+  }
+
   function initRecommendedShops() {
     var grid = qs("[data-featured-shops]");
     var rail = qs("[data-new-shops]");
-    if (!grid && !rail) return;
+    var openGrid = qs("[data-open-shops]");
+    if (!grid && !rail && !openGrid) return;
 
     var title = qs("[data-recs-title]");
     var subtitle = qs("[data-recs-subtitle]");
-    var syncRail = bindRailControls(rail, qs("[data-news-prev]"), qs("[data-news-next]"));
+    var newsCount = qs("[data-news-count]");
+    var openBlock = qs("[data-open-block]");
+    var openSubtitle = qs("[data-open-subtitle]");
+    var openCount = qs("[data-open-count]");
+    var openEmpty = qs("[data-open-empty]");
+    var syncRail = bindRailControls(
+      rail,
+      qs("[data-news-prev]"),
+      qs("[data-news-next]"),
+      qs("[data-news-dots]")
+    );
     var wide = window.matchMedia(RECS_BREAKPOINT);
 
     function renderRanking(city) {
@@ -786,13 +1075,63 @@
       if (!rail) return;
       rail.innerHTML = "";
       rail.setAttribute("aria-label", i18n.t("news.railLabel"));
-      data.newest(NEWS_LIMIT).forEach(function (shop, index) {
+
+      var shops = data.newest(NEWS_LIMIT);
+      shops.forEach(function (shop, index) {
         var item = newsCard(shop);
         qs(".news-card", item).style.setProperty("--reveal-delay", index * 60 + "ms");
         rail.appendChild(item);
       });
+
+      /* A contagem só aparece quando existe: passado o prazo do selo "Novo",
+         o trilho continua correto (são as últimas a entrar) e a pílula sai de
+         cena em vez de anunciar zero. */
+      if (newsCount) {
+        var recent = shops.filter(function (shop) {
+          return data.isNewShop(shop);
+        }).length;
+        newsCount.hidden = recent === 0;
+        newsCount.textContent = recent
+          ? i18n.t("news.count", {
+              count: i18n.formatNumber(recent),
+              days: i18n.formatNumber(data.newShopDays)
+            })
+          : "";
+      }
+
       observeNew(rail);
       if (syncRail) syncRail();
+    }
+
+    function renderOpenNow(city) {
+      if (!openGrid) return;
+      openGrid.innerHTML = "";
+      openGrid.setAttribute("aria-label", i18n.t("open.listLabel"));
+
+      var total = data.openNowCount();
+      var shops = data.openNowShops(city, OPEN_LIMIT);
+
+      if (openSubtitle) {
+        openSubtitle.textContent = city
+          ? i18n.t("open.subtitleCity", { city: city })
+          : i18n.t("open.subtitle");
+      }
+      if (openCount) {
+        openCount.hidden = total === 0;
+        var countText = qs("[data-open-count-text]", openCount) || openCount;
+        countText.textContent = total === 1
+          ? i18n.t("open.countOne")
+          : i18n.t("open.count", { count: i18n.formatNumber(total) });
+      }
+      if (openEmpty) openEmpty.hidden = shops.length > 0;
+      if (openBlock) openBlock.classList.toggle("open--empty", shops.length === 0);
+
+      shops.forEach(function (shop, index) {
+        var item = openCard(shop, city);
+        qs(".open-card", item).style.setProperty("--reveal-delay", index * 55 + "ms");
+        openGrid.appendChild(item);
+      });
+      observeNew(openGrid);
     }
 
     function render() {
@@ -807,6 +1146,7 @@
 
       renderRanking(city);
       renderNews();
+      renderOpenNow(city);
     }
 
     render();

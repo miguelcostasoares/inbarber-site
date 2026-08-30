@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="css/sections.css">
   <link rel="stylesheet" href="css/featured.css">
   <link rel="stylesheet" href="css/recomendadas.css">
+  <link rel="stylesheet" href="css/conta.css">
   <link rel="stylesheet" href="css/responsive.css">
 
   <script type="application/ld+json">
@@ -97,11 +98,18 @@
           <span class="header__business-short" data-i18n="nav.businessShort"></span>
         </a>
 
-        <button type="button" class="btn btn--gradient btn--sm header__signin" data-signin
-                data-i18n-attr="aria-label:nav.signIn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H9.2A4.2 4.2 0 0 0 5 18.7v1.8"/><circle cx="12" cy="7.5" r="3.8"/></svg>
-          <span class="header__signin-label" data-i18n="nav.signIn"></span>
-        </button>
+        <!-- Conta: sem sessão o botão abre o painel de entrada; com sessão
+             ele vira as iniciais do visitante e abre o menu da conta. O
+             conteúdo é reescrito por js/conta.js; o que está aqui é o estado
+             inicial, que continua legível se o JS não carregar. -->
+        <div class="account" data-account>
+          <button type="button" class="btn btn--gradient btn--sm header__signin" data-signin
+                  data-i18n-attr="aria-label:nav.signIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H9.2A4.2 4.2 0 0 0 5 18.7v1.8"/><circle cx="12" cy="7.5" r="3.8"/></svg>
+            <span class="header__signin-label" data-i18n="nav.signIn"></span>
+          </button>
+          <div class="account__menu" data-account-menu hidden></div>
+        </div>
       </div>
     </div>
   </header>
@@ -249,24 +257,74 @@
 
         <div class="recs" data-featured-shops></div>
 
-        <!-- Novas na InBarber: trilho das últimas barbearias a entrar. -->
+        <!-- ================================================================
+             Novas na InBarber
+
+             Trilho das últimas barbearias a entrar, em painel próprio com
+             acento violeta para não disputar com o dourado do ranking. A
+             lista se percorre de quatro formas — setas nas laterais, arrastar,
+             setas do teclado (o trilho é focável) e os pontos abaixo, que
+             também dizem em que ponto da lista se está.
+             ================================================================ -->
         <div class="news" data-reveal>
           <div class="news__header">
             <div class="news__heading">
-              <h3 class="news__title" id="news-title" data-i18n="news.title"></h3>
+              <h3 class="news__title" id="news-title">
+                <span class="section-mark section-mark--violet" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5 13.9 8l5.6 1.9-5.6 1.9L12 17.3l-1.9-5.5L4.5 9.9 10.1 8 12 2.5Z"/><path d="M18.5 14.5 19.4 17l2.6.9-2.6.9-.9 2.5-.9-2.5-2.6-.9 2.6-.9.9-2.5Z" opacity=".6"/></svg>
+                </span>
+                <span data-i18n="news.title"></span>
+              </h3>
               <p class="news__subtitle" data-i18n="news.subtitle"></p>
             </div>
-            <div class="news__controls">
-              <button type="button" class="rail-btn" data-news-prev data-i18n-attr="aria-label:news.prev">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
-              </button>
-              <button type="button" class="rail-btn" data-news-next data-i18n-attr="aria-label:news.next">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
-              </button>
-            </div>
+            <p class="news__count" data-news-count hidden></p>
           </div>
 
-          <ul class="news__rail" data-new-shops></ul>
+          <div class="news__viewport">
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--prev" data-news-prev
+                    data-i18n-attr="aria-label:news.prev" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>
+            </button>
+
+            <ul class="news__rail" data-new-shops aria-describedby="news-hint"></ul>
+
+            <button type="button" class="rail-btn rail-btn--edge rail-btn--next" data-news-next
+                    data-i18n-attr="aria-label:news.next" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+
+          <p class="visually-hidden" id="news-hint" data-i18n="news.railHint"></p>
+          <div class="news__dots" data-news-dots hidden></div>
+        </div>
+
+        <!-- ================================================================
+             Abertas agora
+
+             Terceira lista da seção, para quem quer cortar hoje: só entram
+             barbearias com as portas abertas neste momento, ordenadas pelo
+             mesmo mérito do ranking, e o próximo horário livre já é um link
+             de agendamento.
+             ================================================================ -->
+        <div class="open" data-open-block data-reveal aria-labelledby="open-title">
+          <div class="open__header">
+            <div class="open__heading">
+              <h3 class="open__title" id="open-title">
+                <span class="section-mark section-mark--success" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20.5h16"/><path d="M15 20.5V4.2a1 1 0 0 0-1.2-1L6.8 4.7a1 1 0 0 0-.8 1v14.8"/><path d="M18 20.5V8h-3"/><path d="M12.2 12.4v1.6"/></svg>
+                </span>
+                <span data-i18n="open.title"></span>
+              </h3>
+              <p class="open__subtitle" data-open-subtitle></p>
+            </div>
+            <p class="open__count" data-open-count hidden>
+              <span class="open__count-dot" aria-hidden="true"></span>
+              <span data-open-count-text></span>
+            </p>
+          </div>
+
+          <ul class="open__grid" data-open-shops></ul>
+          <p class="open__empty" data-open-empty data-i18n="open.empty" hidden></p>
         </div>
 
         <div class="shops__footer" data-reveal>
@@ -699,5 +757,6 @@
   <script src="js/i18n.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/featured.js" defer></script>
+  <script src="js/conta.js" defer></script>
 </body>
 </html>

@@ -243,6 +243,14 @@
   border: 1px solid rgba(245, 158, 11, 0.26);
 }
 
+/* "Fechada" é informação que muda a decisão de quem está olhando o card:
+   sai do cinza e vai para o vermelho de erro do sistema. */
+.badge--danger {
+  color: var(--color-error);
+  background: var(--color-error-soft);
+  border: 1px solid rgba(239, 68, 68, 0.32);
+}
+
 .badge__dot {
   width: 6px;
   height: 6px;
@@ -258,6 +266,101 @@
   background: rgba(250, 250, 250, 0.045);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-xs);
+}
+
+/* ==========================================================================
+   3.1 CORAÇÃO DE FAVORITA
+
+   Vive sobre a foto do card, sempre acima do link que cobre o card inteiro
+   (z-index 2, como os horários). Sem conta o coração não some: ele fica
+   vazio e o rótulo explica que é preciso entrar — esconder o botão só
+   deixaria o visitante sem saber que a função existe.
+   ========================================================================== */
+.fav-btn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: var(--color-text);
+  cursor: pointer;
+  background: rgba(9, 9, 11, 0.62);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 50%;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.fav-btn svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  transition: fill var(--duration-fast) var(--ease-out);
+}
+
+.fav-btn:hover {
+  color: var(--color-pink);
+  background: rgba(9, 9, 11, 0.82);
+  border-color: rgba(236, 72, 153, 0.5);
+  transform: scale(1.06);
+}
+
+.fav-btn[aria-pressed="true"] {
+  color: var(--color-pink);
+  border-color: rgba(236, 72, 153, 0.55);
+}
+
+.fav-btn[aria-pressed="true"] svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* Sem sessão o coração é discreto: continua clicável (abre o painel de
+   entrada), mas não finge um estado salvo. */
+.fav-btn[data-fav-locked] {
+  color: var(--color-text-muted);
+}
+
+.fav-btn[data-fav-locked]:hover {
+  color: var(--color-pink);
+}
+
+.fav-btn.is-beating svg {
+  animation: fav-beat 420ms var(--ease-out);
+}
+
+@keyframes fav-beat {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.32); }
+  70% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fav-btn,
+  .fav-btn svg {
+    transition: none;
+  }
+
+  .fav-btn:hover {
+    transform: none;
+  }
+
+  .fav-btn.is-beating svg {
+    animation: none;
+  }
 }
 
 .eyebrow {
