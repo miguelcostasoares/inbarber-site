@@ -259,6 +259,11 @@ window.INBARBER_TRANSLATIONS = {
     "shops.resultsOne": "1 barbearia encontrada",
     "shops.resultsMany": "{count} barbearias encontradas",
     "shops.photoAlt": "Interior da barbearia {name}, em {city}",
+    "shops.nextSlots": "Próximos horários",
+    "shops.distance": "a {km} km",
+    "shops.showing": "Mostrando {shown} de {total}",
+    "shops.loadMore": "Ver mais {count} barbearias",
+    "shops.emptyRelax": "Sem o filtro {label}: {count} barbearias",
 
     /* ---------- Filtros da listagem ---------- */
     "filters.title": "Filtrar resultados",
@@ -281,6 +286,16 @@ window.INBARBER_TRANSLATIONS = {
     "filters.time": "Período",
     "filters.activeTitle": "Filtros ativos",
     "filters.removeFilter": "Remover filtro {label}",
+    "filters.open": "Filtros",
+    "filters.close": "Fechar os filtros",
+    "filters.price": "Preço",
+    "filters.anyPrice": "Qualquer preço",
+    "filters.priceUnder": "Até {price}",
+    "filters.optionCount": "{label} ({count})",
+    "filters.applyCount": "Ver {count} barbearias",
+    "filters.sortRelevance": "Mais relevantes",
+    "filters.sortDistance": "Mais próximas",
+    "filters.sortNewest": "Novidades primeiro",
 
     /* ---------- Serviços ---------- */
     "service.fade": "Degradê",
@@ -489,11 +504,31 @@ window.INBARBER_TRANSLATIONS = {
     "search.eyebrow": "Todas as barbearias",
     "search.title": "Encontre a barbearia certa",
     "search.subtitle":
-      "Filtre por cidade, serviço e nota mínima. Todos os perfis abaixo têm agenda ativa na InBarber.",
-    "search.inputLabel": "Buscar por nome, bairro ou cidade",
-    "search.placeholder": "Buscar por nome, bairro ou cidade",
+      "Comece a digitar: sugerimos barbearias, cidades, bairros e serviços a cada letra. Todos os perfis abaixo têm agenda ativa na InBarber.",
+    "search.inputLabel": "Buscar por nome, bairro, cidade ou serviço",
+    "search.placeholder": "Digite o nome da barbearia, bairro, cidade…",
     "search.button": "Buscar",
     "search.resultsLabel": "Resultados da busca",
+    "search.clear": "Limpar a busca",
+    "search.suggestionsLabel": "Sugestões de busca",
+    "search.groupRecent": "Buscas recentes",
+    "search.groupShops": "Barbearias",
+    "search.groupCities": "Cidades",
+    "search.groupDistricts": "Bairros",
+    "search.groupServices": "Serviços",
+    "search.noSuggestions": "Nada encontrado para \u201c{term}\u201d. Tente outro nome, bairro ou cidade.",
+    "search.oneSuggestion": "1 sugestão disponível",
+    "search.manySuggestions": "{count} sugestões disponíveis",
+    "search.clearRecent": "Limpar buscas recentes",
+
+    /* ---------- Atalhos da busca ---------- */
+    "quick.label": "Atalhos",
+    "quick.openNow": "Abertas agora",
+    "quick.near": "Perto de mim",
+    "quick.nearCity": "Perto de mim · {city}",
+    "quick.topRated": "Nota 4,5+",
+    "quick.new": "Novas na InBarber",
+    "quick.favorites": "Minhas favoritas",
 
     /* ---------- Rodapé ---------- */
     "footer.tagline":
@@ -776,6 +811,11 @@ window.INBARBER_TRANSLATIONS = {
     "shops.resultsOne": "1 barbershop found",
     "shops.resultsMany": "{count} barbershops found",
     "shops.photoAlt": "Inside {name}, a barbershop in {city}",
+    "shops.nextSlots": "Next openings",
+    "shops.distance": "{km} km away",
+    "shops.showing": "Showing {shown} of {total}",
+    "shops.loadMore": "Show {count} more barbershops",
+    "shops.emptyRelax": "Without the {label} filter: {count} barbershops",
 
     /* ---------- Filtros da listagem ---------- */
     "filters.title": "Filter results",
@@ -798,6 +838,16 @@ window.INBARBER_TRANSLATIONS = {
     "filters.time": "Time of day",
     "filters.activeTitle": "Active filters",
     "filters.removeFilter": "Remove {label} filter",
+    "filters.open": "Filters",
+    "filters.close": "Close the filters",
+    "filters.price": "Price",
+    "filters.anyPrice": "Any price",
+    "filters.priceUnder": "Up to {price}",
+    "filters.optionCount": "{label} ({count})",
+    "filters.applyCount": "Show {count} barbershops",
+    "filters.sortRelevance": "Most relevant",
+    "filters.sortDistance": "Closest first",
+    "filters.sortNewest": "Newest first",
 
     /* ---------- Serviços ---------- */
     "service.fade": "Fade",
@@ -1006,11 +1056,31 @@ window.INBARBER_TRANSLATIONS = {
     "search.eyebrow": "All barbershops",
     "search.title": "Find the right barbershop",
     "search.subtitle":
-      "Filter by city, service and minimum rating. Every profile below has an active calendar on InBarber.",
-    "search.inputLabel": "Search by name, neighbourhood or city",
-    "search.placeholder": "Search by name, neighbourhood or city",
+      "Just start typing: we suggest barbershops, cities, neighbourhoods and services with every letter. Every profile below has an active calendar on InBarber.",
+    "search.inputLabel": "Search by name, neighbourhood, city or service",
+    "search.placeholder": "Type a barbershop, neighbourhood, city\u2026",
     "search.button": "Search",
     "search.resultsLabel": "Search results",
+    "search.clear": "Clear the search",
+    "search.suggestionsLabel": "Search suggestions",
+    "search.groupRecent": "Recent searches",
+    "search.groupShops": "Barbershops",
+    "search.groupCities": "Cities",
+    "search.groupDistricts": "Neighbourhoods",
+    "search.groupServices": "Services",
+    "search.noSuggestions": "Nothing found for \u201c{term}\u201d. Try another name, neighbourhood or city.",
+    "search.oneSuggestion": "1 suggestion available",
+    "search.manySuggestions": "{count} suggestions available",
+    "search.clearRecent": "Clear recent searches",
+
+    /* ---------- Atalhos da busca ---------- */
+    "quick.label": "Shortcuts",
+    "quick.openNow": "Open now",
+    "quick.near": "Near me",
+    "quick.nearCity": "Near me · {city}",
+    "quick.topRated": "Rated 4.5+",
+    "quick.new": "New on InBarber",
+    "quick.favorites": "My favourites",
 
     /* ---------- Rodapé ---------- */
     "footer.tagline":
@@ -1293,6 +1363,11 @@ window.INBARBER_TRANSLATIONS = {
     "shops.resultsOne": "1 barbería encontrada",
     "shops.resultsMany": "{count} barberías encontradas",
     "shops.photoAlt": "Interior de la barbería {name}, en {city}",
+    "shops.nextSlots": "Próximos horarios",
+    "shops.distance": "a {km} km",
+    "shops.showing": "Mostrando {shown} de {total}",
+    "shops.loadMore": "Ver {count} barberías más",
+    "shops.emptyRelax": "Sin el filtro {label}: {count} barberías",
 
     /* ---------- Filtros da listagem ---------- */
     "filters.title": "Filtrar resultados",
@@ -1315,6 +1390,16 @@ window.INBARBER_TRANSLATIONS = {
     "filters.time": "Franja horaria",
     "filters.activeTitle": "Filtros activos",
     "filters.removeFilter": "Quitar el filtro {label}",
+    "filters.open": "Filtros",
+    "filters.close": "Cerrar los filtros",
+    "filters.price": "Precio",
+    "filters.anyPrice": "Cualquier precio",
+    "filters.priceUnder": "Hasta {price}",
+    "filters.optionCount": "{label} ({count})",
+    "filters.applyCount": "Ver {count} barberías",
+    "filters.sortRelevance": "Más relevantes",
+    "filters.sortDistance": "Más cercanas",
+    "filters.sortNewest": "Novedades primero",
 
     /* ---------- Serviços ---------- */
     "service.fade": "Degradado",
@@ -1522,11 +1607,31 @@ window.INBARBER_TRANSLATIONS = {
     "search.eyebrow": "Todas las barberías",
     "search.title": "Encuentra la barbería adecuada",
     "search.subtitle":
-      "Filtra por ciudad, servicio y nota mínima. Todos los perfiles de abajo tienen agenda activa en InBarber.",
-    "search.inputLabel": "Buscar por nombre, barrio o ciudad",
-    "search.placeholder": "Buscar por nombre, barrio o ciudad",
+      "Empieza a escribir: sugerimos barberías, ciudades, barrios y servicios con cada letra. Todos los perfiles de abajo tienen agenda activa en InBarber.",
+    "search.inputLabel": "Buscar por nombre, barrio, ciudad o servicio",
+    "search.placeholder": "Escribe el nombre de la barbería, barrio, ciudad\u2026",
     "search.button": "Buscar",
     "search.resultsLabel": "Resultados de la búsqueda",
+    "search.clear": "Borrar la búsqueda",
+    "search.suggestionsLabel": "Sugerencias de búsqueda",
+    "search.groupRecent": "Búsquedas recientes",
+    "search.groupShops": "Barberías",
+    "search.groupCities": "Ciudades",
+    "search.groupDistricts": "Barrios",
+    "search.groupServices": "Servicios",
+    "search.noSuggestions": "No encontramos nada para \u201c{term}\u201d. Prueba con otro nombre, barrio o ciudad.",
+    "search.oneSuggestion": "1 sugerencia disponible",
+    "search.manySuggestions": "{count} sugerencias disponibles",
+    "search.clearRecent": "Borrar búsquedas recientes",
+
+    /* ---------- Atalhos da busca ---------- */
+    "quick.label": "Atajos",
+    "quick.openNow": "Abiertas ahora",
+    "quick.near": "Cerca de mí",
+    "quick.nearCity": "Cerca de mí · {city}",
+    "quick.topRated": "Nota 4,5+",
+    "quick.new": "Nuevas en InBarber",
+    "quick.favorites": "Mis favoritas",
 
     /* ---------- Rodapé ---------- */
     "footer.tagline":

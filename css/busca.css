@@ -1,0 +1,958 @@
+/* ==========================================================================
+   InBarber — Página de busca (barbearias.html)
+
+   Só esta página carrega este arquivo. Ele cobre, na ordem:
+
+     1. Cabeçalho da busca (.finder)
+     2. Combobox e painel de sugestões
+     3. Atalhos rápidos
+     4. Barra de ferramentas grudada no topo
+     5. Painel de filtros (gaveta no mobile, linha no desktop)
+     6. Chips do que está ativo
+     7. Grade, cards e horários
+     8. Tela vazia e paginação
+
+   Mobile-first: o layout base atende 320px e as media queries só ampliam.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CABEÇALHO DA BUSCA
+   ========================================================================== */
+.finder {
+  position: relative;
+  /* Acima da barra de ferramentas grudada: o painel de sugestões precisa
+     cobri-la, e não o contrário. */
+  z-index: calc(var(--z-sticky) + 5);
+  overflow: visible;
+  padding-top: clamp(2.25rem, 5vw, 3.5rem);
+  padding-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.finder__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 52rem;
+}
+
+.finder__title {
+  margin-top: var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-black);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+}
+
+.finder__subtitle {
+  margin-top: var(--space-sm);
+  max-width: 46ch;
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-muted);
+}
+
+.finder__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.finder__submit {
+  justify-content: center;
+  width: 100%;
+}
+
+/* ==========================================================================
+   2. COMBOBOX E SUGESTÕES
+
+   O painel flutua sobre o conteúdo (position: absolute) e o container
+   precisa de z-index alto: as sugestões passam por cima da barra de
+   ferramentas grudada, nunca por baixo.
+   ========================================================================== */
+.combobox {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  min-width: 0;
+}
+
+.combobox.is-open {
+  z-index: calc(var(--z-drawer) + 1);
+}
+
+.combobox__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.combobox__field:hover {
+  border-color: var(--color-border);
+}
+
+.combobox:focus-within .combobox__field {
+  border-color: rgba(0, 240, 255, 0.5);
+  box-shadow: var(--glow-cyan);
+}
+
+.combobox__icon {
+  position: absolute;
+  left: 1.0625rem;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-subtle);
+  pointer-events: none;
+}
+
+.combobox:focus-within .combobox__icon {
+  color: var(--color-secondary);
+}
+
+.combobox__input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.9375rem 3rem 0.9375rem 2.9375rem;
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+}
+
+.combobox__input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.combobox__input:focus {
+  outline: none;
+}
+
+/* Some o "x" nativo do type=search em quem ainda o desenha. */
+.combobox__input::-webkit-search-decoration,
+.combobox__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.combobox__clear {
+  position: absolute;
+  right: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-text-muted);
+  background: rgba(250, 250, 250, 0.06);
+  border-radius: 50%;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.combobox__clear:hover {
+  color: var(--color-text);
+  background: rgba(250, 250, 250, 0.14);
+}
+
+.combobox__clear svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Painel
+   -------------------------------------------------------------------------- */
+.suggestions {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  left: 0;
+  z-index: 5;
+  max-height: min(60vh, 26rem);
+  padding: var(--space-xs);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-bg-elevated);
+  background-image: var(--gradient-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: suggestions-in var(--duration-fast) var(--ease-out);
+}
+
+@keyframes suggestions-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.suggestions__group + .suggestions__group {
+  margin-top: 0.375rem;
+  padding-top: 0.375rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.suggestions__title {
+  padding: 0.5rem 0.75rem 0.375rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-subtle);
+}
+
+.suggestion {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.625rem 0.75rem;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.suggestion:hover,
+.suggestion.is-active {
+  background: var(--color-bg-raised);
+}
+
+.suggestion.is-active {
+  box-shadow: inset 0 0 0 1px rgba(0, 240, 255, 0.35);
+}
+
+.suggestion__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  border-radius: var(--radius-xs);
+}
+
+.suggestion__icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.suggestion__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.125rem;
+}
+
+.suggestion__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* O trecho digitado, destacado sem virar caixa colorida. */
+.suggestion__label mark {
+  color: var(--color-secondary);
+  font-weight: var(--weight-bold);
+  background: none;
+}
+
+.suggestion__meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggestion__aside {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.25rem;
+  align-items: center;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+}
+
+.suggestion__aside svg {
+  width: 12px;
+  height: 12px;
+  color: var(--color-warning);
+}
+
+.suggestions__empty {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  padding: var(--space-md) 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.suggestions__empty svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-subtle);
+}
+
+.suggestions__foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.375rem 0.75rem 0.25rem;
+  margin-top: 0.375rem;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.suggestions__clear {
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.suggestions__clear:hover {
+  color: var(--color-text);
+}
+
+/* ==========================================================================
+   3. ATALHOS RÁPIDOS
+   ========================================================================== */
+.quick-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: var(--space-lg);
+}
+
+.quick-filters__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-subtle);
+}
+
+/* Trilho lateral no celular: os atalhos não quebram em quatro linhas. */
+.quick-filters__row {
+  display: flex;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.quick-filters__row::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.4375rem;
+  align-items: center;
+  padding: 0.5rem 0.875rem;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.quick-chip:hover:not(:disabled) {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.quick-chip.is-active {
+  color: var(--color-text);
+  background: var(--color-primary-soft);
+  border-color: rgba(0, 71, 255, 0.55);
+}
+
+.quick-chip:disabled {
+  opacity: 0.45;
+}
+
+.quick-chip__icon {
+  display: inline-flex;
+}
+
+.quick-chip__icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.quick-chip.is-active .quick-chip__icon {
+  color: var(--color-secondary);
+}
+
+.quick-chip__count {
+  padding: 0.0625rem 0.375rem;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+  background: rgba(250, 250, 250, 0.06);
+  border-radius: var(--radius-pill);
+}
+
+.quick-chip.is-active .quick-chip__count {
+  color: var(--color-text);
+  background: rgba(0, 71, 255, 0.32);
+}
+
+/* ==========================================================================
+   4. BARRA DE FERRAMENTAS
+
+   Gruda logo abaixo do header enquanto a lista rola: contagem, filtros e
+   ordenação seguem ao alcance sem voltar ao topo.
+   ========================================================================== */
+.toolbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  margin-bottom: var(--space-md);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.toolbar__group {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.toolbar__group--end {
+  margin-left: auto;
+}
+
+.toolbar__toggle {
+  flex-shrink: 0;
+}
+
+.toolbar__toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.toolbar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.3125rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+}
+
+.toolbar__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar__sort-label {
+  display: none;
+  font-size: var(--text-sm);
+  color: var(--color-text-subtle);
+  white-space: nowrap;
+}
+
+.select--compact {
+  width: auto;
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+  font-size: var(--text-sm);
+  background-position: right 0.625rem center;
+  background-size: 1rem;
+  border-radius: var(--radius-sm);
+}
+
+/* ==========================================================================
+   5. PAINEL DE FILTROS
+
+   Abaixo de 960px é uma gaveta que sobe do rodapé; a partir daí, um bloco
+   em linha sempre aberto.
+   ========================================================================== */
+.filters-panel {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-drawer);
+  display: flex;
+  flex-direction: column;
+  max-height: 86vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-bg-elevated);
+  background-image: var(--gradient-surface);
+  border-top: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-xl);
+  visibility: hidden;
+  transform: translateY(100%);
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    visibility var(--duration-base) var(--ease-out);
+}
+
+.filters-panel.is-open {
+  visibility: visible;
+  transform: none;
+}
+
+/* Sem JS a gaveta não abriria nunca: ela nasce em linha, como no desktop. */
+.no-js .filters-panel {
+  position: static;
+  max-height: none;
+  visibility: visible;
+  transform: none;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+}
+
+/* Fundo escurecido enquanto a gaveta está aberta. */
+body.has-drawer {
+  overflow: hidden;
+}
+
+body.has-drawer::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-drawer) - 1);
+  background: var(--color-bg-overlay);
+  animation: drawer-backdrop var(--duration-base) var(--ease-out);
+}
+
+@keyframes drawer-backdrop {
+  from { opacity: 0; }
+}
+
+.filters-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-lg) var(--space-sm);
+}
+
+.filters-panel__title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.filters-panel__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-text-muted);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 50%;
+}
+
+.filters-panel__close:hover {
+  color: var(--color-text);
+}
+
+.filters-panel__close svg {
+  width: 15px;
+  height: 15px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+}
+
+.filters-panel__foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.filters-panel__apply {
+  flex: 1;
+  justify-content: center;
+  max-width: 60%;
+}
+
+/* ==========================================================================
+   6. CHIPS DO QUE ESTÁ ATIVO
+   ========================================================================== */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.active-filters__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-subtle);
+}
+
+.active-filters__reset {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.active-filters__reset:hover {
+  color: var(--color-text);
+}
+
+.filter-chip {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.375rem 0.4375rem 0.375rem 0.75rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  background: var(--color-primary-soft);
+  border: 1px solid rgba(0, 71, 255, 0.38);
+  border-radius: var(--radius-pill);
+}
+
+.filter-chip__remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+  border-radius: 50%;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.filter-chip__remove:hover {
+  color: var(--color-text);
+  background: rgba(250, 250, 250, 0.12);
+}
+
+.filter-chip__remove svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ==========================================================================
+   7. GRADE E CARDS
+   ========================================================================== */
+.shops-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-lg);
+}
+
+/* Selos empilhados no canto da foto (aberta/fechada e "novidade"). */
+.shop-card__flags {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  align-items: flex-start;
+}
+
+.shop-card__status {
+  position: static;
+}
+
+.shop-card__new svg {
+  width: 12px;
+  height: 12px;
+}
+
+.shop-card__location {
+  flex-wrap: wrap;
+}
+
+.shop-card__distance {
+  padding: 0.125rem 0.4375rem;
+  font-size: var(--text-xs);
+  color: var(--color-secondary);
+  background: var(--color-secondary-soft);
+  border-radius: var(--radius-pill);
+}
+
+/* --------------------------------------------------------------------------
+   Próximos horários
+
+   O card não serve só para olhar: os dois próximos horários livres já são
+   links de agendamento, então dá para sair da busca direto para a cadeira.
+   -------------------------------------------------------------------------- */
+.shop-card__slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding-top: var(--space-xs);
+}
+
+.shop-card__slots-label {
+  display: inline-flex;
+  gap: 0.3125rem;
+  align-items: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-subtle);
+}
+
+.shop-card__slots-label svg {
+  width: 13px;
+  height: 13px;
+}
+
+.shop-card__slots-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.shop-slot {
+  display: inline-flex;
+  gap: 0.3125rem;
+  align-items: baseline;
+  padding: 0.3125rem 0.5625rem;
+  font-size: var(--text-xs);
+  color: var(--color-text);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-xs);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.shop-slot:hover {
+  background: var(--color-primary-soft);
+  border-color: rgba(0, 71, 255, 0.5);
+}
+
+.shop-slot__day {
+  color: var(--color-text-subtle);
+}
+
+.shop-slot__time {
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   8. TELA VAZIA E PAGINAÇÃO
+   ========================================================================== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  align-items: center;
+  padding: clamp(2.5rem, 6vw, 4rem) var(--space-lg);
+  text-align: center;
+  background: var(--color-bg-elevated);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.empty-state svg {
+  width: 40px;
+  height: 40px;
+  color: var(--color-text-subtle);
+}
+
+.empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.pagination {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-top: var(--space-xl);
+}
+
+.pagination__status {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-subtle);
+}
+
+.pagination__more {
+  min-width: 14rem;
+  justify-content: center;
+}
+
+/* Card recém-carregado recebe foco: a borda não pode sumir em silêncio. */
+.shop-card:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   9. AMPLIAÇÕES POR LARGURA
+   ========================================================================== */
+
+/* ≥ 560px — busca em linha e grade de duas colunas para os filtros */
+@media (min-width: 560px) {
+  .finder__form {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .finder__submit {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ≥ 720px — dois cards lado a lado e atalhos em linha, sem trilho */
+@media (min-width: 720px) {
+  .shops-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-filters__row {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+}
+
+/* ≥ 960px — o painel de filtros deixa de ser gaveta */
+@media (min-width: 960px) {
+  .toolbar__toggle {
+    display: none;
+  }
+
+  .toolbar__sort-label {
+    display: inline;
+  }
+
+  .filters-panel {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    visibility: visible;
+    transform: none;
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+  }
+
+  .filters-panel__head {
+    display: none;
+  }
+
+  /* Três colunas em duas fileiras: seis campos numa linha só espremeriam
+     os rótulos das opções, que carregam a contagem. */
+  .filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: var(--space-lg) var(--space-lg) var(--space-md);
+  }
+
+  .filters-panel__foot {
+    position: static;
+    justify-content: flex-end;
+    padding-top: 0;
+    background: none;
+    border-top: none;
+  }
+
+  /* No desktop os filtros já valem na hora: não há o que "aplicar". */
+  .filters-panel__apply {
+    display: none;
+  }
+
+  body.has-drawer {
+    overflow: auto;
+  }
+
+  body.has-drawer::after {
+    display: none;
+  }
+}
+
+/* ≥ 1200px — três cards por fileira */
+@media (min-width: 1200px) {
+  .shops-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Movimento reduzido: nada entra deslizando. */
+@media (prefers-reduced-motion: reduce) {
+  .suggestions {
+    animation: none;
+  }
+
+  .filters-panel {
+    transition: none;
+  }
+
+  body.has-drawer::after {
+    animation: none;
+  }
+}

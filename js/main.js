@@ -31,8 +31,6 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
     arrowRight:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>',
-    searchOff:
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/><path d="m8.5 8.5 5 5"/><path d="m13.5 8.5-5 5"/></svg>',
     check:
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
     close:
@@ -73,12 +71,6 @@
     { value: "afternoon", key: "time.afternoon" },
     { value: "evening", key: "time.evening" }
   ];
-
-  var RATING_LABELS = {
-    "4.5": "filters.rating45",
-    "4": "filters.rating40",
-    "3.5": "filters.rating35"
-  };
 
   /* Raio máximo, em km, para considerar que o usuário está numa cidade atendida. */
   var MAX_CITY_DISTANCE_KM = 250;
@@ -372,63 +364,13 @@
   }
 
   /* ======================================================================
-     4. SHOPS — cards, filtros, busca e ordenação
+     A página de busca (barbearias.html) tem motor próprio, em js/busca.js:
+     sugestões por letra, filtros com contagem, ordenação e paginação. Este
+     arquivo cuida do que é comum a todas as páginas e da home.
      ====================================================================== */
-  function shopCard(shop) {
-    var card = el("article", "card shop-card");
-    card.setAttribute("data-reveal", "");
-
-    var services = shop.serviceKeys
-      .map(function (key) {
-        return '<li class="chip">' + escapeHtml(i18n.t("service." + key)) + "</li>";
-      })
-      .join("");
-
-    /* Fechada em vermelho: é o dado que muda a decisão de quem está olhando. */
-    var statusClass = shop.openNow ? "badge--success" : "badge--danger";
-    var statusText = i18n.t(shop.openNow ? "shops.openNow" : "shops.closed");
-    var altText = i18n.t("shops.photoAlt", { name: shop.name, city: shop.city });
-
-    card.innerHTML =
-      '<div class="shop-card__media">' +
-        '<img src="' + shop.image + '" alt="' + escapeHtml(altText) + '" loading="lazy" decoding="async" width="800" height="500">' +
-        '<span class="badge ' + statusClass + ' shop-card__status"><span class="badge__dot"></span>' + escapeHtml(statusText) + "</span>" +
-        favButtonMarkup(shop) +
-        '<span class="shop-card__rating">' + ICONS.star +
-          i18n.formatRating(shop.rating) +
-          '<span class="shop-card__reviews">(' + i18n.formatNumber(shop.reviews) + ")</span>" +
-        "</span>" +
-      "</div>" +
-      '<div class="card__body">' +
-        '<h3 class="shop-card__name">' + escapeHtml(shop.name) + "</h3>" +
-        '<p class="shop-card__location">' + ICONS.pin + escapeHtml(shop.neighborhood + " · " + shop.city) + "</p>" +
-        '<ul class="shop-card__services">' + services + "</ul>" +
-        '<div class="shop-card__footer">' +
-          '<p class="shop-card__price">' + escapeHtml(i18n.t("shops.from")) +
-            "<strong>" + escapeHtml(i18n.formatPrice(shop.priceFrom)) + "</strong>" +
-          "</p>" +
-          '<a class="btn btn--ghost btn--sm" href="barbearia.html?id=' + encodeURIComponent(shop.id) + '">' +
-            escapeHtml(i18n.t("shops.viewProfile")) +
-          "</a>" +
-        "</div>" +
-      "</div>";
-
-    return card;
-  }
-
-  function emptyState(onReset) {
-    var box = el("div", "empty-state");
-    box.innerHTML =
-      ICONS.searchOff +
-      "<p>" + escapeHtml(i18n.t("shops.empty")) + "</p>" +
-      '<button type="button" class="btn btn--ghost btn--sm">' + escapeHtml(i18n.t("shops.emptyAction")) + "</button>";
-    var btn = qs("button", box);
-    if (btn && onReset) btn.addEventListener("click", onReset);
-    return box;
-  }
 
   /* ======================================================================
-     4.1 RECOMENDADAS — ranking, novas barbearias e abertas agora
+     4. RECOMENDADAS — ranking, novas barbearias e abertas agora
 
      Três listas com propósitos diferentes, montadas do mesmo data.js:
 
@@ -1346,232 +1288,6 @@
     else if (wide.addListener) wide.addListener(render);
   }
 
-  function initShopExplorer() {
-    var grid = qs("[data-shops-grid]");
-    if (!grid) return;
-
-    var form = qs("[data-filters]");
-    var cityInput = qs("[data-filter-city]");
-    var serviceInput = qs("[data-filter-service]");
-    var ratingInput = qs("[data-filter-rating]");
-    var dayInput = qs("[data-filter-day]");
-    var timeInput = qs("[data-filter-time]");
-    var sortInput = qs("[data-filter-sort]");
-    var resetBtn = qs("[data-filter-reset]");
-    var queryInput = qs("[data-search-input]");
-    var countLabel = qs("[data-results-count]");
-    var activeBox = qs("[data-active-filters]");
-
-    /* Popula os selects mantendo o valor escolhido ao trocar de idioma. */
-    function fillSelects() {
-      if (cityInput) {
-        var city = cityInput.value;
-        cityInput.innerHTML =
-          '<option value="">' + escapeHtml(i18n.t("filters.anyCity")) + "</option>" +
-          data.cities
-            .map(function (name) {
-              return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + "</option>";
-            })
-            .join("");
-        cityInput.value = city;
-      }
-      if (serviceInput) {
-        var service = serviceInput.value;
-        serviceInput.innerHTML =
-          '<option value="">' + escapeHtml(i18n.t("filters.anyService")) + "</option>" +
-          data.serviceKeys
-            .map(function (key) {
-              return '<option value="' + key + '">' + escapeHtml(i18n.t("service." + key)) + "</option>";
-            })
-            .join("");
-        serviceInput.value = service;
-      }
-    }
-
-    function currentFilters() {
-      return {
-        query: queryInput ? queryInput.value.trim() : "",
-        city: cityInput ? cityInput.value : "",
-        service: serviceInput ? serviceInput.value : "",
-        rating: ratingInput ? Number(ratingInput.value || 0) : 0,
-        day: dayInput ? dayInput.value : "any",
-        time: timeInput ? timeInput.value : "any",
-        sort: sortInput ? sortInput.value : "rating"
-      };
-    }
-
-    /** A barbearia abre no dia pedido? "weekend" cobre sábado e domingo. */
-    function matchesDay(shop, day) {
-      if (!day || day === "any" || !shop.days) return true;
-      var today = new Date().getDay();
-      if (day === "today") return shop.days.indexOf(today) !== -1;
-      if (day === "tomorrow") return shop.days.indexOf((today + 1) % 7) !== -1;
-      if (day === "weekend") return shop.days.indexOf(6) !== -1 || shop.days.indexOf(0) !== -1;
-      return true;
-    }
-
-    function matchesTime(shop, period) {
-      if (!period || period === "any" || !shop.periods) return true;
-      return shop.periods.indexOf(period) !== -1;
-    }
-
-    function applyFilters(filters) {
-      var query = filters.query.toLowerCase();
-
-      var list = data.barbershops.filter(function (shop) {
-        if (filters.city && shop.city !== filters.city) return false;
-        if (filters.service && shop.serviceKeys.indexOf(filters.service) === -1) return false;
-        if (filters.rating && shop.rating < filters.rating) return false;
-        if (!matchesDay(shop, filters.day)) return false;
-        if (!matchesTime(shop, filters.time)) return false;
-        if (query) {
-          var haystack = (shop.name + " " + shop.neighborhood + " " + shop.city).toLowerCase();
-          if (haystack.indexOf(query) === -1) return false;
-        }
-        return true;
-      });
-
-      var sorters = {
-        rating: function (a, b) { return b.rating - a.rating || b.reviews - a.reviews; },
-        reviews: function (a, b) { return b.reviews - a.reviews; },
-        price: function (a, b) { return a.priceFrom - b.priceFrom; },
-        name: function (a, b) { return a.name.localeCompare(b.name, i18n.getLocale()); }
-      };
-      return list.sort(sorters[filters.sort] || sorters.rating);
-    }
-
-    /* ---------------------------------------------------------------
-       Chips dos filtros ativos
-       --------------------------------------------------------------- */
-    function clearFilter(type) {
-      if (type === "query" && queryInput) queryInput.value = "";
-      if (type === "city" && cityInput) cityInput.value = "";
-      if (type === "service" && serviceInput) serviceInput.value = "";
-      if (type === "rating" && ratingInput) ratingInput.value = "0";
-      if (type === "day" && dayInput) dayInput.value = "any";
-      if (type === "time" && timeInput) timeInput.value = "any";
-      render();
-    }
-
-    function renderActiveFilters(filters) {
-      if (!activeBox) return;
-
-      var chips = [];
-      if (filters.query) chips.push({ type: "query", label: filters.query });
-      if (filters.city) chips.push({ type: "city", label: filters.city });
-      if (filters.service) chips.push({ type: "service", label: i18n.t("service." + filters.service) });
-      if (filters.rating) {
-        var ratingKey = RATING_LABELS[String(filters.rating)];
-        if (ratingKey) chips.push({ type: "rating", label: i18n.t(ratingKey) });
-      }
-      if (filters.day !== "any") chips.push({ type: "day", label: i18n.t("day." + filters.day) });
-      if (filters.time !== "any") {
-        chips.push({ type: "time", label: i18n.t("time." + filters.time + "Short") });
-      }
-
-      if (!chips.length) {
-        activeBox.hidden = true;
-        activeBox.innerHTML = "";
-        return;
-      }
-
-      activeBox.hidden = false;
-      activeBox.innerHTML =
-        '<span class="active-filters__label">' + escapeHtml(i18n.t("filters.activeTitle")) + "</span>" +
-        chips
-          .map(function (chip) {
-            return (
-              '<span class="filter-chip">' + escapeHtml(chip.label) +
-              '<button type="button" class="filter-chip__remove" data-clear-filter="' + chip.type + '" ' +
-              'aria-label="' + escapeHtml(i18n.t("filters.removeFilter", { label: chip.label })) + '">' +
-              ICONS.close +
-              "</button></span>"
-            );
-          })
-          .join("");
-    }
-
-    function reset() {
-      if (form) form.reset();
-      if (queryInput) queryInput.value = "";
-      if (sortInput) sortInput.value = "rating";
-      if (dayInput) dayInput.value = "any";
-      if (timeInput) timeInput.value = "any";
-      render();
-    }
-
-    function render() {
-      var filters = currentFilters();
-      var results = applyFilters(filters);
-
-      grid.innerHTML = "";
-      if (!results.length) {
-        grid.classList.remove("shops-grid");
-        grid.appendChild(emptyState(reset));
-      } else {
-        grid.classList.add("shops-grid");
-        results.forEach(function (shop, index) {
-          var card = shopCard(shop);
-          card.id = shop.id;
-          card.style.setProperty("--reveal-delay", Math.min(index, 8) * 50 + "ms");
-          grid.appendChild(card);
-        });
-      }
-
-      if (countLabel) {
-        countLabel.textContent =
-          results.length === 1
-            ? i18n.t("shops.resultsOne")
-            : i18n.t("shops.resultsMany", { count: i18n.formatNumber(results.length) });
-      }
-
-      renderActiveFilters(filters);
-      observeNew(grid);
-    }
-
-    fillSelects();
-
-    /* Pré-carrega os filtros vindos da busca do hero: ?q=&day=&time= */
-    var params = new URLSearchParams(window.location.search);
-    var initialQuery = params.get("q");
-    var initialDay = params.get("day");
-    var initialTime = params.get("time");
-
-    if (initialQuery && queryInput) queryInput.value = initialQuery;
-    if (initialQuery && cityInput && data.cities.indexOf(initialQuery) !== -1) {
-      // Quando o termo é exatamente uma cidade atendida, vira filtro de cidade.
-      cityInput.value = initialQuery;
-      if (queryInput) queryInput.value = "";
-    }
-    if (initialDay && dayInput) dayInput.value = initialDay;
-    if (initialTime && timeInput) timeInput.value = initialTime;
-
-    [cityInput, serviceInput, ratingInput, dayInput, timeInput, sortInput].forEach(function (input) {
-      if (input) input.addEventListener("change", render);
-    });
-    if (queryInput) queryInput.addEventListener("input", render);
-    if (resetBtn) resetBtn.addEventListener("click", reset);
-    if (form) {
-      form.addEventListener("submit", function (event) {
-        event.preventDefault();
-        render();
-      });
-    }
-    if (activeBox) {
-      activeBox.addEventListener("click", function (event) {
-        var button = event.target.closest("[data-clear-filter]");
-        if (!button) return;
-        clearFilter(button.getAttribute("data-clear-filter"));
-      });
-    }
-
-    render();
-    onLanguageChange(function () {
-      fillSelects();
-      render();
-    });
-  }
-
   /* ======================================================================
      5. REVIEWS — depoimentos
      ====================================================================== */
@@ -2293,7 +2009,6 @@
     initReveal();
     initCounters();
     initRecommendedShops();
-    initShopExplorer();
     initReviews();
     initBarberTestimonials();
     initTrends();

@@ -38,6 +38,7 @@
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/sections.css">
+  <link rel="stylesheet" href="css/busca.css">
   <link rel="stylesheet" href="css/conta.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -58,7 +59,7 @@
 
       <div class="header__actions">
         <!-- Seletor de idioma: bandeira + código da localidade -->
-        <div class="lang-select" data-lang-select>
+        <!-- <div class="lang-select" data-lang-select>
           <button type="button" class="lang-select__trigger" data-lang-trigger
                   aria-expanded="false" aria-haspopup="true"
                   data-i18n-attr="aria-label:lang.label|title:lang.label">
@@ -68,7 +69,7 @@
           </button>
           <div class="lang-select__menu" role="group" data-lang-menu
                data-i18n-attr="aria-label:lang.menuLabel" hidden></div>
-        </div>
+        </div> -->
 
         <a class="btn btn--ghost btn--sm header__business" href="para-barbearias.html"
            data-i18n-attr="aria-label:nav.business">
@@ -96,101 +97,153 @@
   <main id="main">
 
     <!-- ==================================================================
-         BUSCA — cabeçalho da página
-         ================================================================== -->
-    <section class="page-hero" aria-labelledby="search-title">
-      <div class="grid-lines" aria-hidden="true"></div>
-      <div class="container page-hero__inner">
-        <span class="eyebrow" data-i18n="search.eyebrow" data-reveal></span>
-        <h1 class="page-hero__title" id="search-title" data-i18n="search.title" data-reveal style="--reveal-delay:60ms"></h1>
-        <p class="page-hero__subtitle" data-i18n="search.subtitle" data-reveal style="--reveal-delay:120ms"></p>
+         1. BUSCA — combobox com sugestões e atalhos
 
-        <div class="page-hero__search" data-reveal style="--reveal-delay:180ms">
-          <form class="search-bar" role="search" onsubmit="return false;">
+         O campo é um combobox de verdade (role="combobox" + listbox), não
+         um input com um menu qualquer: leitor de tela anuncia quantas
+         sugestões existem e qual está ativa. Digitar uma letra já traz
+         barbearias, cidades, bairros e serviços que começam com ela.
+
+         Abaixo do campo ficam os atalhos: um clique resolve as intenções
+         mais comuns ("abertas agora", "perto de mim") sem abrir filtro.
+         Os botões são montados por js/busca.js porque cada um carrega a
+         contagem de barbearias que atende ao critério.
+         ================================================================== -->
+    <section class="finder" aria-labelledby="search-title">
+      <div class="grid-lines" aria-hidden="true"></div>
+      <div class="container finder__inner">
+        <span class="eyebrow" data-i18n="search.eyebrow" data-reveal></span>
+        <h1 class="finder__title" id="search-title" data-i18n="search.title" data-reveal style="--reveal-delay:60ms"></h1>
+        <p class="finder__subtitle" data-i18n="search.subtitle" data-reveal style="--reveal-delay:120ms"></p>
+
+        <form class="finder__form" role="search" data-search-form data-reveal style="--reveal-delay:180ms">
+          <div class="combobox" data-combobox>
             <label class="visually-hidden" for="shop-search" data-i18n="search.inputLabel"></label>
-            <div class="search-bar__field">
-              <svg class="search-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
-              <input class="search-bar__input" id="shop-search" name="q" type="search" autocomplete="off"
+
+            <div class="combobox__field">
+              <svg class="combobox__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+
+              <input class="combobox__input" id="shop-search" name="q" type="text"
+                     role="combobox" aria-expanded="false" aria-autocomplete="list"
+                     aria-controls="search-suggestions"
+                     autocomplete="off" autocorrect="off" spellcheck="false"
                      data-search-input data-i18n-attr="placeholder:search.placeholder">
+
+              <button type="button" class="combobox__clear" data-search-clear hidden
+                      data-i18n-attr="aria-label:search.clear|title:search.clear">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
             </div>
-          </form>
+
+            <!-- Painel de sugestões: preenchido a cada tecla por js/busca.js -->
+            <div class="suggestions" id="search-suggestions" role="listbox" hidden
+                 data-suggestions data-i18n-attr="aria-label:search.suggestionsLabel"></div>
+          </div>
+
+          <button type="submit" class="btn btn--gradient finder__submit" data-i18n="search.button"></button>
+        </form>
+
+        <!-- Anúncio para leitor de tela: quantas sugestões / quantos resultados -->
+        <p class="visually-hidden" role="status" aria-live="polite" data-search-status></p>
+
+        <div class="quick-filters" data-reveal style="--reveal-delay:240ms">
+          <span class="quick-filters__label" data-i18n="quick.label"></span>
+          <div class="quick-filters__row" data-quick-filters></div>
         </div>
       </div>
     </section>
 
     <!-- ==================================================================
-         FILTROS + RESULTADOS
+         2. FILTROS + RESULTADOS
+
+         A barra de ferramentas gruda no topo enquanto a lista rola: a
+         contagem de resultados, o botão de filtros e a ordenação ficam
+         sempre ao alcance. Abaixo de 960px o painel de filtros vira uma
+         gaveta; a partir daí ele fica aberto em linha.
          ================================================================== -->
     <section class="section section--tight" aria-labelledby="results-title">
       <div class="container">
         <h2 class="visually-hidden" id="results-title" data-i18n="search.resultsLabel"></h2>
 
-        <form class="filters" data-filters data-reveal>
-          <div class="field">
-            <label class="field__label" for="filter-city" data-i18n="filters.city"></label>
-            <select class="select" id="filter-city" data-filter-city></select>
+        <div class="toolbar" data-toolbar>
+          <div class="toolbar__group">
+            <button type="button" class="btn btn--outline btn--sm toolbar__toggle"
+                    data-filters-toggle aria-expanded="false" aria-controls="filters-panel">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/></svg>
+              <span data-i18n="filters.open"></span>
+              <span class="toolbar__badge" data-filters-count hidden></span>
+            </button>
+            <p class="toolbar__count" data-results-count role="status" aria-live="polite"></p>
           </div>
 
-          <div class="field">
-            <label class="field__label" for="filter-service" data-i18n="filters.service"></label>
-            <select class="select" id="filter-service" data-filter-service></select>
-          </div>
-
-          <div class="field">
-            <label class="field__label" for="filter-rating" data-i18n="filters.rating"></label>
-            <select class="select" id="filter-rating" data-filter-rating>
-              <option value="0" data-i18n="filters.anyRating"></option>
-              <option value="4.5" data-i18n="filters.rating45"></option>
-              <option value="4" data-i18n="filters.rating40"></option>
-              <option value="3.5" data-i18n="filters.rating35"></option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label class="field__label" for="filter-day" data-i18n="filters.day"></label>
-            <select class="select" id="filter-day" data-filter-day>
-              <option value="any" data-i18n="day.any"></option>
-              <option value="today" data-i18n="day.today"></option>
-              <option value="tomorrow" data-i18n="day.tomorrow"></option>
-              <option value="weekend" data-i18n="day.weekend"></option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label class="field__label" for="filter-time" data-i18n="filters.time"></label>
-            <select class="select" id="filter-time" data-filter-time>
-              <option value="any" data-i18n="time.any"></option>
-              <option value="morning" data-i18n="time.morningShort"></option>
-              <option value="afternoon" data-i18n="time.afternoonShort"></option>
-              <option value="evening" data-i18n="time.eveningShort"></option>
-            </select>
-          </div>
-
-          <button type="button" class="btn btn--ghost filters__reset" data-filter-reset data-i18n="filters.reset"></button>
-        </form>
-
-        <div class="active-filters" data-active-filters hidden></div>
-
-        <div class="results-bar">
-          <p class="results-bar__count" data-results-count role="status" aria-live="polite"></p>
-
-          <div class="field">
-            <label class="visually-hidden" for="filter-sort" data-i18n="filters.sort"></label>
-            <select class="select" id="filter-sort" data-filter-sort>
-              <option value="rating" data-i18n="filters.sortRating"></option>
-              <option value="reviews" data-i18n="filters.sortReviews"></option>
-              <option value="price" data-i18n="filters.sortPrice"></option>
-              <option value="name" data-i18n="filters.sortName"></option>
-            </select>
+          <div class="toolbar__group toolbar__group--end">
+            <label class="toolbar__sort-label" for="filter-sort" data-i18n="filters.sort"></label>
+            <select class="select select--compact" id="filter-sort" data-filter-sort></select>
           </div>
         </div>
 
+        <!-- Gaveta de filtros (mobile) / painel em linha (≥960px) -->
+        <div class="filters-panel" id="filters-panel" data-filters-panel role="group"
+             data-i18n-attr="aria-label:filters.title">
+          <div class="filters-panel__head">
+            <h3 class="filters-panel__title" data-i18n="filters.title"></h3>
+            <button type="button" class="filters-panel__close" data-filters-close
+                    data-i18n-attr="aria-label:filters.close|title:filters.close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+          </div>
+
+          <form class="filters" data-filters>
+            <div class="field">
+              <label class="field__label" for="filter-city" data-i18n="filters.city"></label>
+              <select class="select" id="filter-city" data-filter-city></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-service" data-i18n="filters.service"></label>
+              <select class="select" id="filter-service" data-filter-service></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-rating" data-i18n="filters.rating"></label>
+              <select class="select" id="filter-rating" data-filter-rating></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-price" data-i18n="filters.price"></label>
+              <select class="select" id="filter-price" data-filter-price></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-day" data-i18n="filters.day"></label>
+              <select class="select" id="filter-day" data-filter-day></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-time" data-i18n="filters.time"></label>
+              <select class="select" id="filter-time" data-filter-time></select>
+            </div>
+          </form>
+
+          <div class="filters-panel__foot">
+            <button type="button" class="btn btn--ghost btn--sm" data-filter-reset data-i18n="filters.reset"></button>
+            <button type="button" class="btn btn--primary btn--sm filters-panel__apply" data-filters-apply></button>
+          </div>
+        </div>
+
+        <div class="active-filters" data-active-filters hidden></div>
+
         <div class="shops-grid" data-shops-grid></div>
+
+        <div class="pagination" data-pagination hidden>
+          <p class="pagination__status" data-pagination-status></p>
+          <button type="button" class="btn btn--outline pagination__more" data-load-more></button>
+        </div>
       </div>
     </section>
 
     <!-- ==================================================================
-         PREVIEW B2B — transição para a jornada da barbearia
+         3. PREVIEW B2B — transição para a jornada da barbearia
          ================================================================== -->
     <section class="section b2b-preview" aria-labelledby="b2b-preview-title">
       <div class="container">
@@ -309,5 +362,7 @@
   <script src="js/i18n.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/conta.js" defer></script>
+  <!-- Depois de conta.js: os cards já nascem sabendo quais são favoritas. -->
+  <script src="js/busca.js" defer></script>
 </body>
 </html>
