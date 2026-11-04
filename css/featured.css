@@ -137,7 +137,11 @@
   border-radius: var(--radius-lg);
 }
 
-.featured__photo {
+/* Especificidade bumpada (.featured .featured__photo) para vencer
+   .framed { position: relative } quando os dois convivem no mesmo bundle:
+   sem isso, a figura perde inset:0 e a foto aparece encolhida em vez de
+   preencher o slide. */
+.featured .featured__photo {
   position: absolute;
   inset: 0;
   margin: 0;
