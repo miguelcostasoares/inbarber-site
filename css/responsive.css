@@ -87,14 +87,6 @@
   }
 
 
-  .step {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  }
-
-  .step:nth-child(even) .step__text {
-    order: 2;
-  }
-
   .feature {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
   }
