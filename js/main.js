@@ -1291,6 +1291,16 @@
   /* ======================================================================
      5. REVIEWS — depoimentos
      ====================================================================== */
+  /* SVG do selo "avaliação verificada" ao lado do nome do autor.
+     Marca cada depoimento como vindo de um agendamento concluído.
+     Width/height explícitos no próprio SVG evitam que ele herde o
+     tamanho default do navegador caso o CSS ainda não tenha carregado. */
+  var VERIFIED_ICON =
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
+    'stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M20 6 9 17l-5-5"/></svg>';
+
   function reviewCard(item, options) {
     var card = el("article", "card testimonial");
     card.setAttribute("data-reveal", "");
@@ -1304,6 +1314,15 @@
         "</div>"
       : "";
 
+    /* Só os depoimentos de clientes (showStars) carregam o selo de
+       verificação — os B2B usam a métrica como prova social no lugar. */
+    var verifiedBadge = options.showStars
+      ? '<span class="testimonial__verified" role="img" aria-label="' +
+          escapeHtml(i18n.t("reviews.verifiedBadge")) + '">' +
+          VERIFIED_ICON +
+        "</span>"
+      : "";
+
     card.innerHTML =
       metric +
       (options.showStars ? starsMarkup(item.rating || 5) : "") +
@@ -1312,8 +1331,11 @@
         '<img class="testimonial__avatar" src="' + item.photo + '" alt="' +
           escapeHtml(i18n.t("reviews.avatarAlt", { name: name })) +
           '" loading="lazy" decoding="async" width="88" height="88">' +
-        "<div>" +
-          '<p class="testimonial__name">' + escapeHtml(name) + "</p>" +
+        '<div class="testimonial__identity">' +
+          '<div class="testimonial__name-row">' +
+            '<p class="testimonial__name">' + escapeHtml(name) + "</p>" +
+            verifiedBadge +
+          "</div>" +
           '<p class="testimonial__meta">' + escapeHtml(meta) + "</p>" +
         "</div>" +
       "</div>";
@@ -1349,6 +1371,17 @@
     }
     if (prev) prev.addEventListener("click", function () { scrollByCard(-1); });
     if (next) next.addEventListener("click", function () { scrollByCard(1); });
+
+    /* "Ver mais avaliações" — placeholder: o destino final (ex.: página
+       de todas as avaliações ou perfil público) ainda não existe, então
+       o clique só previne a navegação. O botão permanece focável,
+       traduzível e com aria-label para leitores de tela. */
+    var moreBtn = qs("[data-reviews-more]");
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+      });
+    }
   }
 
   function initBarberTestimonials() {

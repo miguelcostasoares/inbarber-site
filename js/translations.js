@@ -368,10 +368,16 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.eyebrow": "Avaliações da InBarber",
     "reviews.title": "Quem agenda pela InBarber volta",
     "reviews.subtitle":
-      "Avaliações verificadas: só quem concluiu um agendamento pela plataforma pode avaliar.",
+      "Depoimentos reais de clientes que usam a plataforma todo mês.",
     "reviews.scoreValue": "4,9",
-    "reviews.scoreLabel": "de 12.000 avaliações",
-    "reviews.scoreCaption": "Nota média da plataforma nos últimos 12 meses",
+    "reviews.scoreStarsAlt": "Nota média de 4,9 sobre 5 estrelas",
+    "reviews.scoreLabel": "de 5,0 em média",
+    "reviews.scoreCaption": "Baseado em mais de 12.000 avaliações nos últimos 12 meses",
+    "reviews.trustTitle": "100% verificadas",
+    "reviews.trustDesc": "Só quem concluiu um agendamento pela plataforma pode avaliar.",
+    "reviews.verifiedBadge": "Agendamento verificado",
+    "reviews.loadMore": "Ver mais avaliações",
+    "reviews.loadMoreAria": "Ver mais avaliações da InBarber",
     "reviews.starsAlt": "Nota {rating} de 5 estrelas",
     "reviews.avatarAlt": "Foto de {name}",
     "reviews.prev": "Depoimento anterior",
@@ -379,27 +385,27 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.item1.name": "Rafael Nogueira",
     "reviews.item1.city": "São Paulo, SP",
     "reviews.item1.text":
-      "Mudei de bairro e não conhecia ninguém. Achei uma barbearia com 4,9 a três quadras de casa, agendei às 22h de um domingo e no dia seguinte já estava na cadeira. Virou minha barbearia fixa.",
+      "Mudei de bairro e não conhecia ninguém. Achei uma barbearia 4,9 a três quadras, agendei às 22h de domingo e na segunda já estava na cadeira. Virou minha barbearia fixa.",
     "reviews.item2.name": "Diego Almeida",
     "reviews.item2.city": "Belo Horizonte, MG",
     "reviews.item2.text":
-      "O que me pegou foi ver o preço de cada serviço antes de ir. Sem surpresa na hora de pagar, sem precisar perguntar no WhatsApp.",
+      "Ver o preço de cada serviço antes de ir foi o que me convenceu. Sem surpresa na hora de pagar, sem ficar mandando mensagem no WhatsApp para perguntar valor.",
     "reviews.item3.name": "Lucas Ferreira",
     "reviews.item3.city": "Porto Alegre, RS",
     "reviews.item3.text":
-      "Trabalho em escala e nunca conseguia ligar no horário comercial. Agendo pelo celular na madrugada e recebo o lembrete no dia. Resolveu um problema real.",
+      "Trabalho em escala e nunca conseguia ligar em horário comercial. Agora agendo pelo celular de madrugada e recebo o lembrete no dia. Resolveu um problema real do meu dia a dia.",
     "reviews.item4.name": "Bruno Carvalho",
     "reviews.item4.city": "Recife, PE",
     "reviews.item4.text":
-      "Levei meu filho pela primeira vez usando o filtro de corte infantil. O perfil mostrava fotos do espaço e ele foi tranquilo. Detalhe que faz diferença.",
+      "Levei meu filho pela primeira vez usando o filtro de corte infantil. O perfil mostrava fotos do espaço e ele foi super tranquilo. Detalhe pequeno que faz toda a diferença.",
     "reviews.item5.name": "Thiago Menezes",
     "reviews.item5.city": "Curitiba, PR",
     "reviews.item5.text":
-      "Precisei remarcar duas vezes na mesma semana e não tive que pedir desculpa para ninguém no telefone. Dois cliques e pronto.",
+      "Precisei remarcar duas vezes na mesma semana e não tive que pedir desculpa para ninguém no telefone. Dois cliques e pronto, horário novo confirmado na hora.",
     "reviews.item6.name": "André Batista",
     "reviews.item6.city": "Salvador, BA",
     "reviews.item6.text":
-      "As avaliações são honestas porque só avalia quem foi de verdade. Já evitei dois lugares e acertei em cheio no terceiro.",
+      "As avaliações são honestas porque só avalia quem foi de verdade. Já evitei dois lugares pela nota e acertei em cheio no terceiro. Confiança total na plataforma.",
 
     /* ---------- HOME · Preview B2B ---------- */
     "b2bPreview.eyebrow": "Para donos de barbearia",
@@ -945,10 +951,16 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.eyebrow": "InBarber reviews",
     "reviews.title": "People who book on InBarber come back",
     "reviews.subtitle":
-      "Verified reviews: only clients who completed a booking on the platform can leave one.",
+      "Real stories from clients who use the platform every month.",
     "reviews.scoreValue": "4.9",
-    "reviews.scoreLabel": "from 12,000 reviews",
-    "reviews.scoreCaption": "Average platform rating over the last 12 months",
+    "reviews.scoreStarsAlt": "Average rating of 4.9 out of 5 stars",
+    "reviews.scoreLabel": "out of 5.0 on average",
+    "reviews.scoreCaption": "Based on more than 12,000 reviews in the last 12 months",
+    "reviews.trustTitle": "100% verified",
+    "reviews.trustDesc": "Only clients who completed a booking on the platform can leave a review.",
+    "reviews.verifiedBadge": "Verified booking",
+    "reviews.loadMore": "See more reviews",
+    "reviews.loadMoreAria": "See more InBarber reviews",
     "reviews.starsAlt": "Rated {rating} out of 5 stars",
     "reviews.avatarAlt": "Photo of {name}",
     "reviews.prev": "Previous review",
@@ -956,27 +968,27 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.item1.name": "Rafael Nogueira",
     "reviews.item1.city": "São Paulo, Brazil",
     "reviews.item1.text":
-      "I moved neighbourhoods and knew nobody. Found a 4.9-rated shop three blocks away, booked at 10pm on a Sunday and was in the chair the next day. It's my regular now.",
+      "I moved neighbourhoods and knew nobody. Found a 4.9-rated shop three blocks away, booked at 10pm on a Sunday and was in the chair on Monday. It's my regular now.",
     "reviews.item2.name": "Diego Almeida",
     "reviews.item2.city": "Belo Horizonte, Brazil",
     "reviews.item2.text":
-      "What sold me was seeing the price of every service before going. No surprise at the till, no need to ask over WhatsApp.",
+      "What sold me was seeing the price of every service before going. No surprise at the till, no need to message anyone on WhatsApp just to ask how much it costs.",
     "reviews.item3.name": "Lucas Ferreira",
     "reviews.item3.city": "Porto Alegre, Brazil",
     "reviews.item3.text":
-      "I work shifts and could never call during business hours. Now I book from my phone at 2am and get the reminder on the day. It solved a real problem.",
+      "I work shifts and could never call during business hours. Now I book from my phone at 2am and get the reminder on the day. It solved a real problem in my routine.",
     "reviews.item4.name": "Bruno Carvalho",
     "reviews.item4.city": "Recife, Brazil",
     "reviews.item4.text":
-      "I took my son for the first time using the kids' cut filter. The profile showed photos of the space and he was completely at ease. Small detail, big difference.",
+      "I took my son for the first time using the kids' cut filter. The profile showed photos of the space and he was completely at ease. Small detail, huge difference.",
     "reviews.item5.name": "Thiago Menezes",
     "reviews.item5.city": "Curitiba, Brazil",
     "reviews.item5.text":
-      "I had to reschedule twice in one week and didn't have to apologise to anyone on the phone. Two clicks and done.",
+      "I had to reschedule twice in one week and didn't have to apologise to anyone on the phone. Two clicks and done, new time confirmed instantly.",
     "reviews.item6.name": "André Batista",
     "reviews.item6.city": "Salvador, Brazil",
     "reviews.item6.text":
-      "The reviews are honest because only people who actually went can write one. I skipped two places and nailed it on the third.",
+      "The reviews are honest because only people who actually went can write one. I skipped two places based on the ratings and nailed it on the third. Full trust in the platform.",
 
     /* ---------- HOME · Preview B2B ---------- */
     "b2bPreview.eyebrow": "For shop owners",
@@ -1522,10 +1534,16 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.eyebrow": "Valoraciones de InBarber",
     "reviews.title": "Quien reserva en InBarber vuelve",
     "reviews.subtitle":
-      "Valoraciones verificadas: solo puede valorar quien completó una reserva en la plataforma.",
+      "Testimonios reales de clientes que usan la plataforma cada mes.",
     "reviews.scoreValue": "4,9",
-    "reviews.scoreLabel": "de 12.000 valoraciones",
-    "reviews.scoreCaption": "Nota media de la plataforma en los últimos 12 meses",
+    "reviews.scoreStarsAlt": "Nota media de 4,9 sobre 5 estrellas",
+    "reviews.scoreLabel": "de 5,0 de media",
+    "reviews.scoreCaption": "Basado en más de 12.000 valoraciones en los últimos 12 meses",
+    "reviews.trustTitle": "100% verificadas",
+    "reviews.trustDesc": "Solo quien completó una reserva en la plataforma puede valorar.",
+    "reviews.verifiedBadge": "Reserva verificada",
+    "reviews.loadMore": "Ver más valoraciones",
+    "reviews.loadMoreAria": "Ver más valoraciones de InBarber",
     "reviews.starsAlt": "Valoración de {rating} sobre 5 estrellas",
     "reviews.avatarAlt": "Foto de {name}",
     "reviews.prev": "Valoración anterior",
@@ -1533,27 +1551,27 @@ window.INBARBER_TRANSLATIONS = {
     "reviews.item1.name": "Rafael Nogueira",
     "reviews.item1.city": "São Paulo, Brasil",
     "reviews.item1.text":
-      "Me mudé de barrio y no conocía a nadie. Encontré una barbería con 4,9 a tres manzanas, reservé un domingo a las 22h y al día siguiente ya estaba en la silla. Es mi barbería fija.",
+      "Me mudé de barrio y no conocía a nadie. Encontré una barbería 4,9 a tres manzanas, reservé un domingo a las 22h y el lunes ya estaba en la silla. Es mi barbería fija.",
     "reviews.item2.name": "Diego Almeida",
     "reviews.item2.city": "Belo Horizonte, Brasil",
     "reviews.item2.text":
-      "Lo que me convenció fue ver el precio de cada servicio antes de ir. Sin sorpresas al pagar y sin tener que preguntar por WhatsApp.",
+      "Lo que me convenció fue ver el precio de cada servicio antes de ir. Sin sorpresas al pagar y sin tener que preguntar por WhatsApp cuánto cuesta.",
     "reviews.item3.name": "Lucas Ferreira",
     "reviews.item3.city": "Porto Alegre, Brasil",
     "reviews.item3.text":
-      "Trabajo por turnos y nunca podía llamar en horario comercial. Ahora reservo de madrugada desde el móvil y recibo el recordatorio el mismo día. Resolvió un problema real.",
+      "Trabajo por turnos y nunca podía llamar en horario comercial. Ahora reservo de madrugada desde el móvil y recibo el recordatorio el mismo día. Resolvió un problema real de mi rutina.",
     "reviews.item4.name": "Bruno Carvalho",
     "reviews.item4.city": "Recife, Brasil",
     "reviews.item4.text":
-      "Llevé a mi hijo por primera vez usando el filtro de corte infantil. El perfil mostraba fotos del local y fue tranquilísimo. Un detalle que marca la diferencia.",
+      "Llevé a mi hijo por primera vez usando el filtro de corte infantil. El perfil mostraba fotos del local y fue tranquilísimo. Un detalle pequeño que marca toda la diferencia.",
     "reviews.item5.name": "Thiago Menezes",
     "reviews.item5.city": "Curitiba, Brasil",
     "reviews.item5.text":
-      "Tuve que cambiar la hora dos veces en la misma semana y no tuve que disculparme con nadie por teléfono. Dos clics y listo.",
+      "Tuve que cambiar la hora dos veces en la misma semana y no tuve que disculparme con nadie por teléfono. Dos clics y listo, nuevo horario confirmado al instante.",
     "reviews.item6.name": "André Batista",
     "reviews.item6.city": "Salvador, Brasil",
     "reviews.item6.text":
-      "Las valoraciones son honestas porque solo valora quien fue de verdad. Descarté dos sitios y acerté de lleno con el tercero.",
+      "Las valoraciones son honestas porque solo valora quien fue de verdad. Descarté dos sitios por la nota y acerté de lleno con el tercero. Confianza total en la plataforma.",
 
     /* ---------- HOME · Preview B2B ---------- */
     "b2bPreview.eyebrow": "Para dueños de barbería",
