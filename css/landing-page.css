@@ -1436,59 +1436,6 @@ strong {
   transform: translateX(3px);
 }
 
-/* ==========================================================================
-   PREVIEW B2B (transição entre jornadas)
-   ========================================================================== */
-.b2b-preview {
-  position: relative;
-  overflow: hidden;
-}
-
-.b2b-preview__panel {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(2rem, 5vw, 4rem);
-  align-items: center;
-  padding: clamp(2rem, 5vw, 4rem);
-  overflow: hidden;
-  background: var(--color-bg-elevated);
-  background-image: var(--gradient-brand-soft);
-  border: 1px solid rgba(0, 71, 255, 0.28);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-xl);
-}
-
-.b2b-preview__panel::before {
-  content: "";
-  position: absolute;
-  top: -40%;
-  right: -10%;
-  width: 460px;
-  height: 460px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.22), transparent 70%);
-  filter: blur(50px);
-  pointer-events: none;
-}
-
-.b2b-preview__content {
-  position: relative;
-  z-index: 1;
-}
-
-.b2b-preview__title {
-  margin-top: var(--space-md);
-  font-size: var(--text-3xl);
-}
-
-.b2b-preview__desc {
-  max-width: 48ch;
-  margin-top: var(--space-md);
-  font-size: var(--text-md);
-  line-height: var(--leading-relaxed);
-}
-
 .check-list {
   display: flex;
   flex-direction: column;
@@ -1510,15 +1457,6 @@ strong {
   height: 18px;
   margin-top: 1px;
   color: var(--color-success);
-}
-
-.b2b-preview__cta {
-  margin-top: var(--space-xl);
-}
-
-.b2b-preview__visual {
-  position: relative;
-  z-index: 1;
 }
 
 /* ==========================================================================

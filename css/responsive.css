@@ -116,9 +116,6 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   }
 
-  .b2b-preview__panel {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  }
 
   .cta-block {
     grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);

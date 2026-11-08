@@ -42,6 +42,7 @@
   <link rel="stylesheet" href="css/conta.css">
   <link rel="stylesheet" href="css/responsive.css">
   <link rel="stylesheet" href="css/como-funciona.css">
+  <link rel="stylesheet" href="css/para-donos.css">
 
   <script type="application/ld+json">
   {
@@ -709,68 +710,220 @@
     </section>
 
     <!-- ==================================================================
-         SEÇÃO 6 — PREVIEW DA JORNADA B2B
+         SEÇÃO 6 — PARA DONOS DE BARBEARIA (ponte para a jornada B2B)
+         Mesmo desenho do showcase de produtos da InCode: cabeçalho
+         centralizado, coluna de ganhos + chamada, e o painel real da
+         InBarber com câmera guiada pelos quatro pontos principais.
+         Estilos: css/para-donos.css · Interações: js/para-donos.js
          ================================================================== -->
-    <section class="section b2b-preview" aria-labelledby="b2b-preview-title">
-      <div class="container">
-        <div class="b2b-preview__panel" data-reveal="scale">
-          <div class="b2b-preview__content">
-            <span class="eyebrow" data-i18n="b2bPreview.eyebrow"></span>
-            <h2 class="b2b-preview__title" id="b2b-preview-title" data-i18n="b2bPreview.title"></h2>
-            <p class="b2b-preview__desc" data-i18n="b2bPreview.desc"></p>
+    <section class="owners" id="para-donos" aria-labelledby="owners-title">
+      <div class="owners__grid" aria-hidden="true"></div>
+      <div class="owners__glow" aria-hidden="true"></div>
+      <div class="owners__veil" aria-hidden="true"></div>
 
-            <ul class="check-list">
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                <span data-i18n="b2bPreview.bullet1"></span>
+      <div class="container owners__inner">
+        <header class="owners__head" data-reveal>
+          <div class="owners__label">
+            <span class="owners__label-line" aria-hidden="true"></span>
+            <p class="owners__label-text" data-i18n="owners.eyebrow"></p>
+            <span class="owners__label-line" aria-hidden="true"></span>
+          </div>
+          <h2 class="owners__title" id="owners-title" data-i18n-html="owners.titleHtml"></h2>
+          <p class="owners__lead" data-i18n="owners.lead"></p>
+        </header>
+
+        <div class="owners__showcase" id="owners-showcase" data-reveal style="--reveal-delay: 120ms">
+          <!-- Coluna lateral: o que muda na barbearia + chamada -->
+          <div class="owners__side">
+            <ul class="owners__gains" data-i18n-attr="aria-label:owners.gainsLabel">
+              <li class="owners-gain">
+                <span class="owners-gain__accent" aria-hidden="true"></span>
+                <span class="owners-gain__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/><path d="M11 8v6M8 11h6"/></svg></span>
+                <span class="owners-gain__text">
+                  <b data-i18n="owners.gain1.title"></b>
+                  <small data-i18n="owners.gain1.desc"></small>
+                </span>
               </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                <span data-i18n="b2bPreview.bullet2"></span>
+              <li class="owners-gain">
+                <span class="owners-gain__accent" aria-hidden="true"></span>
+                <span class="owners-gain__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 9.5h18"/><path d="m9 15 2 2 4-4"/></svg></span>
+                <span class="owners-gain__text">
+                  <b data-i18n="owners.gain2.title"></b>
+                  <small data-i18n="owners.gain2.desc"></small>
+                </span>
               </li>
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                <span data-i18n="b2bPreview.bullet3"></span>
+              <li class="owners-gain">
+                <span class="owners-gain__accent" aria-hidden="true"></span>
+                <span class="owners-gain__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/><path d="M15 8h5v5"/></svg></span>
+                <span class="owners-gain__text">
+                  <b data-i18n="owners.gain3.title"></b>
+                  <small data-i18n="owners.gain3.desc"></small>
+                </span>
               </li>
             </ul>
 
-            <div class="b2b-preview__cta">
-              <a class="btn btn--gold btn--lg" href="para-barbearias.html" data-i18n="b2bPreview.cta"></a>
-            </div>
+            <aside class="owners-cta" aria-labelledby="owners-cta-title">
+              <p class="owners-cta__title" id="owners-cta-title" data-i18n="owners.cta.title"></p>
+              <ul class="owners-cta__list">
+                <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.4 2.9 2.9 6.1-6.6"/></svg><span data-i18n="owners.cta.point1"></span></li>
+                <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.4 2.9 2.9 6.1-6.6"/></svg><span data-i18n="owners.cta.point2"></span></li>
+                <li><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3.5 8.4 2.9 2.9 6.1-6.6"/></svg><span data-i18n="owners.cta.point3"></span></li>
+              </ul>
+              <a class="btn btn--gold owners-cta__btn" href="para-barbearias.html#cadastro">
+                <span data-i18n="owners.cta.primary"></span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.8 8h9.4M8.6 4.4 12.2 8l-3.6 3.6"/></svg>
+              </a>
+              <a class="owners-cta__link" href="para-barbearias.html#funcionalidades">
+                <span data-i18n="owners.cta.secondary"></span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.8 8h9.4M8.6 4.4 12.2 8l-3.6 3.6"/></svg>
+              </a>
+            </aside>
           </div>
 
-          <div class="b2b-preview__visual">
-            <div class="mockup" role="img" data-i18n-attr="aria-label:b2bPreview.imageAlt">
-              <div class="mockup__bar" aria-hidden="true">
-                <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
-                <span class="mockup__url">painel.inbarber.com</span>
+          <!-- Demonstração guiada do painel -->
+          <div class="owners-demo">
+            <!-- Trio de dispositivos: mostra o mesmo painel no monitor, no
+                 notebook e no celular (o painel é responsivo).
+                 Prints esperadas em assets/images/ (WebP + JPG de fallback):
+                   painel-monitor  → 1920×1080 (16:9)
+                   painel-laptop   → 1440×900  (16:10)
+                   painel-celular  → 780×1688  (390×844 @2x, 9:19,5)
+                 A câmera guiada percorre a tela do monitor. -->
+            <div class="owners-demo__stage">
+              <div class="owners-demo__tilt" data-tilt>
+                <div class="owners-devices">
+                  <!-- Notebook -->
+                  <figure class="owners-device owners-device--laptop">
+                    <div class="owners-laptop__lid">
+                      <span class="owners-laptop__cam" aria-hidden="true"></span>
+                      <div class="owners-device__screen owners-device__screen--laptop">
+                        <picture>
+                          <source srcset="assets/images/painel-laptop.webp" type="image/webp">
+                          <img class="owners-device__img" src="assets/images/painel-laptop.jpg"
+                               width="1440" height="900" loading="lazy" decoding="async" draggable="false"
+                               data-i18n-attr="alt:owners.mock.altLaptop" alt="">
+                        </picture>
+                        <span class="owners-device__gloss" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                    <div class="owners-laptop__base" aria-hidden="true"><span></span></div>
+                  </figure>
+
+                  <!-- Monitor (palco da câmera guiada) -->
+                  <figure class="owners-device owners-device--monitor">
+                    <div class="owners-mock">
+                      <div class="owners-mock__bar">
+                        <span class="owners-mock__lights" aria-hidden="true">
+                          <i class="owners-mock__light owners-mock__light--r"></i>
+                          <i class="owners-mock__light owners-mock__light--y"></i>
+                          <i class="owners-mock__light owners-mock__light--g"></i>
+                        </span>
+                        <span class="owners-mock__url" data-i18n="owners.mock.url"></span>
+                      </div>
+
+                      <div class="owners-mock__screen">
+                        <div class="owners-mock__camera" data-camera>
+                          <picture>
+                            <source srcset="assets/images/painel-monitor.webp" type="image/webp">
+                            <img class="owners-mock__img" src="assets/images/painel-monitor.jpg"
+                                 width="1920" height="1080" loading="lazy" decoding="async" draggable="false"
+                                 data-i18n-attr="alt:owners.mock.altMonitor" alt="">
+                          </picture>
+                          <span class="owners-mock__focus" data-focus aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+                        </div>
+                        <span class="owners-mock__sweep" data-sweep aria-hidden="true"></span>
+                        <span class="owners-mock__shade" aria-hidden="true"></span>
+                        <p class="owners-mock__caption" data-caption aria-hidden="true">
+                          <span class="owners-mock__caption-dot"></span>
+                          <span class="owners-mock__caption-text" data-caption-text></span>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="owners-monitor__chin" aria-hidden="true">
+                      <img class="owners-monitor__logo" src="assets/images/inbarber-logo.png" width="446" height="622" alt="" loading="lazy" decoding="async">
+                      <span class="owners-monitor__brand" data-i18n="brand.name"></span>
+                    </div>
+                    <div class="owners-monitor__neck" aria-hidden="true"></div>
+                    <div class="owners-monitor__foot" aria-hidden="true"></div>
+                  </figure>
+
+                  <!-- Celular -->
+                  <figure class="owners-device owners-device--phone">
+                    <div class="owners-phone__frame">
+                      <span class="owners-phone__island" aria-hidden="true"></span>
+                      <div class="owners-device__screen owners-device__screen--phone">
+                        <picture>
+                          <source srcset="assets/images/painel-celular.webp" type="image/webp">
+                          <img class="owners-device__img" src="assets/images/painel-celular.jpg"
+                               width="780" height="1688" loading="lazy" decoding="async" draggable="false"
+                               data-i18n-attr="alt:owners.mock.altPhone" alt="">
+                        </picture>
+                        <span class="owners-device__gloss" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                  </figure>
+                </div>
               </div>
-              <div class="mockup__screen" aria-hidden="true">
-                <div class="mockup__row">
-                  <span class="mockup__title">Hoje · 14 agendamentos</span>
-                  <span class="mockup__grow"></span>
-                  <span class="mockup__pill mockup__pill--success">+18%</span>
-                </div>
-                <div class="mockup__panel">
-                  <span class="mockup__label">Ocupação da semana</span>
-                  <div class="mockup__bars">
-                    <span style="height:42%"></span><span style="height:64%"></span><span style="height:55%"></span>
-                    <span style="height:82%"></span><span style="height:96%"></span><span style="height:74%"></span>
-                    <span style="height:38%"></span>
-                  </div>
-                </div>
-                <div class="mockup__panel mockup__row">
-                  <span class="mockup__bone mockup__bone--avatar"></span>
-                  <span class="mockup__grow"><span class="mockup__title">Rafael N.</span><span class="mockup__meta">11:00 · Degradê + barba</span></span>
-                  <span class="mockup__pill mockup__pill--cyan">Novo</span>
-                </div>
-                <div class="mockup__panel mockup__row">
-                  <span class="mockup__bone mockup__bone--avatar"></span>
-                  <span class="mockup__grow"><span class="mockup__title">Diego A.</span><span class="mockup__meta">11:45 · Corte clássico</span></span>
-                  <span class="mockup__pill mockup__pill--primary">Recorrente</span>
-                </div>
-              </div>
+              <span class="owners-demo__reflection" aria-hidden="true"></span>
+
+              <!-- Etiqueta: o mesmo painel em todas as telas -->
+              <p class="owners-sync">
+                <span class="owners-sync__devices" aria-hidden="true">
+                  <span class="owners-sync__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="5" width="15" height="10" rx="1.5"/><path d="M2 19h20l-1.6-4H3.6z"/></svg></span>
+                  <i class="owners-sync__link"></i>
+                  <span class="owners-sync__icon owners-sync__icon--main"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M9 20.5h6M12 16.5v4"/></svg></span>
+                  <i class="owners-sync__link"></i>
+                  <span class="owners-sync__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+                </span>
+                <span class="owners-sync__text">
+                  <b data-i18n="owners.sync.title"></b>
+                  <small data-i18n="owners.sync.desc"></small>
+                </span>
+              </p>
             </div>
+
+            <ol class="owners-demo__steps" data-steps data-i18n-attr="aria-label:owners.stepsLabel">
+                <li class="owners-demo__step">
+                  <button class="owners-step is-active" type="button" data-step="0" data-cam="50 50 1" aria-current="true">
+                    <span class="owners-step__num" aria-hidden="true">01</span>
+                    <span class="owners-step__txt">
+                      <b data-i18n="owners.step1.title"></b>
+                      <small data-i18n="owners.step1.desc"></small>
+                    </span>
+                    <span class="owners-step__bar" aria-hidden="true"><i></i></span>
+                  </button>
+                </li>
+                <li class="owners-demo__step">
+                  <button class="owners-step" type="button" data-step="1" data-cam="32 22 1.55" aria-current="false">
+                    <span class="owners-step__num" aria-hidden="true">02</span>
+                    <span class="owners-step__txt">
+                      <b data-i18n="owners.step2.title"></b>
+                      <small data-i18n="owners.step2.desc"></small>
+                    </span>
+                    <span class="owners-step__bar" aria-hidden="true"><i></i></span>
+                  </button>
+                </li>
+                <li class="owners-demo__step">
+                  <button class="owners-step" type="button" data-step="2" data-cam="47 70 1.5" aria-current="false">
+                    <span class="owners-step__num" aria-hidden="true">03</span>
+                    <span class="owners-step__txt">
+                      <b data-i18n="owners.step3.title"></b>
+                      <small data-i18n="owners.step3.desc"></small>
+                    </span>
+                    <span class="owners-step__bar" aria-hidden="true"><i></i></span>
+                  </button>
+                </li>
+                <li class="owners-demo__step">
+                  <button class="owners-step" type="button" data-step="3" data-cam="84 55 1.5" aria-current="false">
+                    <span class="owners-step__num" aria-hidden="true">04</span>
+                    <span class="owners-step__txt">
+                      <b data-i18n="owners.step4.title"></b>
+                      <small data-i18n="owners.step4.desc"></small>
+                    </span>
+                    <span class="owners-step__bar" aria-hidden="true"><i></i></span>
+                  </button>
+                </li>
+            </ol>
           </div>
         </div>
       </div>
@@ -876,5 +1029,6 @@
   <script src="js/featured.js" defer></script>
   <script src="js/como-funciona.js" defer></script>
   <script src="js/conta.js" defer></script>
+  <script src="js/para-donos.js" defer></script>
 </body>
 </html>
